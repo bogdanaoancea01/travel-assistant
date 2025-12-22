@@ -1,48 +1,37 @@
 import { useState } from 'react';
-import { Mail, Lock, ArrowRight, Globe, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
-export function SignIn({ onNavigate }) {
+export function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Mock sign in - in production, this would make an API call
+    // API call
     console.log('Sign in:', { email, password, rememberMe });
-    // Navigate to dashboard after successful sign in
-    onNavigate('dashboard');
+    navigate('/home');
   };
 
   const handleGoogleSignIn = () => {
-    // Mock Google sign in
     console.log('Google sign in');
-    onNavigate('dashboard');
+    navigate('/home');
   };
 
   const handleAppleSignIn = () => {
-    // Mock Apple sign in
     console.log('Apple sign in');
-    onNavigate('dashboard');
+    navigate('/home');
   };
-
-  const navigate = useNavigate();
-
 
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Form */}
       <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-20 xl:px-24 bg-white">
         <div className="mx-auto w-full max-w-md">
-          {/* Logo */}
-          <div className="flex items-center gap-2 mb-8">
-            <div className="bg-linear-to-br from-pink-400 via-orange-400 to-yellow-300 p-2 rounded-xl">
-              <Globe className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl text-gray-900">TravelAI</span>
-          </div>
 
           {/* Header */}
           <div className="mb-8">
@@ -56,7 +45,7 @@ export function SignIn({ onNavigate }) {
           <div className="space-y-3 mb-6">
             <button
               onClick={handleGoogleSignIn}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 cursor-pointer border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -81,7 +70,7 @@ export function SignIn({ onNavigate }) {
 
             <button
               onClick={handleAppleSignIn}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 cursor-pointer border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
@@ -90,7 +79,7 @@ export function SignIn({ onNavigate }) {
             </button>
           </div>
 
-          {/* Divider */}
+          {/* Continue with mail */}
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
@@ -100,7 +89,7 @@ export function SignIn({ onNavigate }) {
             </div>
           </div>
 
-          {/* Sign In Form */}
+          {/* Form - Sign In */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
@@ -144,7 +133,7 @@ export function SignIn({ onNavigate }) {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
@@ -163,7 +152,7 @@ export function SignIn({ onNavigate }) {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded cursor-pointer"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
                   Remember me
@@ -172,7 +161,7 @@ export function SignIn({ onNavigate }) {
 
               <button
                 type="button"
-                className="text-sm text-orange-500 hover:text-orange-600"
+                className="text-sm text-orange-500 hover:text-orange-600 cursor-pointer"
               >
                 Forgot password?
               </button>
@@ -181,7 +170,7 @@ export function SignIn({ onNavigate }) {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-linear-to-r from-pink-500 to-orange-500 text-white py-3 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 group"
+              className="w-full bg-linear-to-r from-pink-500 to-orange-500 text-white py-3 rounded-xl cursor-pointer hover:shadow-lg transition-all flex items-center justify-center gap-2 group"
             >
               Sign in
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -192,7 +181,7 @@ export function SignIn({ onNavigate }) {
           <p className="mt-6 text-center text-sm text-gray-600">
             Don't have an account?{' '}
             <button
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/signup")}
               className="text-orange-500 hover:text-orange-600 cursor-pointer hover:underline"
             >
               Sign up
@@ -201,7 +190,7 @@ export function SignIn({ onNavigate }) {
         </div>
       </div>
 
-      {/* Right Side - Image */}
+      {/* Right Side */}
       <div className="hidden lg:block lg:flex-1 relative bg-linear-to-br from-pink-400 via-orange-400 to-yellow-300">
         <div className="absolute inset-0">
           

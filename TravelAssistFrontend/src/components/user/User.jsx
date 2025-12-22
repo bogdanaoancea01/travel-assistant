@@ -1,6 +1,5 @@
 import { useState, useEffect  } from "react";
 import UserForm from "./UserForm"
-import UserList from "./UserList"
 import { useForm } from "react-hook-form"
 import toast from 'react-hot-toast';
 import axios from "axios";
@@ -11,7 +10,6 @@ function User() {
 
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    //const [editData, setEditData] = useState(null);
 
     useEffect(() => {
         const loadUsers = async () => {

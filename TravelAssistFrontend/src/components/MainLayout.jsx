@@ -1,4 +1,3 @@
-// MainLayout.jsx
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Globe, Menu, X } from "lucide-react";

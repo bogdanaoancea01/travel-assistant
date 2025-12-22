@@ -1,5 +1,5 @@
 export default function NavBar({
-  brand = "TravelAI",
+  brand = "AI travel assistant",
   mobileMenuOpen = false,
   onToggleMobileMenu = () => {},
   onNavigate = () => {},
@@ -49,25 +49,29 @@ function Logo({ brand, Globe }) {
 function DesktopNav({ onNavigate }) {
   return (
     <div className="hidden md:flex items-center gap-8">
-      <button className="text-gray-600 hover:text-gray-900 transition-colors">How it works</button>
+      <button 
+        onClick={() => onNavigate("home")}
+        className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">
+          
+        Home
+      </button>
       <button
         onClick={() => onNavigate("explore")}
-        className="text-gray-600 hover:text-gray-900 transition-colors"
+        className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
       >
         Explore
       </button>
-      <button className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</button>
       <button
-        onClick={() => onNavigate("signin")}
-        className="text-gray-600 hover:text-gray-900 transition-colors"
-      >
-        Sign In
-      </button>
-      <button
-        onClick={() => onNavigate("new-trip")}
-        className="bg-linear-to-r from-pink-500 to-orange-500 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-shadow"
+        onClick={() => onNavigate("newTrip")}
+        className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
       >
         Get Started
+      </button>
+      <button
+        onClick={() => onNavigate("signin")}
+        className="bg-linear-to-r from-pink-500 to-orange-500 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-shadow cursor-pointer"
+      >
+        Sign In
       </button>
     </div>
   );
@@ -77,29 +81,29 @@ function MobileNav({ onNavigate }) {
   return (
     <div className="md:hidden bg-white border-t border-gray-200">
       <div className="px-4 py-4 space-y-3">
-        <button className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
-          How it works
+        <button 
+          onClick={() => onNavigate("home")}
+          className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
+          
+          Home
         </button>
         <button
           onClick={() => onNavigate("explore")}
-          className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+          className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
         >
           Explore
         </button>
-        <button className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
-          Pricing
-        </button>
         <button
-          onClick={() => onNavigate("login")}
-          className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-        >
-          Sign In
-        </button>
-        <button
-          onClick={() => onNavigate("new-trip")}
-          className="block w-full bg-linear-to-r from-pink-500 to-orange-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-shadow"
+          onClick={() => onNavigate("newTrip")}
+          className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
         >
           Get Started
+        </button>
+        <button
+          onClick={() => onNavigate("signin")}
+          className="block w-full bg-linear-to-r from-pink-500 to-orange-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-shadow cursor-pointer"
+        >
+          Sign In
         </button>
       </div>
     </div>

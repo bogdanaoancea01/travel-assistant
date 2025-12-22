@@ -1,5 +1,8 @@
-export function Hero({ onNavigate, icons }) {
+import { useNavigate } from "react-router-dom";
+
+export function Hero({ icons }) {
   const { Sparkles, ArrowRight, Star } = icons;
+  const navigate = useNavigate();
 
   return (
     <section className="pt-32 pb-20 px-4 bg-linear-to-br from-pink-50 via-orange-50 to-yellow-50">
@@ -10,7 +13,7 @@ export function Hero({ onNavigate, icons }) {
           <h1 className="mb-6">
             Plan Your Perfect Trip<br />
             <span className="bg-linear-to-r from-pink-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
-              In Seconds, Not Hours
+            In Minutes, Not Hours
             </span>
           </h1>
 
@@ -19,7 +22,7 @@ export function Hero({ onNavigate, icons }) {
             activities, and recommendations—tailored to your style and budget.
           </p>
 
-          <HeroActions onNavigate={onNavigate} ArrowRight={ArrowRight} />
+          <HeroActions navigate={navigate} ArrowRight={ArrowRight} />
 
           <HeroStats Star={Star} />
         </div>
@@ -37,20 +40,20 @@ function Badge({ Sparkles }) {
   );
 }
 
-function HeroActions({ onNavigate, ArrowRight }) {
+function HeroActions({navigate, ArrowRight }) {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
       <button
-        onClick={() => onNavigate('new-trip')}
-        className="bg-linear-to-r from-pink-500 to-orange-500 text-white px-8 py-4 rounded-xl hover:shadow-xl transition-all flex items-center gap-2 group"
+        onClick={() => navigate("/newtrip")}
+        className="bg-linear-to-r from-pink-500 to-orange-500 text-white px-8 py-4 rounded-xl cursor-pointer hover:shadow-xl transition-all flex items-center gap-2 group"
       >
         Start Planning
         <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
       </button>
 
       <button
-        onClick={() => onNavigate('explore')}
-        className="bg-white text-gray-900 px-8 py-4 rounded-xl border-2 border-gray-200 hover:border-orange-500 hover:shadow-lg transition-all"
+        onClick={() => navigate('/explore')}
+        className="bg-white text-gray-900 px-8 py-4 rounded-xl border-2 border-gray-200 hover:border-orange-500 cursor-pointer hover:shadow-lg transition-all"
       >
         Explore Destinations
       </button>
@@ -58,7 +61,7 @@ function HeroActions({ onNavigate, ArrowRight }) {
   );
 }
 
-function HeroStats({ Star }) {
+function HeroStats({ Star }) {  
   return (
     <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-600">
       <div className="flex items-center gap-2">

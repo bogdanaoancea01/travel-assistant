@@ -2,7 +2,8 @@ import React from 'react'
 import Home from './pages/Home'
 import About from './pages/About'
 import {SignIn} from './pages/SignIn'
-import {Register} from './pages/Register'
+import {SignUp} from './pages/SignUp'
+import {NewTrip} from './pages/NewTrip'
 import NotFound from './pages/NotFound'
 import User from './components/user/User'
 import { Routes, Route } from "react-router";
@@ -22,11 +23,12 @@ const App = () => {
           <Route path="home" element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="user" element={<User />} />
+          <Route path="newTrip" element={<NewTrip />} />
+          <Route path="signin" element={<SignIn />} />
+          <Route path="signup" element={<SignUp />} />
         </Route>
 
         {/* Without navbar */}
-        <Route path="signin" element={<SignIn />} />
-        <Route path="register" element={<Register />} />
         <Route path="*" element={<NotFound />} />
     </Routes>
 
