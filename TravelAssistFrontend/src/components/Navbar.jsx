@@ -6,6 +6,7 @@ export default function NavBar({
   icons = {},
 }) {
   const { Globe, Menu, X } = icons;
+  const isAuthenticated = !!localStorage.getItem("token");
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
@@ -13,7 +14,10 @@ export default function NavBar({
         <div className="flex items-center justify-between h-16">
           <Logo brand={brand} Globe={Globe} />
 
-          <DesktopNav onNavigate={onNavigate} />
+          <DesktopNav
+            onNavigate={onNavigate}
+            isAuthenticated={isAuthenticated}
+          />
 
           <button
             onClick={onToggleMobileMenu}
@@ -30,7 +34,12 @@ export default function NavBar({
         </div>
       </div>
 
-      {mobileMenuOpen && <MobileNav onNavigate={onNavigate} />}
+      {mobileMenuOpen && (
+        <MobileNav
+          onNavigate={onNavigate}
+          isAuthenticated={isAuthenticated}
+        />
+      )}
     </nav>
   );
 }
@@ -46,65 +55,72 @@ function Logo({ brand, Globe }) {
   );
 }
 
-function DesktopNav({ onNavigate }) {
+function DesktopNav({ onNavigate, isAuthenticated }) {
   return (
     <div className="hidden md:flex items-center gap-8">
-      <button 
-        onClick={() => onNavigate("home")}
-        className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">
-          
+      <button onClick={() => onNavigate("home")} className="nav-btn">
         Home
       </button>
-      <button
-        onClick={() => onNavigate("explore")}
-        className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
-      >
+
+      <button onClick={() => onNavigate("explore")} className="nav-btn">
         Explore
       </button>
-      <button
-        onClick={() => onNavigate("newTrip")}
-        className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
-      >
+
+      <button onClick={() => onNavigate("newTrip")} className="nav-btn">
         Get Started
       </button>
-      <button
-        onClick={() => onNavigate("signin")}
-        className="bg-linear-to-r from-pink-500 to-orange-500 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-shadow cursor-pointer"
-      >
-        Sign In
-      </button>
+
+      {isAuthenticated ? (
+        <button
+          onClick={() => onNavigate("profile")}
+          className="bg-gray-100 text-gray-900 px-6 py-2 rounded-lg hover:bg-gray-200 transition cursor-pointer"
+        >
+          Profile
+        </button>
+      ) : (
+        <button
+          onClick={() => onNavigate("signin")}
+          className="bg-linear-to-r from-pink-500 to-orange-500 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-shadow cursor-pointer"
+        >
+          Sign In
+        </button>
+      )}
     </div>
   );
 }
 
-function MobileNav({ onNavigate }) {
+function MobileNav({ onNavigate, isAuthenticated }) {
   return (
     <div className="md:hidden bg-white border-t border-gray-200">
       <div className="px-4 py-4 space-y-3">
-        <button 
-          onClick={() => onNavigate("home")}
-          className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
-          
+
+        <button onClick={() => onNavigate("home")} className="mobile-btn">
           Home
         </button>
-        <button
-          onClick={() => onNavigate("explore")}
-          className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
-        >
+
+        <button onClick={() => onNavigate("explore")} className="mobile-btn">
           Explore
         </button>
-        <button
-          onClick={() => onNavigate("newTrip")}
-          className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
-        >
+
+        <button onClick={() => onNavigate("newTrip")} className="mobile-btn">
           Get Started
         </button>
-        <button
-          onClick={() => onNavigate("signin")}
-          className="block w-full bg-linear-to-r from-pink-500 to-orange-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-shadow cursor-pointer"
-        >
-          Sign In
-        </button>
+
+        {isAuthenticated ? (
+          <button
+            onClick={() => onNavigate("profile")}
+            className="block w-full bg-gray-100 text-gray-900 px-6 py-3 rounded-lg hover:bg-gray-200 transition cursor-pointer"
+          >
+            Profile
+          </button>
+        ) : (
+          <button
+            onClick={() => onNavigate("signin")}
+            className="block w-full bg-linear-to-r from-pink-500 to-orange-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-shadow cursor-pointer"
+          >
+            Sign In
+          </button>
+        )}
       </div>
     </div>
   );

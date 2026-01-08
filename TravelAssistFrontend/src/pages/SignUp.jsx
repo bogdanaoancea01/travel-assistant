@@ -24,17 +24,54 @@ export function SignUp() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // password match
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // Frontend safety check (UX)
+  if (formData.password !== formData.confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  try {
+    const response = await fetch("https://localhost:7237/api/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Backend validation errors
+      if (data.errors) {
+        const firstError = Object.values(data.errors)[0][0];
+        alert(firstError);
+      } else {
+        alert(data);
+      }
       return;
     }
-    console.log('SignUp:', formData);
-    navigate('/home');
-  };
+
+    // Success
+    console.log("Signup success:", data);
+    navigate("/signin");
+
+  } 
+  catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+};
+
 
   const handleGoogleSignUp = () => {
     console.log('Google sign up');
@@ -51,14 +88,14 @@ export function SignUp() {
     <div className="min-h-screen flex">
 
     {/* Left Side - Form */}
-      <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-16 xl:px-20 bg-white">
+      <div className="flex-1 flex flex-col justify-start lg:justify-center px-4 sm:px-6 lg:px-16 xl:px-20 bg-white overflow-y-auto">
         <div className="mx-auto w-full max-w-md">
 
           {/* Header */}
-          <div className="mb-5">
-            <h1 className="text-gray-900 mb-1">Create your account</h1>
-            <p className="text-gray-600 text-sm">
-              Sign up and keep your journies in one place.
+          <div className="mb-8">
+            <h1 className="text-gray-900 mb-2">Create your account</h1>
+            <p className="text-gray-600">
+              Start planning your dream trips with AI
             </p>
           </div>
 

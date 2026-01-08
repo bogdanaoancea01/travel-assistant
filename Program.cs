@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TravelAssistant.Models;
+using TravelAssistant.Services;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -8,6 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<PasswordHasher<User>>();
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException("ConnectionString is null");
 
@@ -26,13 +33,6 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
-//app.UseHttpsRedirection();
-//app.UseStaticFiles();
-
-//app.UseRouting();
-
-//app.UseAuthorization();
 
 app.UseCors(MyAllowSpecificOrigins);
 

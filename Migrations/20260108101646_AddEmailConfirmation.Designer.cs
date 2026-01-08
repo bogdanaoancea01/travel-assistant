@@ -11,8 +11,8 @@ using TravelAssistant.Models;
 namespace TravelAssistant.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251202204056_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260108101646_AddEmailConfirmation")]
+    partial class AddEmailConfirmation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace TravelAssistant.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("TravelAssistant.Models.Person", b =>
+            modelBuilder.Entity("TravelAssistant.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,7 +32,15 @@ namespace TravelAssistant.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("FisrtName")
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("EmailConfirmationToken")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
@@ -42,9 +50,13 @@ namespace TravelAssistant.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.ToTable("People");
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

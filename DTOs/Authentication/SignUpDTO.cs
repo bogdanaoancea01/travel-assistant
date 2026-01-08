@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TravelAssistant.Validation;
 
-namespace TravelAssistant.Models
+namespace TravelAssistant.DTOs.Authentication
 {
-    public class User
+    public class SignUpDTO
     {
-        public int Id { get; set; }
-
         [Required]
         [MaxLength(30)]
         public string FirstName { get; set; } = string.Empty;
@@ -18,11 +17,13 @@ namespace TravelAssistant.Models
         [EmailAddress]
         [MaxLength(100)]
         public string Email { get; set; } = string.Empty;
-        
+
         [Required]
-        public string PasswordHash { get; set; } = string.Empty;
+        [StrongPassword]
+        public string Password { get; set; } = string.Empty;
 
-        public string? EmailConfirmationToken { get; set; }
-
+        [Required]
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
+        public string ConfirmPassword { get; set; } = string.Empty;
     }
 }

@@ -22,7 +22,10 @@ export default function MainLayout() {
         onNavigate={onNavigate}
         icons={{ Globe, Menu, X }}
       />
-      <Outlet />
+
+      <main className="pt-16 min-h-screen">
+        <Outlet />
+      </main>
     </>
   );
 }
