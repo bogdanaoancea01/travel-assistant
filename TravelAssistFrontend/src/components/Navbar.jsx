@@ -58,15 +58,22 @@ function Logo({ brand, Globe }) {
 function DesktopNav({ onNavigate, isAuthenticated }) {
   return (
     <div className="hidden md:flex items-center gap-8">
-      <button onClick={() => onNavigate("home")} className="nav-btn">
+      <button 
+        onClick={() => onNavigate("home")}
+        className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer">
+          
         Home
       </button>
-
-      <button onClick={() => onNavigate("explore")} className="nav-btn">
+      <button
+        onClick={() => onNavigate("explore")}
+        className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
+      >
         Explore
       </button>
-
-      <button onClick={() => onNavigate("newTrip")} className="nav-btn">
+      <button
+        onClick={() => onNavigate("newTrip")}
+        className="text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
+      >
         Get Started
       </button>
 
@@ -93,16 +100,22 @@ function MobileNav({ onNavigate, isAuthenticated }) {
   return (
     <div className="md:hidden bg-white border-t border-gray-200">
       <div className="px-4 py-4 space-y-3">
+        <button 
+          onClick={() => onNavigate("home")}
+          className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
 
-        <button onClick={() => onNavigate("home")} className="mobile-btn">
           Home
         </button>
-
-        <button onClick={() => onNavigate("explore")} className="mobile-btn">
+        <button
+          onClick={() => onNavigate("explore")}
+          className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+        >
           Explore
         </button>
-
-        <button onClick={() => onNavigate("newTrip")} className="mobile-btn">
+        <button
+          onClick={() => onNavigate("newTrip")}
+          className="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+        >
           Get Started
         </button>
 
