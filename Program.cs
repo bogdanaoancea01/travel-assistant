@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OpenAI;
 using TravelAssistant.Models;
 using TravelAssistant.Services;
 
@@ -9,6 +10,12 @@ var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddSingleton(_ =>
+{
+    var apiKey = builder.Configuration["OPENAI_API_KEY"];
+    return new OpenAIClient(apiKey);
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<PasswordHasher<User>>();
