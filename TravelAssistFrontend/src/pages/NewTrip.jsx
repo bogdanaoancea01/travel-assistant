@@ -40,70 +40,64 @@ export function NewTrip({ onNavigate, onTripCreate }) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const getAIResponse = (userInput, messageCount) => {
-    
-    // Destination (first response)
-    if (messageCount === 1) {
-      setTripData(prev => ({ ...prev, destination: userInput }));
-      return `${userInput} - what an amazing choice! 🌍 When are you planning to visit? You can tell me specific dates like "March 15-22" or something like "next summer for 10 days".`;
-    }
-    
-    // Dates (second response)
-    if (messageCount === 3) {
-      setTripData(prev => ({ ...prev, dates: userInput }));
-      return `Perfect timing! 📅 How many people will be traveling? Just you, or are you bringing friends/family?`;
-    }
-    
-    // Travelers (third response)
-    if (messageCount === 5) {
-      const travelers = parseInt(userInput) || 1;
-      setTripData(prev => ({ ...prev, travelers }));
-      
-      if (travelers === 1) {
-        return `Solo adventure - I love it! 🎒 What's your approximate budget per person? You can say something like "$2000", "budget-friendly", "mid-range", or "luxury".`;
-      } else {
-        return `Great! A group of ${travelers} travelers. 👥 What's your approximate budget per person? You can say something like "$2000", "budget-friendly", "mid-range", or "luxury".`;
+
+  const callBackendChat = async (chatMessages) => {
+  const response = await fetch("https://localhost:7237/api/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      messages: chatMessages.map(m => ({
+        role: m.type,
+        content: m.content,
+      })),
+    }),
+  });
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    console.error("Backend error:", text);
+    throw new Error(text);
+  }
+
+  return JSON.parse(text).reply;
+
+  //const data = await response.json();
+  //return data.reply;
+};
+
+  const handleSendMessage = async () => {
+  if (!input.trim() || isTyping) return;
+
+  const userMessage = { type: 'user', content: input };
+  const updatedMessages = [...messages, userMessage];
+
+  setMessages(updatedMessages);
+  setInput('');
+  setIsTyping(true);
+
+  try {
+    const aiReply = await callBackendChat(updatedMessages);
+
+    setMessages(prev => [
+      ...prev,
+      { type: 'assistant', content: aiReply }
+    ]);
+  } catch (err) {
+    console.error("Chat error:", err);
+    setMessages(prev => [
+      ...prev,
+      {
+        type: 'assistant',
+        content: "Sorry 😕 something went wrong. Please try again.",
       }
-    }
-    
-    // Budget (fourth response)
-    if (messageCount === 7) {
-      setTripData(prev => ({ ...prev, budget: userInput }));
-      return `Got it! 💰 Last question: What's your travel style? Are you more of a "luxury resort", "boutique hotels", "hostels & budget stays", or "mix of everything" traveler?`;
-    }
-    
-    // Travel style (fifth response)
-    if (messageCount === 9) {
-      setTripData(prev => ({ ...prev, travelStyle: userInput }));
-      return `Excellent! 🎯 Now let me show you some activity categories to help me understand what kind of experiences you're looking for. Select all that interest you!`;
-    }
-    
-    // Default response
-    return "Thanks for that! Let me process this information. 🤔";
-  };
-
-  const handleSendMessage = () => {
-    if (!input.trim() || isTyping) return;
-
-    const userMessage = { type: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsTyping(true);
-
-    // Simulate AI typing delay
-    setTimeout(() => {
-      const response = getAIResponse(input, messages.length);
-      setMessages(prev => [...prev, { type: 'assistant', content: response }]);
-      setIsTyping(false);
-
-      // After travel style question, show interests selection
-      if (messages.length === 9) {
-        setTimeout(() => {
-          setConversationMode(false);
-        }, 1000);
-      }
-    }, 800 + Math.random() * 400);
-  };
+    ]);
+  } finally {
+    setIsTyping(false);
+  }
+};
 
   const handleGenerateTrip = () => {
     const trip = {

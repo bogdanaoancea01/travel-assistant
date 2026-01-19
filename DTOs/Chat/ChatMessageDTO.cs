@@ -10,6 +10,6 @@ namespace TravelAssistant.DTOs.Chat
 
         [Required]
         [MaxLength(4000)]
-        public string Message { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
     }
 }

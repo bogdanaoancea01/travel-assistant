@@ -12,7 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddSingleton(_ =>
 {
-    var apiKey = builder.Configuration["OPENAI_API_KEY"];
+    var apiKey = builder.Configuration["OpenAI:ApiKey"];
+
+    if (string.IsNullOrWhiteSpace(apiKey))
+    {
+        throw new Exception("OpenAI API key is missing");
+    }
+
     return new OpenAIClient(apiKey);
 });
 

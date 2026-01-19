@@ -7,6 +7,6 @@ namespace TravelAssistant.DTOs.Chat
     {
         [Required]
         [MinLength(1, ErrorMessage = "At least one message is required.")]
-        public List<ChatMessage> Messages { get; set; } = [];
+        public List<ChatMessageDTO> Messages { get; set; } = [];
     }
 }
