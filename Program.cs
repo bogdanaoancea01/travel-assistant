@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OpenAI;
 using TravelAssistant.Models;
 using TravelAssistant.Services;
+using TravelAssistant.Services.Interfaces;
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";

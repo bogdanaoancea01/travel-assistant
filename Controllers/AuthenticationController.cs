@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TravelAssistant.DTOs.Authentication;
 using TravelAssistant.Models;
 using TravelAssistant.Services;
+using TravelAssistant.Services.Interfaces;
 
 namespace TravelAssistant.Controllers
 {

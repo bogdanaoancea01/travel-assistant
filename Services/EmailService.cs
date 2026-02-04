@@ -1,10 +1,7 @@
-﻿namespace TravelAssistant.Services
-{
-    public interface IEmailService
-    {
-        Task SendAsync(string to, string subject, string body);
-    }
+﻿using TravelAssistant.Services.Interfaces;
 
+namespace TravelAssistant.Services
+{
     public class EmailService : IEmailService
     {
         public Task SendAsync(string to, string subject, string body)

@@ -4,6 +4,7 @@ import About from './pages/About'
 import {SignIn} from './pages/SignIn'
 import {SignUp} from './pages/SignUp'
 import {NewTrip} from './pages/NewTrip'
+import {NewChat} from './pages/NewChat'
 import NotFound from './pages/NotFound'
 import User from './components/user/User'
 import { Routes, Route } from "react-router";
@@ -26,10 +27,12 @@ const App = () => {
           <Route path="newTrip" element={<NewTrip />} />
           <Route path="signin" element={<SignIn />} />
           <Route path="signup" element={<SignUp />} />
+          
         </Route>
 
         {/* Without navbar */}
         <Route path="*" element={<NotFound />} />
+        <Route path="newchat" element={<NewChat />} />
     </Routes>
 
 
