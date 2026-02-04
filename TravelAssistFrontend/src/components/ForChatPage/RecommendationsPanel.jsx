@@ -41,6 +41,20 @@ const inspirationCards = [
   },
 ];
 
+// Tools card data
+const tools = [
+  {
+    id: 1,
+    title: 'Create a Trip',
+    subtitle: 'in French',
+  },
+  {
+    id: 2,
+    title: 'Take travel test',
+    subtitle: 'in Attraction',
+  },
+];
+
 export function RecommendationsPanel() {
   return (
     <div className="bg-white px-6 py-4 overflow-y-auto h-screen">
@@ -79,7 +93,7 @@ export function RecommendationsPanel() {
           </button>
 
           {/* Scrollable destinations container */}
-          <div className="flex gap-3 overflow-hidden scrollbar-hide snap-x snap-mandatory pb-2">
+          <div className="flex gap-4 overflow-hidden snap-x snap-mandatory pb-2">
             {destinations.map((destination) => (
               <div
                 key={destination.id}
@@ -90,7 +104,7 @@ export function RecommendationsPanel() {
                   <img
                     src={destination.image}
                     alt={destination.title}
-                    className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   {/* Gradient overlay for text readability */}
                   <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
@@ -116,7 +130,7 @@ export function RecommendationsPanel() {
             See all
           </button>
         </div>
-        {/* Inspiration cards carousel - same layout as "For you" */}
+        {/* Inspiration cards carousel */}
         <div className="relative">
           {/* Carousel navigation buttons */}
           <button
@@ -132,8 +146,8 @@ export function RecommendationsPanel() {
             <ChevronRight className="size-4" />
           </button>
 
-          {/* Scrollable inspiration cards container */}
-          <div className="flex gap-3 overflow-hidden scrollbar-hide snap-x snap-mandatory pb-2">
+          {/* Tools cards container */}
+          <div className="flex gap-4 overflow-hidden snap-x snap-mandatory pb-10">
             {inspirationCards.map((card) => (
               <div
                 key={card.id}
@@ -144,7 +158,7 @@ export function RecommendationsPanel() {
                   <img
                     src={card.image}
                     alt={card.title}
-                    className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   {/* Dark gradient overlay */}
                   <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
@@ -159,6 +173,41 @@ export function RecommendationsPanel() {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Tools section */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-medium">Get started with TravelAI</h3>
+        </div>
+
+          {/* Scrollable inspiration cards container */}
+          <div className="flex gap-10 overflow-hidden snap-x snap-mandatory pb-2">
+            {tools.map((card) => (
+              <div
+                key={card.id}
+                className="shrink-0 w-62 snap-start"
+              >
+                <div className="relative rounded-xl overflow-hidden group cursor-pointer">
+                  {/* Card image */}
+                  <img
+                    src={card.image}
+                    alt={card.title}
+                    className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  {/* Dark gradient overlay */}
+                  <div className="absolute inset-0 rounded-xl bg-linear-to-t from-black/70 via-black/20 to-transparent"/>
+                  {/* Card title */}
+                  <div className=" bottom-0 left-0 right-0 p-3 text-white">
+                    <p className="text-sm font-medium leading-tight">
+                      {card.title}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
       </div>
     </div>
   );

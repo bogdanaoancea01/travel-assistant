@@ -1,14 +1,78 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Mic, Send, Sparkles } from 'lucide-react';
 
 export function ChatArea() {
-  const [message, setMessage] = useState('');
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
 
-  // Handle sending a message
-  const handleSend = () => {
-    if (message.trim()) {
-      console.log('Sending message:', message);
-      setMessage('');
+  const [messages, setMessages] = useState([
+  {
+    type: 'assistant',
+    content: "Hey there, I'm here to assist you in planning your experience. Ask me anything travel related.",
+  },
+  ]);
+  
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  const callBackendChat = async (chatMessages) => {
+    const response = await fetch("https://localhost:7237/api/chat", {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+        messages: chatMessages.map(m => ({
+            role: m.type,
+            content: m.content,
+        })),
+        }),
+    });
+
+    const text = await response.text();
+
+    if (!response.ok) {
+        console.error("Backend error:", text);
+        throw new Error(text);
+    }
+
+    return JSON.parse(text).reply;
+
+    //const data = await response.json();
+    //return data.reply;
+  };
+
+  const handleSendMessage = async () => {
+    if (!input.trim() || isTyping) return;
+
+    const userMessage = { type: 'user', content: input };
+    const updatedMessages = [...messages, userMessage];
+
+    setMessages(updatedMessages);
+    setInput('');
+    setIsTyping(true);
+
+    try {
+        const aiReply = await callBackendChat(updatedMessages);
+
+        setMessages(prev => [
+        ...prev,
+        { type: 'assistant', content: aiReply }
+        ]);
+    } catch (err) {
+        console.error("Chat error:", err);
+        setMessages(prev => [
+        ...prev,
+        {
+            type: 'assistant',
+            content: "Sorry, something went wrong! Please try again.",
+        }
+        ]);
+    } finally {
+        setIsTyping(false);
     }
   };
 
@@ -30,29 +94,41 @@ export function ChatArea() {
       </div>
 
       {/* Main chat content area */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="max-w-2xl w-full text-center">
-          {/* Illustration */}
-          <div className="mb-8 flex justify-center">
-            {/* <img
-              src={chatIllustration}
-              alt="Travel illustration"
-              className="w-48 h-auto"
-            /> */}
-          </div>
+      <div className="flex-1 overflow-y-auto px-6 py-6">
+        <div className="max-w-3xl mx-auto space-y-4">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex ${
+                msg.type === 'user' ? 'justify-end' : 'justify-start'
+              }`}
+            >
+              <div
+                className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                  msg.type === 'user'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-gray-900'
+                }`}
+              >
+                {msg.content}
+              </div>
+            </div>
+          ))}
 
-          {/* Greeting text */}
-          <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-3">
-            Where to today, Bogdana?
-          </h1>
-          <p className="text-gray-600 mb-8">
-            Hey there, I'm here to assist you in planning your experience.
-            <br />
-            Ask me anything travel related.
-          </p>
+          {/* Typing indicator */}
+          {isTyping && (
+            <div className="flex justify-start">
+              <div className="bg-gray-100 text-gray-500 rounded-2xl px-4 py-2 text-sm">
+                Thinking…
+              </div>
+            </div>
+          )}
 
+          <div ref={messagesEndRef} />
         </div>
       </div>
+
+      
 
       {/* Input area at bottom */}
       <div className="px-6 py-4 border-t border-gray-200">
@@ -62,38 +138,24 @@ export function ChatArea() {
             {/* Text input */}
             <input
               type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
               placeholder="Ask anything"
-              className="flex-1 px-4 py-2.5 bg-transparent border-none outline-none resize-none text-sm placeholder:text-gray-400"
+              className="flex-1 px-4 py-2.5 bg-transparent border-none outline-none text-sm"
             />
 
-            {/* Action buttons */}
+            {/* Send button */}
             <div className="flex items-center gap-1 pr-1">
-              {/* Voice input button */}
               <button
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                aria-label="Voice input"
-              >
-                <Mic className="size-5 text-gray-500" />
-              </button>
-
-              {/* Send button */}
-              <button
-                onClick={handleSend}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
-                disabled={!message.trim()}
-                aria-label="Send message"
+                onClick={handleSendMessage}
+                disabled={!input.trim()}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
               >
                 <Send className="size-5 text-gray-500" />
               </button>
             </div>
-          </div>
 
-          {/* Disclaimer text */}
-          <p className="text-xs text-gray-400 text-center mt-3">
-            ⓘ Mindtrip can make mistakes. Check important info.
-          </p>
+          </div>
         </div>
       </div>
     </div>
