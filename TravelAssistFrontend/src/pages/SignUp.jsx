@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { Mail, Lock, User, ArrowRight, Globe, Eye, EyeOff } from 'lucide-react';
+import { useState } from "react";
+import { Mail, Lock, User, ArrowRight, Globe, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function SignUp() {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -18,79 +18,73 @@ export function SignUp() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // Frontend safety check (UX)
-  if (formData.password !== formData.confirmPassword) {
-    alert("Passwords do not match");
-    return;
-  }
-
-  try {
-    const response = await fetch("https://localhost:7237/api/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword
-      })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      // Backend validation errors
-      if (data.errors) {
-        const firstError = Object.values(data.errors)[0][0];
-        alert(firstError);
-      } else {
-        alert(data);
-      }
+    // Frontend safety check (UX)
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match");
       return;
     }
 
-    // Success
-    console.log("Signup success:", data);
-    navigate("/signin");
+    try {
+      const response = await fetch("https://localhost:7237/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+        }),
+      });
 
-  } 
-  catch (error) {
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Backend validation errors
+        if (data.errors) {
+          const firstError = Object.values(data.errors)[0][0];
+          alert(firstError);
+        } else {
+          alert(data);
+        }
+        return;
+      }
+
+      // Success
+      console.log("Signup success:", data);
+      navigate("/signin");
+    } catch (error) {
       console.error(error);
       alert(error.message);
     }
-};
-
+  };
 
   const handleGoogleSignUp = () => {
-    console.log('Google sign up');
-    navigate('/home');
+    console.log("Google sign up");
+    navigate("/home");
   };
 
   const handleAppleSignUp = () => {
-    console.log('Apple sign up');
-    navigate('/home');
+    console.log("Apple sign up");
+    navigate("/home");
   };
-
 
   return (
     <div className="min-h-screen flex">
-
-    {/* Left Side - Form */}
+      {/* Left Side - Form */}
       <div className="flex-1 flex flex-col justify-start lg:justify-center px-4 sm:px-6 lg:px-16 xl:px-20 bg-white overflow-y-auto">
         <div className="mx-auto w-full max-w-md">
-
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-gray-900 mb-2">Create your account</h1>
@@ -143,7 +137,9 @@ export function SignUp() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">Or register with email</span>
+              <span className="px-4 bg-white text-gray-500">
+                Or register with email
+              </span>
             </div>
           </div>
 
@@ -151,7 +147,10 @@ export function SignUp() {
           <form onSubmit={handleSubmit} className="space-y-3">
             {/* Name */}
             <div>
-              <label htmlFor="firstName" className="block text-sm text-gray-700 mb-1.5">
+              <label
+                htmlFor="firstName"
+                className="block text-sm text-gray-700 mb-1.5"
+              >
                 First name
               </label>
               <div className="relative">
@@ -172,7 +171,10 @@ export function SignUp() {
             </div>
 
             <div>
-              <label htmlFor="lastName" className="block text-sm text-gray-700 mb-1.5">
+              <label
+                htmlFor="lastName"
+                className="block text-sm text-gray-700 mb-1.5"
+              >
                 Last name
               </label>
               <div className="relative">
@@ -194,7 +196,10 @@ export function SignUp() {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm text-gray-700 mb-1.5">
+              <label
+                htmlFor="email"
+                className="block text-sm text-gray-700 mb-1.5"
+              >
                 Email address
               </label>
               <div className="relative">
@@ -216,7 +221,10 @@ export function SignUp() {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm text-gray-700 mb-1.5">
+              <label
+                htmlFor="password"
+                className="block text-sm text-gray-700 mb-1.5"
+              >
                 Password
               </label>
               <div className="relative">
@@ -226,7 +234,7 @@ export function SignUp() {
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   required
                   value={formData.password}
                   onChange={handleChange}
@@ -249,7 +257,10 @@ export function SignUp() {
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm text-gray-700 mb-1.5">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm text-gray-700 mb-1.5"
+              >
                 Confirm password
               </label>
               <div className="relative">
@@ -259,7 +270,7 @@ export function SignUp() {
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -290,13 +301,22 @@ export function SignUp() {
                 className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded mt-1 cursor-pointer"
                 required
               />
-              <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-                I agree to the{' '}
-                <button type="button" className="text-orange-500 hover:text-orange-600 cursor-pointer">
+              <label
+                htmlFor="terms"
+                className="ml-2 block text-sm text-gray-700"
+              >
+                I agree to the{" "}
+                <button
+                  type="button"
+                  className="text-orange-500 hover:text-orange-600 cursor-pointer"
+                >
                   Terms of Service
-                </button>
-                {' '}and{' '}
-                <button type="button" className="text-orange-500 hover:text-orange-600 cursor-pointer">
+                </button>{" "}
+                and{" "}
+                <button
+                  type="button"
+                  className="text-orange-500 hover:text-orange-600 cursor-pointer"
+                >
                   Privacy Policy
                 </button>
               </label>
@@ -314,7 +334,7 @@ export function SignUp() {
 
           {/* Sign In Link */}
           <p className="mt-4 text-center text-sm text-gray-600">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <button
               onClick={() => navigate("/signin")}
               className="text-orange-500 hover:text-orange-600 cursor-pointer hover:underline"
@@ -325,7 +345,6 @@ export function SignUp() {
         </div>
       </div>
 
-
       {/* Right Side - Image */}
       <div className="hidden lg:block lg:flex-1 relative bg-linear-to-br from-pink-400 via-orange-400 to-yellow-300">
         <div className="absolute inset-0">
@@ -333,11 +352,10 @@ export function SignUp() {
         </div>
         <div className="relative h-full flex items-center justify-center p-12">
           <div className="max-w-lg text-white">
-            <h2 className="text-white mb-4">
-              Start Your Journey Today
-            </h2>
+            <h2 className="text-white mb-4">Start Your Journey Today</h2>
             <p className="text-white/90 text-lg mb-6">
-              Create an account and unlock the power of AI-driven travel planning.
+              Create an account and unlock the power of AI-driven travel
+              planning.
             </p>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -356,12 +374,14 @@ export function SignUp() {
                 <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
                   ✓
                 </div>
-                <span className="text-white/90">Save and share itineraries</span>
+                <span className="text-white/90">
+                  Save and share itineraries
+                </span>
               </div>
             </div>
           </div>
         </div>
-      </div> 
+      </div>
     </div>
   );
 }

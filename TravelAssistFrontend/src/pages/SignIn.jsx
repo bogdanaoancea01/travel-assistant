@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { useState } from "react";
+import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function SignIn() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -13,18 +13,18 @@ export function SignIn() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // API call
-    console.log('Sign in:', { email, password, rememberMe });
-    navigate('/home');
+    console.log("Sign in:", { email, password, rememberMe });
+    navigate("/home");
   };
 
   const handleGoogleSignIn = () => {
-    console.log('Google sign in');
-    navigate('/home');
+    console.log("Google sign in");
+    navigate("/home");
   };
 
   const handleAppleSignIn = () => {
-    console.log('Apple sign in');
-    navigate('/home');
+    console.log("Apple sign in");
+    navigate("/home");
   };
 
   return (
@@ -32,7 +32,6 @@ export function SignIn() {
       {/* Left Side - Form */}
       <div className="flex-1 flex flex-col justify-center px-4 sm:px-6 lg:px-20 xl:px-24 bg-white">
         <div className="mx-auto w-full max-w-md">
-
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-gray-900 mb-2">Welcome back</h1>
@@ -85,7 +84,9 @@ export function SignIn() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">Or continue with email</span>
+              <span className="px-4 bg-white text-gray-500">
+                Or continue with email
+              </span>
             </div>
           </div>
 
@@ -93,7 +94,10 @@ export function SignIn() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm text-gray-700 mb-2"
+              >
                 Email address
               </label>
               <div className="relative">
@@ -114,7 +118,10 @@ export function SignIn() {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm text-gray-700 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
@@ -123,7 +130,7 @@ export function SignIn() {
                 </div>
                 <input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -154,7 +161,10 @@ export function SignIn() {
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded cursor-pointer"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                <label
+                  htmlFor="remember-me"
+                  className="ml-2 block text-sm text-gray-700"
+                >
                   Remember me
                 </label>
               </div>
@@ -179,7 +189,7 @@ export function SignIn() {
 
           {/* Sign Up Link */}
           <p className="mt-6 text-center text-sm text-gray-600">
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <button
               onClick={() => navigate("/signup")}
               className="text-orange-500 hover:text-orange-600 cursor-pointer hover:underline"
@@ -193,17 +203,15 @@ export function SignIn() {
       {/* Right Side */}
       <div className="hidden lg:block lg:flex-1 relative bg-linear-to-br from-pink-400 via-orange-400 to-yellow-300">
         <div className="absolute inset-0">
-          
           <div className="absolute inset-0 bg-linear-to-br from-pink-500/50 via-orange-500/50 to-yellow-400/50"></div>
         </div>
-        
+
         <div className="relative h-full flex items-center justify-center p-12">
           <div className="max-w-lg text-white">
-            <h2 className="text-white mb-4">
-              Plan Your Next Adventure
-            </h2>
+            <h2 className="text-white mb-4">Plan Your Next Adventure</h2>
             <p className="text-white/90 text-lg mb-6">
-              Join thousands of travelers who use AI to plan perfect trips in minutes, not hours.
+              Join thousands of travelers who use AI to plan perfect trips in
+              minutes, not hours.
             </p>
             <div className="space-y-4">
               <div className="flex items-center gap-3">

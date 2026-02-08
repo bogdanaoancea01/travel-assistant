@@ -1,32 +1,44 @@
-import {
-  ArrowRight,
-  Calendar,
-  Check,
-  Globe,
-  MapPin,
-  Menu,
-  Sparkles,
-  Star,
-  Users,
-  X,
-} from 'lucide-react';
-import { Footer } from "../components/Footer";
-import { HowItWorks } from '../components/HowItWorks';
-import { Hero } from '../components/Hero';
+import { useState } from "react";
+import { HeaderSection } from "../components/Home/HeaderSection";
+import { HeroSection } from "../components/Home/HeroSection";
+import { HowItWorksSection } from "../components/Home/HowItWorksSection";
+import { PopularItinerariesSection } from "../components/Home/PopularItinerariesSection";
+import { FeatureSection } from "../components/Home/FeatureSection";
+import { Footer } from "../components/Home/FooterSection";
+import { QuizSection } from "../components/Home/QuizSection";
+import { SignInModal } from "../components/Home/SignInModal";
+import { SignUpModal } from "../components/Home/SignUpModal";
+import { MenuModal } from "../components/Home/MenuModal";
 
 const Home = () => {
-  const onNavigate = (route) => {
-    console.log("Navigate to:", route);
-  };
+  const [authModal, setAuthModal] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col">
-     
-      <Hero onNavigate={onNavigate} icons={{ Sparkles, ArrowRight, Star }} />
-
-      <HowItWorks />
-
-      <Footer brand="TravelAI" icons={{ Globe }} onNavigate={onNavigate} />
+    <div className="min-h-screen bg-white">
+      <HeaderSection
+        onSignInClick={() => setAuthModal("signin")}
+        onMenuClick={() => setIsMenuOpen(true)}
+      />
+      <MenuModal isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <main>
+        <HeroSection />
+        <HowItWorksSection />
+        <PopularItinerariesSection />
+        <FeatureSection />
+        <QuizSection />
+        <SignInModal
+          isOpen={authModal === "signin"}
+          onClose={() => setAuthModal(null)}
+          onSignUpClick={() => setAuthModal("signup")}
+        />
+        <SignUpModal
+          isOpen={authModal === "signup"}
+          onClose={() => setAuthModal(null)}
+          onSignInClick={() => setAuthModal("signin")}
+        />
+      </main>
+      <Footer />
     </div>
   );
 };
