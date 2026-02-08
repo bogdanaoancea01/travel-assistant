@@ -1,43 +1,28 @@
-import React from 'react'
-import Home from './pages/Home'
-import About from './pages/About'
-import {SignIn} from './pages/SignIn'
-import {SignUp} from './pages/SignUp'
-import {Chat} from './pages/Chat'
-import NotFound from './pages/NotFound'
-import User from './components/user/User'
+import React from "react";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import { SignIn } from "./pages/SignIn";
+import { SignUp } from "./pages/SignUp";
+import { Chat } from "./pages/Chat";
+import NotFound from "./pages/NotFound";
+import User from "./components/user/User";
 import { Routes, Route } from "react-router";
-import { Toaster } from 'react-hot-toast';
-
-
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   return (
     <>
       <Routes>
-        
-        {/* With navbar */}
-        <Route>
-          <Route index element={<Home />} />
-          
-          <Route path="about" element={<About />} />
-          <Route path="user" element={<User />} />
-          
-          <Route path="signin" element={<SignIn />} />
-          <Route path="signup" element={<SignUp />} />
-          
-        </Route>
+        <Route index element={<Home />} />
 
-        {/* Without navbar */}
         <Route path="home" element={<Home />} />
         <Route path="*" element={<NotFound />} />
         <Route path="chat" element={<Chat />} />
-    </Routes>
-
+      </Routes>
 
       <Toaster />
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;

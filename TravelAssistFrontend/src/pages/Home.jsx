@@ -15,29 +15,27 @@ const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div>
       <HeaderSection
         onSignInClick={() => setAuthModal("signin")}
         onMenuClick={() => setIsMenuOpen(true)}
       />
       <MenuModal isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
-      <main>
-        <HeroSection />
-        <HowItWorksSection />
-        <PopularItinerariesSection />
-        <FeatureSection />
-        <QuizSection />
-        <SignInModal
-          isOpen={authModal === "signin"}
-          onClose={() => setAuthModal(null)}
-          onSignUpClick={() => setAuthModal("signup")}
-        />
-        <SignUpModal
-          isOpen={authModal === "signup"}
-          onClose={() => setAuthModal(null)}
-          onSignInClick={() => setAuthModal("signin")}
-        />
-      </main>
+      <SignInModal
+        isOpen={authModal === "signin"}
+        onClose={() => setAuthModal(null)}
+        onSignUpClick={() => setAuthModal("signup")}
+      />
+      <SignUpModal
+        isOpen={authModal === "signup"}
+        onClose={() => setAuthModal(null)}
+        onSignInClick={() => setAuthModal("signin")}
+      />
+      <HeroSection />
+      <HowItWorksSection />
+      <PopularItinerariesSection />
+      <FeatureSection />
+      <QuizSection />
       <Footer />
     </div>
   );
