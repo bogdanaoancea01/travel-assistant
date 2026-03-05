@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
-export function MenuModal({ isOpen, onClose }) {
+export default function MenuModal({ isOpen, onClose }) {
   const navigate = useNavigate();
 
   const goTo = (path) => {
@@ -100,8 +100,3 @@ export function MenuModal({ isOpen, onClose }) {
     </div>
   );
 }
-
-MenuModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-};

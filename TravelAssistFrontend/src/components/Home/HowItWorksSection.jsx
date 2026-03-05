@@ -1,6 +1,6 @@
 import { Plus, Smile, AtSign, Mic, Send } from "lucide-react";
 
-export function HowItWorksSection() {
+export default function HowItWorksSection() {
   const activities = [
     {
       icon: "💆",

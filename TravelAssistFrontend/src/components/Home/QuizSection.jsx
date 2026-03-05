@@ -1,4 +1,4 @@
-export function QuizSection() {
+export default function QuizSection() {
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">

@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 
-export function HeroSection() {
+export default function HeroSection() {
   return (
     <section className="pt-32 pb-20 bg-linear-to-b from-orange-50/40 via-orange-50/20 to-white">
       <div className="container mx-auto px-4">

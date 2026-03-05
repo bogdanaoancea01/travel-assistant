@@ -1,15 +1,11 @@
 import { X } from "lucide-react";
-import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
-export function SignInModal({ isOpen, onClose, onSignUpClick }) {
+export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-
-  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -164,9 +160,3 @@ export function SignInModal({ isOpen, onClose, onSignUpClick }) {
     </div>
   );
 }
-
-SignInModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onSignUpClick: PropTypes.func.isRequired,
-};

@@ -1,7 +1,7 @@
 import { Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export function HeaderSection({ onSignInClick, onMenuClick }) {
+export default function HeaderSection({ onSignInClick, onMenuClick }) {
   const navigate = useNavigate();
 
   return (

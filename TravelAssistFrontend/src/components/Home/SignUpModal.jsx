@@ -1,10 +1,9 @@
 import { X } from "lucide-react";
-import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
-export function SignUpModal({ isOpen, onClose, onSignInClick }) {
+export default function SignUpModal({ isOpen, onClose, onSignInClick }) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -57,7 +56,6 @@ export function SignUpModal({ isOpen, onClose, onSignInClick }) {
       const data = await response.json();
 
       if (!response.ok) {
-        // Backend validation errors
         if (data.errors) {
           const firstError = Object.values(data.errors)[0][0];
           alert(firstError);
@@ -287,9 +285,3 @@ export function SignUpModal({ isOpen, onClose, onSignInClick }) {
     </div>
   );
 }
-
-SignUpModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onSignInClick: PropTypes.func.isRequired,
-};

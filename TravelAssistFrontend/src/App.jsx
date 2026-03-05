@@ -1,11 +1,6 @@
-import React from "react";
 import Home from "./pages/Home";
-import About from "./pages/About";
-import { SignIn } from "./pages/SignIn";
-import { SignUp } from "./pages/SignUp";
-import { Chat } from "./pages/Chat";
+import ChatPage from "./pages/ChatPage";
 import NotFound from "./pages/NotFound";
-import User from "./components/user/User";
 import { Routes, Route } from "react-router";
 import { Toaster } from "react-hot-toast";
 
@@ -17,7 +12,7 @@ const App = () => {
 
         <Route path="home" element={<Home />} />
         <Route path="*" element={<NotFound />} />
-        <Route path="chat" element={<Chat />} />
+        <Route path="chat" element={<ChatPage />} />
       </Routes>
 
       <Toaster />

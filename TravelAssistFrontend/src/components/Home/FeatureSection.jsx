@@ -1,6 +1,6 @@
 import { Heart, ThumbsUp, ThumbsDown, Play } from "lucide-react";
 
-export function FeatureSection() {
+export default function FeatureSection() {
   return (
     <section className="py-20 bg-linear-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4">
