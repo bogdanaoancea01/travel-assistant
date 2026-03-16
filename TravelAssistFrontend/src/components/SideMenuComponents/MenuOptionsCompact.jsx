@@ -20,13 +20,6 @@ export default function MenuOptionsCompact({ menuItems }) {
         <span className="[writing-mode:vertical-rl] rotate-180 font-semibold text-2xl">
           TravelAI
         </span>
-        <svg
-          className="w-5 h-5 [writing-mode:vertical-rl] rotate-180"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-        </svg>
       </div>
     </div>
   );

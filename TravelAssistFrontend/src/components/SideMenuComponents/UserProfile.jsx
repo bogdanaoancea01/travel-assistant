@@ -3,7 +3,7 @@ export default function UserProfile({ isCompact }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <div className="size-8 rounded-full bg-gray-800 flex items-center justify-center">
+        <div className="size-8 rounded-full bg-gray-800 flex items-center justify-center cursor-pointer">
           <span className="text-white text-sm font-medium">B</span>
         </div>
         {!isCompact && (
