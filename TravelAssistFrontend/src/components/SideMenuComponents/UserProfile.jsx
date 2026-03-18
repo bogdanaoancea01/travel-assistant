@@ -1,11 +1,17 @@
 import { MoreHorizontal } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 export default function UserProfile({ isCompact }) {
+  const navigate = useNavigate();
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <div className="size-8 rounded-full bg-gray-800 flex items-center justify-center cursor-pointer">
-          <span className="text-white text-sm font-medium">B</span>
-        </div>
+        <button
+          className="bg-gray-800 rounded-full size-8 cursor-pointer text-white text-sm font-medium"
+          onClick={() => navigate("/editprofile")}
+        >
+          BO
+        </button>
         {!isCompact && (
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 truncate">
@@ -16,8 +22,8 @@ export default function UserProfile({ isCompact }) {
         )}
       </div>
       {!isCompact && (
-        <button className="p-1 hover:bg-gray-200 rounded transition-colors">
-          <MoreHorizontal className="size-4 text-gray-600" />
+        <button className="hover:bg-gray-200 rounded transition-colors">
+          <MoreHorizontal className="size-4 text-gray-600 ml-2" />
         </button>
       )}
     </div>

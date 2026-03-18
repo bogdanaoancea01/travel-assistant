@@ -31,7 +31,7 @@ export default function QuizSection() {
             <div className="pt-2">
               <button
                 size="lg"
-                className="bg-black text-white hover:bg-gray-800 rounded-full px-8 py-6 text-base"
+                className="bg-black text-white hover:bg-gray-800 rounded-full px-8 py-4 text-base cursor-pointer"
               >
                 Take our quiz
               </button>

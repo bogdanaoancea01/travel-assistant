@@ -30,7 +30,7 @@ export default function HeaderSection({ onSignInClick, onMenuClick }) {
           </button>
           <button
             onClick={() => navigate("/chat")}
-            className="rounded-full bg-black text-white hover:bg-gray-800 cursor-pointer"
+            className="px-4 py-2 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer"
           >
             Get started
           </button>

@@ -1,6 +1,6 @@
 import Home from "./pages/Home";
 import ChatPage from "./pages/ChatPage";
-import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
 import { Routes, Route } from "react-router";
 import { Toaster } from "react-hot-toast";
@@ -14,7 +14,7 @@ const App = () => {
         <Route path="home" element={<Home />} />
         <Route path="*" element={<NotFound />} />
         <Route path="chat" element={<ChatPage />} />
-        <Route path="profile" element={<Profile />} />
+        <Route path="editprofile" element={<EditProfile />} />
       </Routes>
 
       <Toaster />

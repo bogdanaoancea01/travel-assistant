@@ -1,7 +1,4 @@
-import { useState } from "react";
-export default function ProfileMenu() {
-  const [active, setActive] = useState("profile");
-
+export default function ProfileMenu({ active, setActive }) {
   const menuOptions = [
     { id: "profile", label: "Edit profile" },
     { id: "account", label: "Your account" },
@@ -25,7 +22,6 @@ export default function ProfileMenu() {
         >
           {option.label}
 
-          {/* active indicator */}
           {active === option.id && (
             <span className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-black rounded-l"></span>
           )}

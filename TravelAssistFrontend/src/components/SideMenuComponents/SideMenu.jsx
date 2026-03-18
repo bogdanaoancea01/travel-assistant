@@ -27,9 +27,7 @@ export default function SideMenu() {
   const [isCompact, setIsCompact] = useState(false);
   return (
     <div className="h-full bg-gray-50 border-r border-gray-200 flex flex-col">
-      <div
-        className={`${isCompact ? "" : "border-b border-gray-200"} p-5.5  flex items-center justify-between`}
-      >
+      <div className="p-6 flex items-center justify-between">
         {!isCompact && (
           <div
             className="flex items-center gap-2 cursor-pointer"
@@ -38,15 +36,15 @@ export default function SideMenu() {
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
-            <span className="font-semibold text-lg">TravelAI</span>
+            <span className="font-semibold text-xl">TravelAI</span>
           </div>
         )}
 
         <button
-          className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100 cursor-pointer"
+          className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100 cursor-pointer"
           onClick={() => setIsCompact(!isCompact)}
         >
-          {isCompact ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          {isCompact ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
       </div>
 

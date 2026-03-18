@@ -1,4 +1,4 @@
-export default function EditSection() {
+export default function EditProfileSection() {
   const profileFields = [
     {
       id: "firstName",
@@ -19,28 +19,10 @@ export default function EditSection() {
       placeholder: "@username",
     },
     {
-      id: "website",
-      label: "Website",
-      type: "text",
-      placeholder: "https://example.com",
-    },
-    {
-      id: "location",
-      label: "Location",
-      type: "text",
-      placeholder: "Country",
-    },
-    {
       id: "bio",
       label: "Bio",
       type: "textarea",
       placeholder: "Let us know you",
-    },
-    {
-      id: "social",
-      label: "Instagram",
-      type: "text",
-      placeholder: "https://instagram.com",
     },
   ];
 

@@ -6,8 +6,8 @@ export default function MenuOptionsCompact({ menuItems }) {
       <ul className="space-y-1 p-2">
         {menuItems.map((item) => (
           <li key={item.label}>
-            <button className="px-3 py-2.5 rounded-lg hover:bg-gray-200 cursor-pointer">
-              <item.icon className="size-6 text-black" />
+            <button className="px-4 py-3 rounded-lg hover:bg-gray-200 cursor-pointer">
+              <item.icon className="size-5 text-black" />
             </button>
           </li>
         ))}

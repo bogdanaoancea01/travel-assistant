@@ -8,17 +8,17 @@ export default function ChatHeader() {
   const [openExportModal, setOpenExportModal] = useState(false);
 
   return (
-    <div className="relative flex items-center justify-between px-6 py-6 border-b border-gray-200">
+    <div className="border-b border-gray-200 px-4 py-4">
       <button
-        className="flex items-center gap-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+        className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
         onClick={() => setOpenMenu(!openMenu)}
       >
-        <span className="text-base font-medium">New chat</span>
-        <ChevronDown />
+        <span className="font-medium">New chat</span>
+        <ChevronDown size={16} />
       </button>
 
       {openMenu && (
-        <div className="absolute top-16 left-6 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2">
+        <div className="absolute w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2">
           <button
             className="flex items-center gap-3 w-full px-4 py-2 text-sm hover:bg-gray-100"
             onClick={() => {

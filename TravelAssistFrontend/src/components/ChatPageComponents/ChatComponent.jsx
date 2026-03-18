@@ -72,7 +72,6 @@ export default function ChatComponent() {
 
   return (
     <div className="h-full flex flex-col bg-white">
-      <ChatHeader />
       <ConversationArea messages={messages} isTyping={isTyping} />
       <ChatInput
         inputQuestion={inputQuestion}

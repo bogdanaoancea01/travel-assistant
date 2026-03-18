@@ -19,11 +19,15 @@ export default function HeroSection() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button
               size="lg"
-              className="bg-black text-white hover:bg-gray-800 rounded-full px-8"
+              className="px-8 py-2.5 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer"
             >
               Start planning
             </button>
-            <button size="lg" variant="outline" className="rounded-full px-8">
+            <button
+              size="lg"
+              variant="outline"
+              className="rounded-full px-6 py-2 font-semibold cursor-pointer hover:bg-gray-100"
+            >
               Explore destinations
             </button>
           </div>
@@ -37,7 +41,7 @@ export default function HeroSection() {
                 placeholder="Where do you want to go?"
                 className="flex-1 outline-none px-2 py-2 text-base"
               />
-              <button className="rounded-full bg-black text-white hover:bg-gray-800">
+              <button className="px-3 py-1.5 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer">
                 Search
               </button>
             </div>
