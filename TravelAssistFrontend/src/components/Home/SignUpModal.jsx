@@ -1,9 +1,41 @@
-import { X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 
 export default function SignUpModal({ isOpen, onClose, onSignInClick }) {
+  const handleGoogleSignUp = () => {
+    console.log("Google sign up");
+  };
+
+  const handleFacebookSignUp = () => {
+    console.log("Facebook sign up");
+  };
+
+  const handleAppleSignUp = () => {
+    console.log("Apple sign up");
+  };
+
+  const socialButtons = [
+    {
+      id: "google",
+      icon: "svg",
+      description: "Continue with Google",
+      handler: handleGoogleSignUp,
+    },
+    {
+      id: "facebook",
+      icon: "svg",
+      description: "Continue with Facebook",
+      handler: handleFacebookSignUp,
+    },
+    {
+      id: "apple",
+      icon: "svg",
+      description: "Continue with Apple",
+      handler: handleAppleSignUp,
+    },
+  ];
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -32,7 +64,6 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Frontend safety check (UX)
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match");
       return;
@@ -65,7 +96,6 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick }) {
         return;
       }
 
-      // Success
       console.log("Signup success:", data);
       navigate("/home");
     } catch (error) {
@@ -74,22 +104,10 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick }) {
     }
   };
 
-  const handleGoogleSignUp = () => {
-    console.log("Google sign up");
-  };
-
-  const handleFacebookSignUp = () => {
-    console.log("Facebook sign up");
-  };
-
-  const handleAppleSignUp = () => {
-    console.log("Apple sign up");
-  };
-
   return (
     <div
       className={`
-        absolute inset-0 z-50 flex items-center justify-center p-4
+        fixed inset-0 z-100 flex items-center justify-center p-4
         transition-opacity duration-400 backdrop-blur-xs bg-black/60
         ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
       `}
@@ -251,24 +269,16 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick }) {
 
         {/* Social signup */}
         <div className="space-y-3">
-          <button
-            onClick={handleGoogleSignUp}
-            className="w-full rounded-full border py-4 hover:bg-gray-50 cursor-pointer"
-          >
-            Continue with Google
-          </button>
-          <button
-            onClick={handleFacebookSignUp}
-            className="w-full rounded-full border py-4 hover:bg-gray-50 cursor-pointer"
-          >
-            Continue with Facebook
-          </button>
-          <button
-            onClick={handleAppleSignUp}
-            className="w-full rounded-full border py-4 hover:bg-gray-50 cursor-pointer"
-          >
-            Continue with Apple
-          </button>
+          {socialButtons.map((button) => (
+            <button
+              id={button.id}
+              onClick={button.handler}
+              className="w-full rounded-full border py-4 hover:bg-gray-50 cursor-pointer"
+            >
+              <span>{button.icon}</span>
+              {button.description}
+            </button>
+          ))}
         </div>
 
         {/* Footer */}

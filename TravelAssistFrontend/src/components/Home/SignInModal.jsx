@@ -1,17 +1,11 @@
-import { X } from "lucide-react";
+import { X, Eye, EyeOff } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // API call
-    console.log("Sign in:", { email, password, rememberMe });
-  };
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleGoogleSignIn = () => {
     console.log("Google sign in");
@@ -25,6 +19,32 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
     console.log("Apple sign in");
   };
 
+  const socialButtons = [
+    {
+      id: "google",
+      icon: "svg",
+      description: "Continue with Google",
+      handler: handleGoogleSignIn,
+    },
+    {
+      id: "facebook",
+      icon: "svg",
+      description: "Continue with Facebook",
+      handler: handleFacebookSignIn,
+    },
+    {
+      id: "apple",
+      icon: "svg",
+      description: "Continue with Apple",
+      handler: handleAppleSignIn,
+    },
+  ];
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Sign in:", { email, password, rememberMe });
+  };
+
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
@@ -32,22 +52,19 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
 
   return (
     <div
-      className={`
-        absolute inset-0 z-50 flex items-center justify-center p-4
-        transition-opacity duration-400 backdrop-blur-xs bg-black/60
-        ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
-      `}
+      className={`fixed inset-0 z-100 flex items-center justify-center p-4
+                transition-opacity duration-400 backdrop-blur-xs bg-black/60
+                ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
+              `}
       onClick={onClose}
     >
       {/* Modal */}
       <div
         className={`
           relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl duration-300
-          ${isOpen ? "opacity-100 pointer-events-auto" : " opacity-0 pointer-events-none"}
-        `}
+          ${isOpen ? "opacity-100 pointer-events-auto" : " opacity-0 pointer-events-none"}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-2 transition hover:bg-gray-100"
@@ -69,11 +86,12 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
           <p className="text-gray-600">Sign in to continue your journey</p>
         </div>
 
-        {/* Form */}
+        {/* SignIn Form */}
         <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
           <div>
             <label className="mb-2 block text-sm font-medium">Email</label>
             <input
+              id="email"
               type="email"
               required
               placeholder="you@example.com"
@@ -81,18 +99,31 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
             />
           </div>
 
-          <div>
-            <label className="mb-2 block text-sm font-medium">Password</label>
+          <div className="relative">
+            <label className="mb-1 block text-sm font-medium">Password</label>
             <input
-              type="password"
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
               required
               placeholder="Enter your password"
               className="w-full rounded-lg border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9.5 flex items-center"
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              ) : (
+                <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              )}
+            </button>
           </div>
 
           <div className="flex items-center justify-between text-sm">
-            <label className="flex cursor-pointer items-center gap-2">
+            <label className="flex items-center gap-2">
               <input type="checkbox" />
               <span>Remember me</span>
             </label>
@@ -104,6 +135,7 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
           <button
             type="submit"
             className="w-full rounded-full bg-black py-4 text-white transition hover:bg-gray-800"
+            onClick={handleSubmit}
           >
             Log in
           </button>
@@ -123,26 +155,16 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
 
         {/* Social buttons */}
         <div className="space-y-3">
-          <button
-            className="flex w-full items-center justify-center gap-3 rounded-full border py-4 transition hover:bg-gray-50"
-            onClick={handleGoogleSignIn}
-          >
-            Continue with Google
-          </button>
-
-          <button
-            className="flex w-full items-center justify-center gap-3 rounded-full border py-4 transition hover:bg-gray-50"
-            onClick={handleFacebookSignIn}
-          >
-            Continue with Facebook
-          </button>
-
-          <button
-            className="flex w-full items-center justify-center gap-3 rounded-full border py-4 transition hover:bg-gray-50"
-            onClick={handleAppleSignIn}
-          >
-            Continue with Apple
-          </button>
+          {socialButtons.map((button) => (
+            <button
+              id={button.id}
+              className="flex w-full items-center justify-center gap-3 rounded-full border py-4 transition hover:bg-gray-50"
+              onClick={button.handler}
+            >
+              <span>{button.icon}</span>
+              {button.description}
+            </button>
+          ))}
         </div>
 
         {/* Footer */}
