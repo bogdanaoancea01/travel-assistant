@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>travel_assistant_backend</RootNamespace>
+    <UserSecretsId>34499d29-9a3e-406b-833b-7707ec82372d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

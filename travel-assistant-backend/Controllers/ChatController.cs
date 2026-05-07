@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OpenAI.Chat;
 using travel_assistant_backend.DTOs.Chat;
-using travel_assistant_backend.Services.Interfaces;
+using travel_assistant_backend.Services.Interfaces.Chat;
 
 namespace travel_assistant_backend.Controllers
 {

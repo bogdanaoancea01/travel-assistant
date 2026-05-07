@@ -5,8 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using OpenAI;
 using System.Text;
 using travel_assistant_backend.Models;
-using travel_assistant_backend.Services;
-using travel_assistant_backend.Services.Interfaces;
+using travel_assistant_backend.Services.Interfaces.Chat;
+using travel_assistant_backend.Services.Weather;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +82,10 @@ builder.Services.AddSingleton(sp =>
 });
 
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddHttpClient<IWeatherService, WeatherService>(client =>
+{
+    client.BaseAddress = new Uri("https://api.weatherapi.com/v1/");
+});
 
 var app = builder.Build();
 

@@ -5,6 +5,7 @@
         public TripDestination Destination { get; set; }
         public int NumberOfDays { get; set; }
         public string Summary { get; set; }
+        public string WeatherGuidance { get; set; }
         public List<TripDay> Itinerary { get; set; }
     }
 }
