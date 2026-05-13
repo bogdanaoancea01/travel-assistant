@@ -3,7 +3,6 @@ using NJsonSchema.Generation;
 using OpenAI.Chat;
 using System.Text.Json;
 using travel_assistant_backend.DTOs.Chat;
-using travel_assistant_backend.DTOs.Weather;
 using travel_assistant_backend.Services.Weather;
 
 namespace travel_assistant_backend.Services.Interfaces.Chat
@@ -14,53 +13,42 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
         private readonly IWeatherService _weatherService;
 
         private const string TripSystemPrompt = """
-            ROLE: You are a high-end, consultative AI Travel Concierge. You specialize in creating 
-            efficient, culturally immersive, and logically sound travel itineraries.
+            ROLE: You are a high-end AI Travel Concierge. Generate structured JSON travel plans that are geographically logical and culturally immersive.
 
-            OBJECTIVE: Generate a structured JSON travel plan. Your goal is to maximize the user's 
-            time by grouping activities geographically and providing logistical wisdom.
+            EXECUTION ORDER (mandatory):
+            1. Validate input → 2. Call weather tool → 3. Generate itinerary → 4. Populate all schema fields.
 
-            CRITICAL OPERATIONAL RULES:
-            1. VALIDATION GATE:
-               - A trip is considered valid for generation if you have exactly two pieces of information: A specific destination and a specific number of days.
-               - *DO NOT* require pace, budget, or specific interests to proceed. If these are missing, assume a "Balanced/Moderate" profile.
-               - If either is missing, set 'isPlanComplete' to false, leave 'tripDetails' null, 
-                 and use 'assistantMessage' to ask for the missing details with a professional, inviting tone. 
-                 In this message, you may *suggest* that providing a preferred pace or interests is optional but helpful.
-               - COMPLETE INFO: Set 'isPlanComplete' to true and populate 'tripDetails' fully.
+            RULES:
 
-            2. GEOGRAPHIC LOGIC: 
-               - If the destination is a country, design a logical circuit (loop) to minimize travel time.
-               - In cities, group activities by neighborhood to avoid cross-town transit.
+            1. VALIDATION
+               - Required: destination + number of days. If either is missing, set isPlanComplete: false, tripDetails: null, and ask professionally. Pace/budget/interests are optional; default to "Balanced/Moderate" if absent.
 
-            3. PROMPT PROFESSIONALISM:
-               - TONE: Maintain a sophisticated yet accessible tone. Avoid generic "sample" filler. Avoid exclamation marks and generic "AI-sounding" excitement.
-               - LOCAL INSIGHT: Provide 'local_tips' that a resident would know (e.g., "Tuesday is market day," "Avoid this area during rush hour").
+            2. GEOGRAPHY
+               - Country trips: design a logical circuit to minimize travel time.
+               - City trips: group activities by neighborhood.
 
-            4. TECHNICAL CONSTRAINTS:
-               - No prose itineraries in the 'assistantMessage'. If 'isPlanComplete' is true, 
-                 keep 'assistantMessage' to a professional confirmation.
-               - Coordinates (lat/lng) must be precise for the specific landmark/activity.
-               - Use exactly the provided schema; do not omit fields.
+            3. TONE & TIPS
+               - Sophisticated, accessible. No exclamation marks, no generic filler.
+               - local_tips must reflect genuine resident knowledge.
 
-            5. LIVE WEATHER INTEGRATION:
-                - Mandatory Call: Execute GetDestinationWeather for trips planned in the next 7 days. Pass days relative to future start dates.
-                - Truthfulness: Only use specific data if the tool returns success. If "unavailable," provide general seasonal packing advice; never invent temperatures.
-                - Guidance: Convert data (UV, Rain, Humidity) into "Concierge Wisdom" in weather_guidance. Avoid raw stats except for temperatures (High/Avg/Low).
-                - Adaptation: Pivot activities to indoor options if rain or high UV is forecasted.
+            4. SCHEMA
+               - assistantMessage is a brief confirmation only when isPlanComplete: true.
+               - Coordinates must be precise. If uncertain, use the nearest district center and flag it.
+               - Never omit schema fields.
 
-            6. HISTORICAL DATE LOGIC:
-                - Mandatory: For trips planned more than 7 days ahead execute GetHistoricalWeather. Mention highs and lows for the weather
-                - Vague Month: If the user says "in June," set startDate to yyyy-06-01 and endDate to yyyy-06-30.
-                - Vague Season: If the user says "this summer," default to the peak month (e.g., startDate: yyyy-06-01, endDate: yyyy-08-31).
-                - Specific Dates: If the user says a specific date use exactly those dates.
-                - Year Selection: Always use the upcoming occurrence of that month/date relative to the current date ({DateTime.Now}).
+            5. LIVE WEATHER (startDate within 7 days of today)
+               - Call GetDestinationWeather first. Pass location and number of trip days.
+               - On success: translate UV, rain, humidity into concierge advice; include temp highs/lows. Pivot outdoor activities indoors if rain or UV > 6.
+               - On failure: give general seasonal guidance, clearly framed as such. Never invent data.
+
+            6. HISTORICAL WEATHER (startDate more than 7 days from today)
+               - Call GetHistoricalWeather first. Pass location, startDate, endDate (yyyy-MM-dd).
+               - Vague dates: "in June" → yyyy-06-01 / yyyy-06-30. "This summer" → yyyy-06-01 / yyyy-08-31. Always use the next upcoming occurrence.
+               - On success: frame output as historical averages, not a forecast.
+               - On failure: same fallback as Rule 5.
 
             7. SUMMARY
-                - A single, elegant sentence for the summary field.
-                - Focus entirely on the experience and theme of the trip.
-                - Sophisticated, expert, and brief. No bullet points.
-                - Do not explain the logistics, "efficiency," or travel time
+               - One elegant sentence. Experience and theme only — no logistics, no travel times.
             """;
 
         public ChatService(ChatClient chatClient, IWeatherService weatherService)
@@ -100,14 +88,14 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                         "location": { "type": "string", "description": "The city and country" },
                         "days": { "type": "integer", "description": "Number of days in the future" }
                     },
-                    "required": ["location"]
+                    "required": ["location", "days"]
                 }   
                 """)
             );
 
             ChatTool historicalWeatherTool = ChatTool.CreateFunctionTool(
                 functionName: "GetHistoricalWeather",
-                functionDescription: "Provides climate averages for long-range planning (trips > 14 days away). Returns the typical mean temperature, highs, and lows based on 30-year data.",
+                functionDescription: "Provides climate averages for long-range planning (trips > 7 days away). Returns the typical mean temperature, highs, and lows based on 30-year data.",
                 functionParameters: BinaryData.FromString("""
                 {
                     "type": "object",
@@ -127,7 +115,7 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                     jsonSchemaFormatName: "trip_planning_result",
                     jsonSchema: BinaryData.FromString(schemaJson),
                     jsonSchemaIsStrict: true),
-                Tools = { weatherTool }
+                Tools = { weatherTool, historicalWeatherTool }
             };
 
             var messageHistory = new List<ChatMessage>
@@ -153,9 +141,7 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                             {
                                 using var args = JsonDocument.Parse(toolCall.FunctionArguments);
                                 string location = args.RootElement.GetProperty("location").GetString();
-                                int days = args.RootElement.TryGetProperty("days", out var daysElement)
-                                               ? daysElement.GetInt32()
-                                               : 1;
+                                int days = args.RootElement.GetProperty("days").GetInt32();
 
                                 var weatherData = await _weatherService.GetWeatherAsync(location, days);
 
@@ -178,9 +164,10 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                             {
                                 using var args = JsonDocument.Parse(toolCall.FunctionArguments);
                                 string location = args.RootElement.GetProperty("location").GetString();
-                                string tripDate = args.RootElement.GetProperty("date").GetString();
+                                string startDate = args.RootElement.GetProperty("startDate").GetString();
+                                string endDate = args.RootElement.GetProperty("endDate").GetString();
 
-                                var historicalWeatherData = await _weatherService.GetHistoricalClimateAsync(location, tripDate);
+                                var historicalWeatherData = await _weatherService.GetHistoricalClimateAsync(location, startDate, endDate);
 
                                 if (historicalWeatherData != null)
                                 {
@@ -191,7 +178,7 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                                     historicalWeatherJson = "Weather forecast unavailable for those dates.";
                                 }
 
-                                messageHistory.Add(new ToolChatMessage(toolCall.Id, weatherJson));
+                                messageHistory.Add(new ToolChatMessage(toolCall.Id, historicalWeatherJson));
                                 requiresAction = true;
                             }
                         }

@@ -6,6 +6,7 @@ using OpenAI;
 using System.Text;
 using travel_assistant_backend.Models;
 using travel_assistant_backend.Services.Interfaces.Chat;
+using travel_assistant_backend.Services.PopularDestinations;
 using travel_assistant_backend.Services.Weather;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -82,12 +83,15 @@ builder.Services.AddSingleton(sp =>
 });
 
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IPopularDestinationsService, PopularDestinationsService>();
 builder.Services.AddHttpClient<IWeatherService, WeatherService>(client =>
 {
     client.BaseAddress = new Uri("https://api.weatherapi.com/v1/");
 });
 
 var app = builder.Build();
+
+await app.SeedPopularDestinationsAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -104,5 +108,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//_ = app.SeedPopularDestinationsAsync();
 
 app.Run();

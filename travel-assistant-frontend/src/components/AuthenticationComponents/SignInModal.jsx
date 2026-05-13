@@ -1,6 +1,7 @@
 import { X, Eye, EyeOff } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../AuthContext";
+import SocialMediaAuth from "./SocialMediaAuth";
 
 export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
   const [email, setEmail] = useState("");
@@ -9,38 +10,6 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
 
-  const handleGoogleSignIn = () => {
-    console.log("Google sign in");
-  };
-
-  const handleFacebookSignIn = () => {
-    console.log("Google sign in");
-  };
-
-  const handleAppleSignIn = () => {
-    console.log("Apple sign in");
-  };
-
-  const socialButtons = [
-    {
-      id: "google",
-      icon: "svg",
-      description: "Continue with Google",
-      handler: handleGoogleSignIn,
-    },
-    {
-      id: "facebook",
-      icon: "svg",
-      description: "Continue with Facebook",
-      handler: handleFacebookSignIn,
-    },
-    {
-      id: "apple",
-      icon: "svg",
-      description: "Continue with Apple",
-      handler: handleAppleSignIn,
-    },
-  ];
 
  const handleSubmit = async (e) => {
   e.preventDefault();
@@ -171,32 +140,8 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
           </button>
         </form>
 
-        {/* Divider */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-4 text-gray-500">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        {/* Social buttons */}
-        <div className="space-y-3">
-          {socialButtons.map((button) => (
-            <button
-              key={button.id}
-              id={button.id}
-              className="flex w-full items-center justify-center gap-3 rounded-full border py-4 transition hover:bg-gray-50"
-              onClick={button.handler}
-            >
-              <span>{button.icon}</span>
-              {button.description}
-            </button>
-          ))}
-        </div>
+        {/* Social Media Auth */}
+        <SocialMediaAuth />
 
         {/* Footer */}
         <p className="mt-6 text-center text-sm text-gray-600">

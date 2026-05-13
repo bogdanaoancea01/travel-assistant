@@ -47,16 +47,14 @@ namespace travel_assistant_backend.Services.Weather
             return null;
         }
 
-        public async Task<HistoricalWeatherDTO?> GetHistoricalClimateAsync(string location, string date)
+        public async Task<HistoricalWeatherDTO?> GetHistoricalClimateAsync(string location, string startDate, string endDate)
         {
             try
             {
                 var response = await _httpClient.GetFromJsonAsync<VisualCrossingApiResponse>(
-                    $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{Uri.EscapeDataString(location)}/{date}?unitGroup=metric&include=stats&key={_apiKeyVisualCrossing}");
+                    $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{Uri.EscapeDataString(location)}/{startDate}/{endDate}?unitGroup=metric&include=stats&key={_apiKeyVisualCrossing}");
 
-                var day = response?.Days?.FirstOrDefault();
-
-                if (day != null)
+                if (response?.Days != null && response.Days.Count > 0)
                 {
                     return new HistoricalWeatherDTO(
                         Math.Round(response.Days.Average(d => d.MaxTemp), 1),

@@ -6,8 +6,8 @@ import PopularItinerariesSection from "../components/Home/PopularItinerariesSect
 import FeatureSection from "../components/Home/FeatureSection";
 import Footer from "../components/Home/FooterSection";
 import QuizSection from "../components/Home/QuizSection";
-import SignInModal from "../components/Home/SignInModal";
-import SignUpModal from "../components/Home/SignUpModal";
+import SignInModal from "../components/AuthenticationComponents/SignInModal";
+import SignUpModal from "../components/AuthenticationComponents/SignUpModal";
 import MenuModal from "../components/Home/MenuModal";
 
 const Home = () => {

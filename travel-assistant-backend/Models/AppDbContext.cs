@@ -11,6 +11,7 @@ namespace travel_assistant_backend.Models
         }
 
         public DbSet<User> Users { get; set; } = null!;
+        public DbSet<PopularDestination> PopularDestinations { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

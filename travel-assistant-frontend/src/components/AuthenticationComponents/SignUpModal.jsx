@@ -1,41 +1,9 @@
 import { useState, useEffect } from "react";
 import { Eye, EyeOff, X } from "lucide-react";
 import { useAuth } from "../../AuthContext";
+import SocialMediaAuth from "./SocialMediaAuth";
 
 export default function SignUpModal({ isOpen, onClose, onSignInClick }) {
-  const handleGoogleSignUp = () => {
-    console.log("Google sign up");
-  };
-
-  const handleFacebookSignUp = () => {
-    console.log("Facebook sign up");
-  };
-
-  const handleAppleSignUp = () => {
-    console.log("Apple sign up");
-  };
-
-  const socialButtons = [
-    {
-      id: "google",
-      icon: "svg",
-      description: "Continue with Google",
-      handler: handleGoogleSignUp,
-    },
-    {
-      id: "facebook",
-      icon: "svg",
-      description: "Continue with Facebook",
-      handler: handleFacebookSignUp,
-    },
-    {
-      id: "apple",
-      icon: "svg",
-      description: "Continue with Apple",
-      handler: handleAppleSignUp,
-    },
-  ];
-
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -261,32 +229,8 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick }) {
           </button>
         </form>
 
-        {/* Divider */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-4 text-gray-500">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        {/* Social signup */}
-        <div className="space-y-3">
-          {socialButtons.map((button) => (
-            <button
-              key={button.id}
-              id={button.id}
-              onClick={button.handler}
-              className="w-full rounded-full border py-4 hover:bg-gray-50 cursor-pointer"
-            >
-              <span>{button.icon}</span>
-              {button.description}
-            </button>
-          ))}
-        </div>
+        {/* Social Media Auth */}
+        <SocialMediaAuth />
 
         {/* Footer */}
         <p className="mt-6 text-center text-sm text-gray-600">

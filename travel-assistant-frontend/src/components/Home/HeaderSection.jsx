@@ -1,10 +1,8 @@
 import { Menu } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 import AuthProvider from "../../AuthContext"; 
 
 export default function HeaderSection({ onSignInClick, onMenuClick }) {
-  const navigate = useNavigate();
   const { user } = useAuth();
 
   return (
@@ -31,18 +29,12 @@ export default function HeaderSection({ onSignInClick, onMenuClick }) {
             </span>
           ) : (
             <button
-              className="hidden sm:inline-flex cursor-pointer"
+              className="px-4 py-2 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer"
               onClick={onSignInClick}
             >
               Sign in
             </button>
           )}
-          <button
-            onClick={() => navigate("/chat")}
-            className="px-4 py-2 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer"
-          >
-            Get started
-          </button>
         </div>
       </div>
     </header>
