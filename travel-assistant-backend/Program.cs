@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using OpenAI;
 using System.Text;
 using travel_assistant_backend.Models;
+using travel_assistant_backend.Services.Geocoding;
 using travel_assistant_backend.Services.Interfaces.Chat;
 using travel_assistant_backend.Services.PopularDestinations;
 using travel_assistant_backend.Services.Weather;
@@ -87,6 +88,11 @@ builder.Services.AddScoped<IPopularDestinationsService, PopularDestinationsServi
 builder.Services.AddHttpClient<IWeatherService, WeatherService>(client =>
 {
     client.BaseAddress = new Uri("https://api.weatherapi.com/v1/");
+});
+builder.Services.AddHttpClient<IGeocodingService, GeocodingService>(client =>
+{
+    client.DefaultRequestHeaders.Add("User-Agent", "TravelAssistant/1.0");
+    client.Timeout = TimeSpan.FromSeconds(10);
 });
 
 var app = builder.Build();

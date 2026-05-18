@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, X } from "lucide-react";
 import { useAuth } from "../../AuthContext";
 import SocialMediaAuth from "./SocialMediaAuth";
 
-export default function SignUpModal({ isOpen, onClose, onSignInClick }) {
+export default function SignUpModal({ isOpen, onClose, onSignInClick, redirectTo = "/chat" }) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -14,6 +15,7 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -68,6 +70,7 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick }) {
         login(data.token);
       }
 
+      navigate(redirectTo, { replace: true });
       onClose();
 
     } catch (error) {

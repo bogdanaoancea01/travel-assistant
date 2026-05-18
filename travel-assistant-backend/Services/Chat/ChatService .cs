@@ -3,6 +3,7 @@ using NJsonSchema.Generation;
 using OpenAI.Chat;
 using System.Text.Json;
 using travel_assistant_backend.DTOs.Chat;
+using travel_assistant_backend.Services.Geocoding;
 using travel_assistant_backend.Services.Weather;
 
 namespace travel_assistant_backend.Services.Interfaces.Chat
@@ -11,6 +12,7 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
     {
         private readonly ChatClient _chatClient;
         private readonly IWeatherService _weatherService;
+        private readonly IGeocodingService _geocodingService;
 
         private const string TripSystemPrompt = """
             ROLE: You are a high-end AI Travel Concierge. Generate structured JSON travel plans that are geographically logical and culturally immersive.
@@ -35,6 +37,13 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                - assistantMessage is a brief confirmation only when isPlanComplete: true.
                - Coordinates must be precise. If uncertain, use the nearest district center and flag it.
                - Never omit schema fields.
+               - Activity names must be short and concise — maximum 4 words (e.g. "Fontana di Trevi", "Vatican Museums", "Trastevere dinner"). Never include descriptions, conditions, or parentheticals in the name field.
+               - For each activity, provide a full address in the format "Street, Postal Code, City, Country". This is used for geocoding — be as precise as possible.
+               - For every activity, call GeocodeActivity with the attraction name and its full address (street, postal code, city, country) to obtain exact coordinates.
+               - Use the returned lat/lng directly in the activity's location field.
+               - If GeocodeActivity returns an error, omit the location rather than inventing coordinates.
+               - Call GeocodeActivity before finalizing the itinerary — never hardcode or estimate coordinates.
+               - Set weatherDependent: true for any activity that is significantly impacted by rain or high UV.
 
             5. LIVE WEATHER (startDate within 7 days of today)
                - Call GetDestinationWeather first. Pass location and number of trip days.
@@ -51,10 +60,11 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                - One elegant sentence. Experience and theme only — no logistics, no travel times.
             """;
 
-        public ChatService(ChatClient chatClient, IWeatherService weatherService)
+        public ChatService(ChatClient chatClient, IWeatherService weatherService, IGeocodingService geocodingService)
         {
             _chatClient = chatClient;
             _weatherService = weatherService;
+            _geocodingService = geocodingService;
         }
 
         public async Task<GenerateTripResult> GenerateTripAsync(IReadOnlyList<ChatMessage> messages, CancellationToken cancellationToken = default)
@@ -109,13 +119,28 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                 """)
             );
 
+            ChatTool geocodeTool = ChatTool.CreateFunctionTool(
+                functionName: "GeocodeActivity",
+                functionDescription: "Get the exact latitude and longitude for a specific attraction or place. Call this for every activity in the itinerary before finalizing the response.",
+                functionParameters: BinaryData.FromString("""
+                {
+                    "type": "object",
+                    "properties": {
+                        "name":    { "type": "string", "description": "Name of the attraction or place" },
+                        "address": { "type": "string", "description": "Full address: street, postal code, city, country" }
+                    },
+                    "required": ["name", "address"]
+                }
+                """)
+            );
+
             ChatCompletionOptions options = new()
             {
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                     jsonSchemaFormatName: "trip_planning_result",
                     jsonSchema: BinaryData.FromString(schemaJson),
                     jsonSchemaIsStrict: true),
-                Tools = { weatherTool, historicalWeatherTool }
+                Tools = { weatherTool, historicalWeatherTool, geocodeTool }
             };
 
             var messageHistory = new List<ChatMessage>
@@ -179,6 +204,32 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                                 }
 
                                 messageHistory.Add(new ToolChatMessage(toolCall.Id, historicalWeatherJson));
+                                requiresAction = true;
+                            }
+
+                            if (toolCall.FunctionName == "GeocodeActivity")
+                            {
+                                using var args = JsonDocument.Parse(toolCall.FunctionArguments);
+
+                                string name = args.RootElement.GetProperty("name").GetString() ?? "";
+                                string address = args.RootElement.TryGetProperty("address", out var addrEl)
+                                                     ? addrEl.GetString() ?? ""
+                                                     : "";
+
+                                Console.WriteLine($"[Geocode] Requested: {name} | {address}");
+
+                                // Nominatim rate limit: 1 request per second
+                                await Task.Delay(1000, cancellationToken);
+
+                                var coords = await _geocodingService.GeocodeAsync(name, address);
+
+                                string geocodeResult = coords != null
+                                    ? JsonSerializer.Serialize(new { lat = coords.Value.Lat, lng = coords.Value.Lng })
+                                    : JsonSerializer.Serialize(new { error = "Coordinates not found for this location." });
+
+                                Console.WriteLine($"[Geocode] Result for '{name}': {geocodeResult}");
+
+                                messageHistory.Add(new ToolChatMessage(toolCall.Id, geocodeResult));
                                 requiresAction = true;
                             }
                         }

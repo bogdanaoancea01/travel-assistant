@@ -1,47 +1,37 @@
 import { X, Eye, EyeOff } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 import SocialMediaAuth from "./SocialMediaAuth";
 
-export default function SignInModal({ isOpen, onClose, onSignUpClick }) {
+export default function SignInModal({ isOpen, onClose, onSignUpClick, redirectTo = "/chat" }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
 
  const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await fetch(
-      "https://localhost:7063/api/authentication/signin",
-      {
+    e.preventDefault();
+    try {
+      const response = await fetch("https://localhost:7063/api/authentication/signin", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          passwordHash: password,
-        }),
-      }
-    );
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, passwordHash: password }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
+      if (!response.ok) { alert(data); return; }
 
-    if (!response.ok) {
-      alert(data);
-      return;
-    }
-    login(data.token);
-    onClose();
-
-  } catch (error) {
+      login(data.token);
+      navigate(redirectTo, { replace: true }); // ← navigate after login
+    } catch (error) {
       console.error(error);
       alert("Something went wrong");
     }
-};
+  }
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";

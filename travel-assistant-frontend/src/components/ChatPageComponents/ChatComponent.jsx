@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ConversationArea from "../ChatAreaComponents/ConverstaionArea";
 import ChatInput from "../ChatAreaComponents/ChatInput";
 
@@ -11,23 +11,23 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
       content: "Hey there, I'm here to assist you in planning your experience. Ask me anything travel related.",
     },
   ]);
+  const fromCardClick = useRef(false);
 
   // When a destination card is clicked in RecommendationsPanel,
   // pendingPrompt is set in ChatPage. We consume it here by
   // populating the input and auto-sending.
   useEffect(() => {
     if (!pendingPrompt) return;
+    fromCardClick.current = true;
     setInputQuestion(pendingPrompt);
     onPendingPromptConsumed();
   }, [pendingPrompt]);
 
   // Auto-send once inputQuestion is set from a pending prompt
   useEffect(() => {
-    if (!inputQuestion || isTyping) return;
-    // Only auto-send if it came from a card click (not manual typing)
-    // We track this with a flag set during the pendingPrompt effect
-    if (inputQuestion === pendingPrompt) return; // guard against double-send
-    handleSendMessage();
+    if (!inputQuestion || isTyping || !fromCardClick.current) return;
+    fromCardClick.current = false;
+    handleSendMessage(inputQuestion);
   }, [inputQuestion]);
 
   const handleOnInputChange = (event) => {
@@ -52,7 +52,8 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
     }
 
     const data = await response.json();
-    console.log("Debug: Received data:", data);
+    console.log("Received OBJECT:", data);
+
     return data;
   };
 
@@ -74,17 +75,25 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
 
       if (aiReply.isPlanComplete) {
         const trip = aiReply.tripDetails;
+        const tripDays = trip.itinerary ?? [];
 
-        // Build activeTrip for the map panel using geocoded coordinates
         onTripGenerated({
-          destination: trip.destination,
-          dateRange: `${trip.days?.length ?? ""} days · ${trip.startDate ?? ""} – ${trip.endDate ?? ""}`,
-          pins: trip.days
-            ?.flatMap((day) => day.activities ?? [])
-            .map((a) => ({ name: a.name, lat: a.lat, lng: a.lng })) ?? [],
+          destination: `${trip.destination.city}, ${trip.destination.country}`,
+          pins: tripDays.flatMap((day) =>
+            (day.activities ?? []).map((a) => ({
+              name: a.name,
+              lat: a.lat,
+              lng: a.lng,
+              day: day.dayNumber,
+              description: a.description,
+              estimatedDuration: a.estimatedDuration,
+              address: a.address,
+              isWeatherDependent: a.isWeatherDependent ?? false,
+            }))
+          ),
         });
-
         setMessages((prev) => [...prev, { role: "assistant", content: trip.summary }]);
+        
       } else {
         setMessages((prev) => [...prev, { role: "assistant", content: aiReply.assistantMessage }]);
         onTripGenerated(null);

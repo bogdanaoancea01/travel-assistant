@@ -43,7 +43,7 @@ function DestinationSkeleton() {
   );
 }
 
-export default function RecommendationsPanel({ activeTrip, onPrompt, onNewTrip }) {
+export default function RecommendationsPanel({ activeTrip, onPrompt }) {
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -70,17 +70,16 @@ export default function RecommendationsPanel({ activeTrip, onPrompt, onNewTrip }
   const allCards = [...destinations, SURPRISE_CARD];
 
   if (activeTrip) {
-    return (
-      <div className="bg-white px-5 py-5 overflow-y-auto h-full">
-        <TripMapPanel
-          destination={activeTrip.destination}
-          dateRange={activeTrip.dateRange}
-          pins={activeTrip.pins}
-          onNewTrip={onNewTrip}
-        />
-      </div>
-    );
-  }
+  return (
+    <div className="h-full flex flex-col overflow-hidden">
+      <TripMapPanel
+        key={activeTrip.destination}
+        destination={activeTrip.destination}
+        pins={activeTrip.pins}
+      />
+    </div>
+  );
+}
 
   return (
     <div className="bg-white px-5 py-5 h-full flex flex-col gap-4 overflow-hidden">
