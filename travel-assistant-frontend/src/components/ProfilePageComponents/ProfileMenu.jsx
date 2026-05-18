@@ -3,8 +3,6 @@ export default function ProfileMenu({ active, setActive }) {
     { id: "profile", label: "Edit profile" },
     { id: "account", label: "Your account" },
     { id: "travel", label: "Travel preferences" },
-    { id: "notifications", label: "Notification settings" },
-    { id: "cookies", label: "Cookie preferences" },
   ];
 
   return (

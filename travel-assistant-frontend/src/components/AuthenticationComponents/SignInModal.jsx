@@ -1,16 +1,14 @@
 import { X, Eye, EyeOff } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 import SocialMediaAuth from "./SocialMediaAuth";
 
-export default function SignInModal({ isOpen, onClose, onSignUpClick, redirectTo = "/chat" }) {
+export default function SignInModal({ isOpen, onClose, onSignUpClick, onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
-  const navigate = useNavigate();
 
 
  const handleSubmit = async (e) => {
@@ -26,12 +24,12 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick, redirectTo
       if (!response.ok) { alert(data); return; }
 
       login(data.token);
-      navigate(redirectTo, { replace: true }); // ← navigate after login
+      onLoginSuccess?.();
     } catch (error) {
       console.error(error);
       alert("Something went wrong");
     }
-  }
+  };
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";

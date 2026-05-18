@@ -1,15 +1,17 @@
 import { useState } from "react";
 import EditInputForAddress from "./EditInputForAddress";
 import ButtonsForEdit from "./ButtonsForEdit";
+import { useAuth } from "../../AuthContext";
 
 export default function EditAccountSection() {
+  const { user } = useAuth();
   const [activeEditSection, setActiveEditSection] = useState(null);
 
   const accountFields = [
     {
       id: "email",
       header: "Email",
-      description: "Add your email",
+      description: user?.email ?? "Add your email",
       isChanged: null,
     },
     {
@@ -21,8 +23,7 @@ export default function EditAccountSection() {
     {
       id: "phone",
       header: "Phone",
-      description:
-        "Add mobile phone number for notifications and profile verification",
+      description: "Add mobile phone number for notifications and profile verification",
       isChanged: false,
     },
     {

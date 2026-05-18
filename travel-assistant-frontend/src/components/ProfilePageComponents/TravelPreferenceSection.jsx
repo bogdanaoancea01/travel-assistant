@@ -56,7 +56,7 @@ export default function TravelPreferenceSection() {
 
   return (
     <div className="max-w-3xl px-10 py-6">
-      <h2 className="text-xl font-semibold mb-10">Your account</h2>
+      <h2 className="text-xl font-semibold mb-10">Travel Preferences</h2>
       <div className="space-y-6 mb-10">
         {accountFields.map((field) => (
           <div

@@ -1,8 +1,24 @@
 import { Search } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../AuthContext";
 
 export default function HeroSection() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleStartPlanning = (prompt) => {
+    const text = prompt || searchValue.trim();
+    if (!text) return;
+
+    if (user) {
+      navigate("/chat", { state: { prompt: text } });
+    } else {
+      navigate("/signin", { state: { from: { pathname: "/chat" }, prompt: text } });
+    }
+  };
+
   return (
     <section className="pt-32 pb-20 bg-linear-to-b from-orange-50/40 via-orange-50/20 to-white">
       <div className="container mx-auto px-4">
@@ -38,13 +54,21 @@ export default function HeroSection() {
           {/* Search bar */}
           <div className="max-w-2xl mx-auto mt-12">
             <div className="bg-white rounded-full shadow-lg p-2 flex items-center gap-2 border border-gray-200">
-              <Search className="w-5 h-5 text-gray-400 ml-4" />
+              <Search className="w-5 h-5 text-gray-400 ml-4 shrink-0" />
               <input
                 type="text"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleStartPlanning();
+                }}
                 placeholder="Where do you want to go?"
                 className="flex-1 outline-none px-2 py-2 text-base"
               />
-              <button className="px-3 py-1.5 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer">
+              <button
+                onClick={() => handleStartPlanning()}
+                className="px-3 py-1.5 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer"
+              >
                 Search
               </button>
             </div>

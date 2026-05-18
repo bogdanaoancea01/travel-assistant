@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import ConversationArea from "../ChatAreaComponents/ConverstaionArea";
 import ChatInput from "../ChatAreaComponents/ChatInput";
 
@@ -12,6 +13,7 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
     },
   ]);
   const fromCardClick = useRef(false);
+  const location = useLocation();
 
   // When a destination card is clicked in RecommendationsPanel,
   // pendingPrompt is set in ChatPage. We consume it here by
@@ -29,6 +31,14 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
     fromCardClick.current = false;
     handleSendMessage(inputQuestion);
   }, [inputQuestion]);
+
+  useEffect(() => {
+    const prompt = location.state?.prompt;
+    if (!prompt) return;
+    fromCardClick.current = true;
+    setInputQuestion(prompt);
+    window.history.replaceState({}, ""); // prevent re-firing on refresh
+  }, []);
 
   const handleOnInputChange = (event) => {
     setInputQuestion(event.target.value);
