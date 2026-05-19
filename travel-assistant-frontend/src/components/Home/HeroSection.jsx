@@ -26,7 +26,7 @@ export default function HeroSection() {
           <h1 className="text-5xl md:text-6xl lg:text-7xl">
             Plan your next adventure
             <br />
-            with <span className="italic">mindtrip</span>
+            with <span className="italic">Meridian</span>
           </h1>
 
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">

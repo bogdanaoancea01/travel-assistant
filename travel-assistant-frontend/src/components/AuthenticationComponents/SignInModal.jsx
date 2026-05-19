@@ -25,6 +25,7 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick, onLoginSuc
 
       login(data.token);
       onLoginSuccess?.();
+      onClose();
     } catch (error) {
       console.error(error);
       alert("Something went wrong");

@@ -1,61 +1,68 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import RenameChatModal from "./RenameChatModal";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Pencil, Download, Trash2 } from "lucide-react";
 
 export default function ChatHeader() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openRenameModal, setOpenRenameModal] = useState(false);
-  const [openExportModal, setOpenExportModal] = useState(false);
-  const [chatName, setChatName] = useState(() => {
-    return localStorage.getItem("chatName") || "New chat";
-  });
+  const [chatName, setChatName] = useState(() => localStorage.getItem("chatName") || "New Chat");
+  const menuRef = useRef(null);
 
   useEffect(() => {
     localStorage.setItem("chatName", chatName);
   }, [chatName]);
 
-  return (
-    <div className="border-b border-gray-200 px-4 py-4">
-      <button
-        className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
-        onClick={() => setOpenMenu(!openMenu)}
-      >
-        <span className="font-medium">{chatName}</span>
-        <ChevronDown size={16} />
-      </button>
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpenMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-      {openMenu && (
-        <div className="absolute w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2">
-          <button
-            className="flex items-center gap-3 w-full px-4 py-2 text-sm hover:bg-gray-100"
-            onClick={() => {
-              setOpenRenameModal(!openRenameModal);
-              setOpenMenu(false);
-            }}
-          >
-            Rename chat
-          </button>
-          <button
-            className="flex items-center gap-3 w-full px-4 py-2 text-sm hover:bg-gray-100"
-            onClick={() => {
-              setOpenExportModal(!openExportModal);
-              setOpenMenu(false);
-            }}
-          >
-            Export chat
-          </button>
-          <div className="my-1 border-t border-gray-200" />
-          <button
-            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50"
-            onClick={() => {
-              setOpenExportModal(!openExportModal);
-              setOpenMenu(false);
-            }}
-          >
-            Delete chat
-          </button>
-        </div>
-      )}
+  return (
+    <div className="h-14 border-b border-gray-100 px-5 flex items-center">
+      <div className="relative" ref={menuRef}>
+        <button
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+          onClick={() => setOpenMenu(!openMenu)}
+        >
+          <span className="text-sm font-semibold text-gray-900">{chatName}</span>
+          <ChevronDown
+            size={14}
+            className={`text-gray-400 transition-transform duration-200 ${openMenu ? "rotate-180" : ""}`}
+          />
+        </button>
+
+        {openMenu && (
+          <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50">
+            <button
+              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              onClick={() => { setOpenRenameModal(true); setOpenMenu(false); }}
+            >
+              <Pencil className="h-4 w-4 text-gray-400" />
+              Rename chat
+            </button>
+            <button
+              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              onClick={() => setOpenMenu(false)}
+            >
+              <Download className="h-4 w-4 text-gray-400" />
+              Export chat
+            </button>
+            <div className="my-1 mx-2 border-t border-gray-100" />
+            <button
+              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"
+              onClick={() => setOpenMenu(false)}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete chat
+            </button>
+          </div>
+        )}
+      </div>
 
       {openRenameModal && (
         <RenameChatModal

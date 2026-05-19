@@ -1,30 +1,19 @@
 import { Send } from "lucide-react";
 import { useRef } from "react";
 
-export default function ChatInput({
-  inputQuestion,
-  onInputChange,
-  onSendMessage,
-}) {
-  const textBoxSize = useRef(null);
+export default function ChatInput({ inputQuestion, onInputChange, onSendMessage }) {
+  const textBoxRef = useRef(null);
   const MAX_HEIGHT = 150;
 
   const handleInput = () => {
-    const element = textBoxSize.current;
-
-    if (!element) return;
-
-    element.style.height = "auto";
-
-    if (element.scrollHeight > MAX_HEIGHT) {
-      element.style.height = MAX_HEIGHT + "px";
-    } else {
-      element.style.height = element.scrollHeight + "px";
-    }
+    const el = textBoxRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, MAX_HEIGHT) + "px";
   };
 
   const handleReset = () => {
-    textBoxSize.current.style.height = "auto";
+    if (textBoxRef.current) textBoxRef.current.style.height = "auto";
   };
 
   const handleKeyDown = (e) => {
@@ -35,38 +24,39 @@ export default function ChatInput({
     }
   };
 
+  const hasContent = inputQuestion.trim().length > 0;
+
   return (
-    <div className="px-6 py-4 border-t border-gray-200">
-      <div className="max-w-4xl mx-auto">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSendMessage();
-          }}
-        >
-          <div className="relative flex items-end gap-2 p-1 border border-gray-300 rounded-2xl bg-white focus-within:border-gray-400 transition-colors">
+    <div className="px-6 py-4 border-t border-gray-100">
+      <div className="max-w-2xl mx-auto">
+        <form onSubmit={(e) => { e.preventDefault(); onSendMessage(); handleReset(); }}>
+          <div className="flex items-end gap-2 px-4 py-3 border border-gray-200 rounded-2xl bg-white focus-within:border-gray-400 transition-colors shadow-sm">
             <textarea
-              id="clientQuestion"
               rows={1}
-              ref={textBoxSize}
+              ref={textBoxRef}
               value={inputQuestion}
               onInput={handleInput}
               onChange={onInputChange}
               onKeyDown={handleKeyDown}
               placeholder="Ask me anything"
-              className="flex-1 px-4 py-2.5 bg-transparent border-none outline-none text-sm resize-none w-full"
+              className="flex-1 bg-transparent border-none outline-none text-sm resize-none leading-5 text-gray-800 placeholder-gray-400 py-0 self-center"
+              style={{ height: "20px" }}
             />
-
-            <div className="flex items-center gap-1 pr-1">
-              <button
-                type="submit"
-                onClick={handleReset}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
-              >
-                <Send className="size-5 text-gray-500" />
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={!hasContent}
+              className={`shrink-0 w-8 h-8 flex items-center justify-center rounded-xl transition-colors cursor-pointer
+                ${hasContent
+                  ? "bg-gray-900 hover:bg-gray-700 text-white"
+                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                }`}
+            >
+              <Send className="h-3.5 w-3.5" />
+            </button>
           </div>
+          <p className="text-center text-xs text-gray-300 mt-2">
+            Meridian can make mistakes. Verify important information.
+          </p>
         </form>
       </div>
     </div>
