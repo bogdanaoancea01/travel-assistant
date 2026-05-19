@@ -5,12 +5,8 @@ import { ChevronDown, Pencil, Download, Trash2 } from "lucide-react";
 export default function ChatHeader() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openRenameModal, setOpenRenameModal] = useState(false);
-  const [chatName, setChatName] = useState(() => localStorage.getItem("chatName") || "New Chat");
+  const [chatName, setChatName] = useState("New Chat");
   const menuRef = useRef(null);
-
-  useEffect(() => {
-    localStorage.setItem("chatName", chatName);
-  }, [chatName]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -39,14 +35,14 @@ export default function ChatHeader() {
         {openMenu && (
           <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50">
             <button
-              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
               onClick={() => { setOpenRenameModal(true); setOpenMenu(false); }}
             >
               <Pencil className="h-4 w-4 text-gray-400" />
               Rename chat
             </button>
             <button
-              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
               onClick={() => setOpenMenu(false)}
             >
               <Download className="h-4 w-4 text-gray-400" />
@@ -54,7 +50,7 @@ export default function ChatHeader() {
             </button>
             <div className="my-1 mx-2 border-t border-gray-100" />
             <button
-              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"
+              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
               onClick={() => setOpenMenu(false)}
             >
               <Trash2 className="h-4 w-4" />

@@ -7,6 +7,11 @@ import ChatHeader from "../components/ChatAreaComponents/ChatHeader";
 export default function ChatPage() {
   const [activeTrip, setActiveTrip] = useState(null);
   const [pendingPrompt, setPendingPrompt] = useState("");
+  const [chatKey, setChatKey] = useState(0);
+
+  const handleNewChat = () => {
+    setChatKey(prev => prev + 1);
+  };
 
   const handlePrompt = (prompt) => {
     setPendingPrompt(prompt);
@@ -19,12 +24,12 @@ export default function ChatPage() {
   return (
     <div className="flex h-screen overflow-hidden">
       <div>
-        <SideMenuWhole />
+        <SideMenuWhole onNewChat={handleNewChat} />
       </div>
 
       <div className="flex flex-1 flex-col lg:flex-[0.6] border-r border-gray-200">
-        <ChatHeader />
         <ChatComponent
+          key={chatKey}
           pendingPrompt={pendingPrompt}
           onPendingPromptConsumed={() => setPendingPrompt("")}
           onTripGenerated={setActiveTrip}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import SideMenu from "./SideMenu";
 import { Menu } from "lucide-react";
 
-export default function SideMenuWhole() {
+export default function SideMenuWhole({ onNewChat }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
     <div className="flex min-h-screen">
@@ -30,7 +30,7 @@ export default function SideMenuWhole() {
        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
      `}
       >
-        <SideMenu />
+        <SideMenu onNewChat={onNewChat} />
       </div>
     </div>
   );

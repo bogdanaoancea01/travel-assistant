@@ -1,4 +1,13 @@
-export default function MenuOptions({ menuItems }) {
+import { useNavigate } from "react-router-dom";
+
+export default function MenuOptions({ menuItems, onNewChat }) {
+  const navigate = useNavigate();
+
+  const handleNewChat = () => {
+    navigate("/chat");
+    onNewChat?.();
+  };
+
   return (
     <nav className="flex-1 px-3 py-4">
       <ul className="space-y-0.5">
@@ -21,7 +30,10 @@ export default function MenuOptions({ menuItems }) {
         ))}
       </ul>
 
-      <button className="w-full mt-4 px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-700 transition-colors text-sm font-medium cursor-pointer">
+      <button 
+        className="w-full mt-4 px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-700 transition-colors text-sm font-medium cursor-pointer"
+        onClick={handleNewChat}
+      >
         New chat
       </button>
     </nav>

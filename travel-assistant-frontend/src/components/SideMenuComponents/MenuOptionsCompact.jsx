@@ -1,4 +1,13 @@
-export default function MenuOptionsCompact({ menuItems }) {
+import { useNavigate } from "react-router-dom";
+
+export default function MenuOptionsCompact({ menuItems, onNewChat }) {
+  const navigate = useNavigate();
+
+  const handleNewChat = () => {
+    navigate("/chat");
+    onNewChat?.();
+  };
+
   return (
     <nav className="flex-1 flex flex-col items-center px-2 py-4 gap-1">
       {menuItems.map((item) => (
@@ -19,8 +28,9 @@ export default function MenuOptionsCompact({ menuItems }) {
       <div className="mt-3 w-8 h-px bg-gray-100" />
 
       <button
-        className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-900 hover:bg-gray-700 transition-colors cursor-pointer mt-1"
+        className="w-6 h-6 flex items-center justify-center rounded-xl bg-gray-900 hover:bg-gray-700 transition-colors cursor-pointer mt-3"
         title="New chat"
+        onClick={handleNewChat}
       >
         <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />

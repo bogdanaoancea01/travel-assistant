@@ -7,7 +7,7 @@ import { MessageSquare, MapPin, Compass, Heart, Bell, Lightbulb, ChevronLeft, Ch
 import { useState } from "react";
 import Logo from "../Logo";
 
-export default function SideMenu() {
+export default function SideMenu({ onNewChat }) {
   const menuItems = [
     { icon: MessageSquare, label: "Chats", badge: "2" },
     { icon: MapPin, label: "Trips", badge: null },
@@ -40,9 +40,9 @@ export default function SideMenu() {
 
       {/* Nav */}
       {isCompact ? (
-        <MenuOptionsCompact menuItems={menuItems} />
+        <MenuOptionsCompact menuItems={menuItems} onNewChat={onNewChat} />
       ) : (
-        <MenuOptions menuItems={menuItems} />
+        <MenuOptions menuItems={menuItems} onNewChat={onNewChat} />
       )}
 
       {/* Footer */}

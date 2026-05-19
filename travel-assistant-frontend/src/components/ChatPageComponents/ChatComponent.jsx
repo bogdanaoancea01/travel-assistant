@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import ConversationArea from "../ChatAreaComponents/ConverstaionArea";
 import ChatInput from "../ChatAreaComponents/ChatInput";
+import ChatHeader from "../ChatAreaComponents/ChatHeader";
 
 export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, onTripGenerated }) {
   const [inputQuestion, setInputQuestion] = useState("");
@@ -121,6 +122,7 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
 
   return (
     <div className="h-full flex flex-col bg-white">
+      <ChatHeader />
       <ConversationArea messages={messages} isTyping={isTyping} />
       <ChatInput
         inputQuestion={inputQuestion}
