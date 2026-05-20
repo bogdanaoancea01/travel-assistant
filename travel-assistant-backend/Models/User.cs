@@ -22,5 +22,7 @@ namespace travel_assistant_backend.Models
         [Required]
         public string PasswordHash { get; set; } = string.Empty;
 
+        public List<Chat> Chats { get; set; } = new List<Chat>();
+
     }
 }

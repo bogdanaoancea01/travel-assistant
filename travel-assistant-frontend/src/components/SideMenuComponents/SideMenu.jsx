@@ -4,21 +4,36 @@ import MenuOptionsCompact from "../SideMenuComponents/MenuOptionsCompact";
 import UserProfile from "../SideMenuComponents/UserProfile";
 import FooterLinks from "../SideMenuComponents/FooterLinks";
 import { MessageSquare, MapPin, Compass, Heart, Bell, Lightbulb, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Logo from "../Logo";
+import { useChatHistory } from "../../utilities/useChatHistory";
 
 export default function SideMenu({ onNewChat }) {
+  const navigate = useNavigate();
+  const [isCompact, setIsCompact] = useState(false);
+  const [chatCount, setChatCount] = useState(null);
+  const { fetchChats } = useChatHistory();
+
+  useEffect(() => {
+    async function loadChatCount() {
+      try {
+        const chats = await fetchChats();
+        setChatCount(chats?.length ?? 0);
+      } catch {
+        setChatCount(null);
+      }
+    }
+    loadChatCount();
+  });
+
   const menuItems = [
-    { icon: MessageSquare, label: "Chats", badge: "2" },
+    { icon: MessageSquare, label: "Chats", badge: chatCount > 0 ? String(chatCount) : null },
     { icon: MapPin, label: "Trips", badge: null },
     { icon: Compass, label: "Explore", badge: null },
     { icon: Heart, label: "Saved", badge: null },
     { icon: Bell, label: "Updates", badge: null },
     { icon: Lightbulb, label: "Inspiration", badge: null },
   ];
-
-  const navigate = useNavigate();
-  const [isCompact, setIsCompact] = useState(false);
 
   return (
     <div className={`h-full bg-white border-r border-gray-100 flex flex-col transition-all duration-300 ${isCompact ? "w-16" : "w-56"}`}>

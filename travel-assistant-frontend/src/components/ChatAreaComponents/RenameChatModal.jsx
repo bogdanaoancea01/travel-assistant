@@ -16,7 +16,7 @@ export default function RenameChatModal({ open, handleClose, onRename, currentNa
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
+      className="fixed inset-0 z-2000 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
       onClick={handleClose}
     >
       <div

@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router-dom";
+import { useChatHistory } from "../../utilities/useChatHistory";
 
 export default function MenuOptions({ menuItems, onNewChat }) {
   const navigate = useNavigate();
+  const { createChat } = useChatHistory();
 
-  const handleNewChat = () => {
+  const handleNewChat = async () => {
+    const chat = await createChat("New Chat");
     navigate("/chat");
-    onNewChat?.();
+    onNewChat?.(chat?.id);
   };
 
   return (

@@ -31,37 +31,14 @@ namespace travel_assistant_backend.Controllers
             if (signInDTO == null) return BadRequest("Invalid request");
 
             var user = _context.Users.FirstOrDefault(u => u.Email == signInDTO.Email);
-
             if (user == null) return Unauthorized("Invalid credentials");
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, signInDTO.PasswordHash);
-
             if (result == PasswordVerificationResult.Failed)
                 return Unauthorized("Invalid credentials");
 
-            var claims = new[]
-            {
-                new Claim("email", user.Email),
-                new Claim("firstName", user.FirstName),
-                new Claim("lastName", user.LastName),
-            };
-
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: "yourIssuer",
-                audience: "yourAudience",
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
-                signingCredentials: creds);
-
-            return Ok(new
-            {
-                token = new JwtSecurityTokenHandler().WriteToken(token)
-            });
+            var token = GenerateToken(user);
+            return Ok(new { token });
         }
 
         [HttpPost("signup")]
@@ -69,14 +46,9 @@ namespace travel_assistant_backend.Controllers
         {
             if (string.IsNullOrWhiteSpace(signUpDTO.Email) ||
                 string.IsNullOrWhiteSpace(signUpDTO.PasswordHash))
-            {
                 return BadRequest("Email and password are required");
-            }
 
-            var existingUser = _context.Users
-                .FirstOrDefault(u => u.Email == signUpDTO.Email);
-
-            if (existingUser != null)
+            if (_context.Users.Any(u => u.Email == signUpDTO.Email))
                 return BadRequest("User already exists");
 
             var user = new User
@@ -86,17 +58,24 @@ namespace travel_assistant_backend.Controllers
                 Email = signUpDTO.Email
             };
 
-            var claims = new[]
-            {
-                new Claim("email", user.Email),
-                new Claim("firstName", user.FirstName),
-                new Claim("lastName", user.LastName),
-            };
-
             user.PasswordHash = _passwordHasher.HashPassword(user, signUpDTO.PasswordHash);
 
             _context.Users.Add(user);
             _context.SaveChanges();
+
+            var token = GenerateToken(user);
+            return Ok(new { message = "User registered successfully", token });
+        }
+
+        private string GenerateToken(User user)
+        {
+            var claims = new[]
+            {
+                new Claim("userId", user.Id.ToString()),
+                new Claim("email", user.Email),
+                new Claim("firstName", user.FirstName),
+                new Claim("lastName", user.LastName),
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -108,13 +87,7 @@ namespace travel_assistant_backend.Controllers
                 expires: DateTime.Now.AddMinutes(120),
                 signingCredentials: creds);
 
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return Ok(new
-            {
-                message = "User registered successfully",
-                token = tokenString
-            });
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

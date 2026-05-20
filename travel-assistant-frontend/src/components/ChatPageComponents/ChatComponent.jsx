@@ -3,18 +3,29 @@ import { useLocation } from "react-router-dom";
 import ConversationArea from "../ChatAreaComponents/ConverstaionArea";
 import ChatInput from "../ChatAreaComponents/ChatInput";
 import ChatHeader from "../ChatAreaComponents/ChatHeader";
+import { useChatHistory } from "../../utilities/useChatHistory";
 
-export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, onTripGenerated }) {
+export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, onTripGenerated, initialChatId  }) {
   const [inputQuestion, setInputQuestion] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      role: "assistant",
-      content: "Hey there, I'm here to assist you in planning your experience. Ask me anything travel related.",
-    },
-  ]);
+  const [currentChatId, setCurrentChatId] = useState(() => {
+    const stored = sessionStorage.getItem("currentChatId");
+    return initialChatId ?? (stored ? parseInt(stored) : null);
+  });
+
+  const [messages, setMessages] = useState(() => {
+    const stored = sessionStorage.getItem("currentMessages");
+    return stored ? JSON.parse(stored) : [
+      {
+        role: "assistant",
+        content: "Hey there, I'm here to assist you in planning your experience. Ask me anything travel related.",
+      },
+    ];
+  });
+
   const fromCardClick = useRef(false);
   const location = useLocation();
+  const { createChat, saveUserMessage, saveAssistantResponse } = useChatHistory();
 
   // When a destination card is clicked in RecommendationsPanel,
   // pendingPrompt is set in ChatPage. We consume it here by
@@ -38,12 +49,22 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
     if (!prompt) return;
     fromCardClick.current = true;
     setInputQuestion(prompt);
-    window.history.replaceState({}, ""); // prevent re-firing on refresh
+    window.history.replaceState({}, "");
   }, []);
 
-  const handleOnInputChange = (event) => {
-    setInputQuestion(event.target.value);
-  };
+  useEffect(() => {
+    if (currentChatId) {
+      sessionStorage.setItem("currentChatId", String(currentChatId));
+    } else {
+      sessionStorage.removeItem("currentChatId");
+    }
+  }, [currentChatId]);
+
+  useEffect(() => {
+    sessionStorage.setItem("currentMessages", JSON.stringify(messages));
+  }, [messages]);
+
+  const handleOnInputChange = (event) => setInputQuestion(event.target.value);
 
   const callBackendChat = async (chatMessages) => {
     const response = await fetch("https://localhost:7063/generatetrip", {
@@ -64,7 +85,6 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
 
     const data = await response.json();
     console.log("Received OBJECT:", data);
-
     return data;
   };
 
@@ -79,10 +99,23 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
     setInputQuestion("");
     setIsTyping(true);
 
+    // Create chat on first message
+    let chatId = currentChatId;
+    if (!chatId) {
+      const chat = await createChat("New Chat");
+      chatId = chat?.id;
+      setCurrentChatId(chatId);
+    }
+
+    // Save user message
+    await saveUserMessage(chatId, textToSend);
+
     try {
       const aiReply = await callBackendChat(updatedMessages);
-
       if (!aiReply) throw new Error("No data received from the server.");
+
+      // Save full AI response as JSON
+      await saveAssistantResponse(chatId, aiReply);
 
       if (aiReply.isPlanComplete) {
         const trip = aiReply.tripDetails;
@@ -103,8 +136,8 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
             }))
           ),
         });
+
         setMessages((prev) => [...prev, { role: "assistant", content: trip.summary }]);
-        
       } else {
         setMessages((prev) => [...prev, { role: "assistant", content: aiReply.assistantMessage }]);
         onTripGenerated(null);
@@ -122,7 +155,7 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
 
   return (
     <div className="h-full flex flex-col bg-white">
-      <ChatHeader />
+      <ChatHeader chatId={currentChatId} />
       <ConversationArea messages={messages} isTyping={isTyping} />
       <ChatInput
         inputQuestion={inputQuestion}

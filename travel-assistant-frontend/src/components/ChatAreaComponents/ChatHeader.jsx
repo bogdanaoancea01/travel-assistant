@@ -1,13 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import RenameChatModal from "./RenameChatModal";
 import { ChevronDown, Pencil, Download, Trash2 } from "lucide-react";
+import { useChatHistory } from "../../utilities/useChatHistory";
 
-export default function ChatHeader() {
+export default function ChatHeader({ chatId }) {
   const [openMenu, setOpenMenu] = useState(false);
   const [openRenameModal, setOpenRenameModal] = useState(false);
   const [chatName, setChatName] = useState("New Chat");
   const menuRef = useRef(null);
+  const { renameChat, loadChat  } = useChatHistory();
 
+  useEffect(() => {
+    if (!chatId) return;
+    loadChat(chatId).then((chat) => {
+      if (chat?.name) setChatName(chat.name);
+    });
+  }, [chatId]);
+  
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -17,6 +26,13 @@ export default function ChatHeader() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleRename = async (newName) => {
+    setChatName(newName);
+    if (chatId) {
+      await renameChat(chatId, newName);
+    }
+  };
 
   return (
     <div className="h-14 border-b border-gray-100 px-5 flex items-center">
@@ -64,7 +80,7 @@ export default function ChatHeader() {
         <RenameChatModal
           open={openRenameModal}
           handleClose={() => setOpenRenameModal(false)}
-          onRename={(newName) => setChatName(newName)}
+          onRename={handleRename}
           currentName={chatName}
         />
       )}
