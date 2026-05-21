@@ -1,16 +1,26 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import SideMenuWhole from "../components/SideMenuComponents/SideMenuWhole";
 import ChatComponent from "../components/ChatPageComponents/ChatComponent";
 import RecommendationsPanel from "../components/ChatPageComponents/RecommendationsPanel";
 
 export default function ChatPage() {
- const [activeTrip, setActiveTrip] = useState(() => {
+  const location = useLocation();
+  const [activeTrip, setActiveTrip] = useState(() => {
     const stored = sessionStorage.getItem("activeTrip");
     return stored ? JSON.parse(stored) : null;
   });
   const [pendingPrompt, setPendingPrompt] = useState("");
   const [chatKey, setChatKey] = useState(0);
-  const [initialChatId, setInitialChatId] = useState(null);
+  const [initialChatId, setInitialChatId] = useState(
+    location.state?.initialChatId ?? null
+  );
+
+  useEffect(() => {
+    if (location.state?.initialChatId) {
+      window.history.replaceState({}, "");
+    }
+  }, []);
 
   useEffect(() => {
     if (activeTrip) {

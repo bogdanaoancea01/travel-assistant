@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import GlobeLogo from "../GlobeLogo";
 import { useAuth } from "../../AuthContext";
+import AssistantMessage from "./AssistantMessage";
 
 export default function ConversationArea({ messages, isTyping }) {
   const bottomRef = useRef(null);
@@ -31,14 +32,16 @@ export default function ConversationArea({ messages, isTyping }) {
               </div>
             )}
 
-            <div
-              className={`max-w-[70%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                msg.role === "user"
-                  ? "bg-gray-900 text-white rounded-br-sm"
-                  : "bg-gray-50 border border-gray-100 text-gray-800 rounded-bl-sm"
-              }`}
-            >
-              {typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content)}
+            <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+              msg.role === "user"
+                ? "bg-gray-900 text-white rounded-br-sm"
+                : "bg-gray-50 border border-gray-100 text-gray-800 rounded-bl-sm"
+            }`}>
+              {msg.role === "assistant" ? (
+                <AssistantMessage content={msg.content} aiReply={msg.aiReply} />
+              ) : (
+                typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content)
+              )}
             </div>
           </div>
         ))}

@@ -2,20 +2,55 @@ import { Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
+import { useChatHistory } from "../../utilities/useChatHistory";
 
-export default function HeroSection() {
+export default function HeroSection({ onAuthRequired }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [searchValue, setSearchValue] = useState("");
+  const { createChat } = useChatHistory();
 
-  const handleStartPlanning = (prompt) => {
-    const text = prompt || searchValue.trim();
-    if (!text) return;
+  const handleStartPlanning = async () => {
+    sessionStorage.removeItem("currentChatId");
+    sessionStorage.removeItem("currentMessages");
+    sessionStorage.removeItem("activeTrip");
 
     if (user) {
-      navigate("/chat", { state: { prompt: text } });
+      const chat = await createChat("New Chat");
+      navigate("/chat", { state: { initialChatId: chat?.id } });
     } else {
-      navigate("/signin", { state: { from: { pathname: "/chat" }, prompt: text } });
+      onAuthRequired?.(null);
+    }
+  };
+
+  const handleSearch = async () => {
+    const text = searchValue.trim();
+    if (!text) return;
+
+    sessionStorage.removeItem("currentChatId");
+    sessionStorage.removeItem("currentMessages");
+    sessionStorage.removeItem("activeTrip");
+
+    if (user) {
+      const chat = await createChat("New Chat");
+      navigate("/chat", { state: { prompt: text, initialChatId: chat?.id } });
+    } else {
+      onAuthRequired?.(text);
+    }
+  };
+
+  const handleDestination = async (city) => {
+    const prompt = `Plan a 5-day trip to ${city}`;
+
+    sessionStorage.removeItem("currentChatId");
+    sessionStorage.removeItem("currentMessages");
+    sessionStorage.removeItem("activeTrip");
+
+    if (user) {
+      const chat = await createChat("New Chat");
+      navigate("/chat", { state: { prompt, initialChatId: chat?.id } });
+    } else {
+      onAuthRequired?.(prompt);
     }
   };
 
@@ -38,7 +73,7 @@ export default function HeroSection() {
             <button
               size="lg"
               className="px-8 py-2.5 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer"
-              onClick={() => navigate("/chat")}
+              onClick={() => handleStartPlanning()}
             >
               Start planning
             </button>
@@ -60,13 +95,13 @@ export default function HeroSection() {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") handleStartPlanning();
+                  if (e.key === "Enter") handleSearch();
                 }}
                 placeholder="Where do you want to go?"
                 className="flex-1 outline-none px-2 py-2 text-base"
               />
               <button
-                onClick={() => handleStartPlanning()}
+                onClick={() => handleSearch()}
                 className="px-3 py-1.5 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer"
               >
                 Search
@@ -78,16 +113,15 @@ export default function HeroSection() {
           <div className="pt-8">
             <p className="text-sm text-gray-500 mb-4">Popular destinations</p>
             <div className="flex flex-wrap gap-3 justify-center">
-              {["Paris", "Tokyo", "New York", "Bali", "Iceland", "Dubai"].map(
-                (city) => (
-                  <button
-                    key={city}
-                    className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm hover:border-gray-400 transition-colors"
-                  >
-                    {city}
-                  </button>
-                ),
-              )}
+              {["Paris", "Tokyo", "New York", "Bali", "Iceland", "Dubai"].map((city) => (
+                <button
+                  key={city}
+                  onClick={() => handleDestination(city)}
+                  className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm hover:border-gray-400 transition-colors"
+                >
+                  {city}
+                </button>
+              ))}
             </div>
           </div>
         </div>

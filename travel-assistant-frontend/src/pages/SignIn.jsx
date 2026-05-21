@@ -15,7 +15,7 @@ export default function SignIn() {
         onClose={() => navigate("/")}
         onSignUpClick={() => navigate("/signup", { state: { from: location.state?.from, prompt } })}
         onLoginSuccess={() => navigate(from, { state: { prompt }, replace: true })}
-        />
+      />
     </div>
   );
 }

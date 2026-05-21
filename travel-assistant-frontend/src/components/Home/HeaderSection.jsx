@@ -59,15 +59,9 @@ export default function HeaderSection({ onSignInClick, onMenuClick }) {
             <div className="flex items-center gap-2">
               <button
                 onClick={onSignInClick}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-full transition-colors cursor-pointer"
+                className="px-4 py-2 text-sm font-medium text-gray-90 hover:bg-gray-50 rounded-full transition-colors cursor-pointer"
               >
                 Sign in
-              </button>
-              <button
-                onClick={onSignInClick}
-                className="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-700 transition-colors cursor-pointer"
-              >
-                Get started
               </button>
             </div>
           )}

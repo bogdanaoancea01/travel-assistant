@@ -6,9 +6,9 @@ export default function MenuOptionsCompact({ menuItems, onNewChat }) {
   const { createChat } = useChatHistory();
 
   const handleNewChat = async () => {
-    await createChat("New Chat");
+    const chat = await createChat("New Chat");
     navigate("/chat");
-    onNewChat?.();
+    onNewChat?.(chat?.id);
   };
 
   return (

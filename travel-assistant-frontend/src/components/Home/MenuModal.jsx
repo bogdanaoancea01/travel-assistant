@@ -101,12 +101,6 @@ export default function MenuModal({ isOpen, onClose }) {
           ) : (
             <>
               <button
-                onClick={() => handleNavigate("/signup")}
-                className="w-full rounded-xl bg-gray-900 py-2.5 text-sm text-white font-medium hover:bg-gray-700 transition-colors cursor-pointer"
-              >
-                Get started
-              </button>
-              <button
                 onClick={() => handleNavigate("/signin")}
                 className="w-full rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors cursor-pointer"
               >

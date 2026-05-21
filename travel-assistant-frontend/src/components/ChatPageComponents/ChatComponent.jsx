@@ -137,9 +137,9 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
           ),
         });
 
-        setMessages((prev) => [...prev, { role: "assistant", content: trip.summary }]);
+        setMessages((prev) => [...prev, { role: "assistant", content: trip.summary, aiReply: aiReply }]);
       } else {
-        setMessages((prev) => [...prev, { role: "assistant", content: aiReply.assistantMessage }]);
+        setMessages((prev) => [...prev, { role: "assistant", content: aiReply.assistantMessage, aiReply: null }]);
         onTripGenerated(null);
       }
     } catch (err) {

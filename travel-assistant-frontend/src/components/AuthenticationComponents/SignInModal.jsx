@@ -11,26 +11,26 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick, onLoginSuc
   const { login } = useAuth();
 
 
- const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("https://localhost:7063/api/authentication/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, passwordHash: password }),
-      });
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await fetch("https://localhost:7063/api/authentication/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, passwordHash: password }),
+    });
 
-      const data = await response.json();
-      if (!response.ok) { alert(data); return; }
+    const data = await response.json();
+    if (!response.ok) { alert(data); return; }
 
-      login(data.token);
-      onLoginSuccess?.();
-      onClose();
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong");
-    }
-  };
+    login(data.token);
+    onLoginSuccess?.();
+    onClose();
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
+  }
+};
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";
