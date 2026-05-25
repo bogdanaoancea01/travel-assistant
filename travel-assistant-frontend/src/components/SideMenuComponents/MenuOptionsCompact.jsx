@@ -1,14 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { useChatHistory } from "../../utilities/useChatHistory";
 
-export default function MenuOptionsCompact({ menuItems, onNewChat }) {
+export default function MenuOptionsCompact({ menuItems, onNewChat, onChatCountChange }) {
   const navigate = useNavigate();
   const { createChat } = useChatHistory();
 
   const handleNewChat = async () => {
     const chat = await createChat("New Chat");
-    navigate("/chat");
+    sessionStorage.removeItem("currentMessages");
+    sessionStorage.removeItem("activeTrip");
+    navigate("/chat", { state: { initialChatId: chat?.id } });
     onNewChat?.(chat?.id);
+    onChatCountChange?.((c) => (c ?? 0) + 1);
   };
 
   return (

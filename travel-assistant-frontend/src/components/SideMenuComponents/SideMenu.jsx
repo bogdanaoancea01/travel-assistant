@@ -8,9 +8,10 @@ import { useState, useEffect } from "react";
 import Logo from "../Logo";
 import { useChatHistory } from "../../utilities/useChatHistory";
 
-export default function SideMenu({ onNewChat }) {
+export default function SideMenu({ onNewChat, currentChatId }) {
   const navigate = useNavigate();
   const [isCompact, setIsCompact] = useState(false);
+  const [showChatList, setShowChatList] = useState(false);
   const [chatCount, setChatCount] = useState(null);
   const { fetchChats } = useChatHistory();
 
@@ -55,9 +56,20 @@ export default function SideMenu({ onNewChat }) {
 
       {/* Nav */}
       {isCompact ? (
-        <MenuOptionsCompact menuItems={menuItems} onNewChat={onNewChat} />
+        <MenuOptionsCompact 
+          menuItems={menuItems} 
+          onNewChat={onNewChat} 
+          onChatCountChange={setChatCount}
+        />
       ) : (
-        <MenuOptions menuItems={menuItems} onNewChat={onNewChat} />
+        <MenuOptions
+          menuItems={menuItems}
+          onNewChat={onNewChat}
+          currentChatId={currentChatId}
+          showChatList={showChatList}
+          onChatsClick={() => setShowChatList((p) => !p)}
+          onChatCountChange={setChatCount}
+        />
       )}
 
       {/* Footer */}

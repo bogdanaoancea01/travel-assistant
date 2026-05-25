@@ -64,14 +64,6 @@ export default function ChatHeader({ chatId }) {
               <Download className="h-4 w-4 text-gray-400" />
               Export chat
             </button>
-            <div className="my-1 mx-2 border-t border-gray-100" />
-            <button
-              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
-              onClick={() => setOpenMenu(false)}
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete chat
-            </button>
           </div>
         )}
       </div>

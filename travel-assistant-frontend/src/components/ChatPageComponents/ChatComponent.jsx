@@ -5,7 +5,7 @@ import ChatInput from "../ChatAreaComponents/ChatInput";
 import ChatHeader from "../ChatAreaComponents/ChatHeader";
 import { useChatHistory } from "../../utilities/useChatHistory";
 
-export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, onTripGenerated, initialChatId  }) {
+export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, onTripGenerated, initialChatId }) {
   const [inputQuestion, setInputQuestion] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [currentChatId, setCurrentChatId] = useState(() => {
