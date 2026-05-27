@@ -12,9 +12,11 @@ export default function ChatPage() {
   });
   const [pendingPrompt, setPendingPrompt] = useState("");
   const [chatKey, setChatKey] = useState(0);
-  const [initialChatId, setInitialChatId] = useState(
-    location.state?.initialChatId ?? null
-  );
+  const [initialChatId, setInitialChatId] = useState(() => {
+    if (location.state?.initialChatId) return location.state.initialChatId;
+    const stored = sessionStorage.getItem("currentChatId");
+    return stored ? parseInt(stored) : null;
+  });
 
   useEffect(() => {
     if (location.state?.initialChatId) {
@@ -30,6 +32,14 @@ export default function ChatPage() {
     }
   }, [activeTrip]);
 
+  useEffect(() => {
+    if (initialChatId) {
+      sessionStorage.setItem("currentChatId", String(initialChatId));
+    } else {
+      sessionStorage.removeItem("currentChatId");
+    }
+  }, [initialChatId]);
+
   const handleNewChat = (chatId) => {
     sessionStorage.removeItem("currentChatId");
     sessionStorage.removeItem("currentMessages");
@@ -39,10 +49,22 @@ export default function ChatPage() {
     setChatKey(prev => prev + 1);
   };
 
+  const handleChatSelect = (chatId) => {
+    sessionStorage.removeItem("currentMessages");
+    sessionStorage.removeItem("activeTrip");
+    setActiveTrip(null);
+    setInitialChatId(chatId);
+    setChatKey(prev => prev + 1);
+  };
+
   return (
     <div className="flex h-screen overflow-hidden">
       <div>
-        <SideMenuWhole onNewChat={handleNewChat} />
+        <SideMenuWhole
+          onNewChat={handleNewChat}
+          onChatSelect={handleChatSelect}
+          currentChatId={initialChatId}
+        />
       </div>
 
       <div className="flex flex-1 flex-col lg:flex-[0.6] border-r border-gray-200">

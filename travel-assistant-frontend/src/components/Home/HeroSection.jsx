@@ -117,7 +117,7 @@ export default function HeroSection({ onAuthRequired }) {
                 <button
                   key={city}
                   onClick={() => handleDestination(city)}
-                  className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm hover:border-gray-400 transition-colors"
+                  className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm hover:border-gray-400 transition-colors cursor-pointer"
                 >
                   {city}
                 </button>

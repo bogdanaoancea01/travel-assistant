@@ -69,7 +69,7 @@ function RenameInline({ currentName, onSave, onCancel }) {
   );
 }
 
-export default function MenuOptions({ menuItems, onNewChat, currentChatId, showChatList, onChatsClick, onChatCountChange }) {
+export default function MenuOptions({ menuItems, onNewChat, currentChatId, showChatList, onChatsClick, onChatCountChange, onChatSelect }) {
   const navigate = useNavigate();
   const [chats, setChats] = useState([]);
   const [loadingChats, setLoadingChats] = useState(false);
@@ -105,8 +105,19 @@ export default function MenuOptions({ menuItems, onNewChat, currentChatId, showC
   };
 
   const handleItemClick = (item) => {
-    if (item.label === "Chats") { onChatsClick?.(); return; }
-    navigate(item.path ?? "/");
+    if (item.label === "Chats") { 
+      onChatsClick?.(); 
+      return; 
+    } else {
+      navigate(item.path ?? "/");
+    }
+  };
+
+  const handleChatSelect = (chat) => {
+    if (chat.id === currentChatId) return;
+    sessionStorage.removeItem("currentMessages");
+    sessionStorage.removeItem("activeTrip");
+    onChatSelect?.(chat.id);
   };
 
   return (
@@ -143,7 +154,7 @@ export default function MenuOptions({ menuItems, onNewChat, currentChatId, showC
 
               {/* Inline chats list */}
               {isChatsOption && showChatList && (
-                <div className="mt-1 mb-1 max-h-70 overflow-auto">
+                <div className="mt-1 mb-1 max-h-100 overflow-auto">
                   {loadingChats ? (
                     <div className="space-y-1 px-3 py-1">
                       {[1, 2].map((i) => <div key={i} className="h-7 rounded bg-gray-50 animate-pulse" />)}
@@ -154,6 +165,7 @@ export default function MenuOptions({ menuItems, onNewChat, currentChatId, showC
                     chats.map((chat) => (
                       <div
                         key={chat.id}
+                        onClick={() => handleChatSelect(chat)}
                         className={`group flex items-center justify-between px-3 py-1.5 pl-10 rounded-lg cursor-pointer transition-colors ${
                           chat.id === currentChatId ? "bg-gray-100" : "hover:bg-gray-50"
                         }`}

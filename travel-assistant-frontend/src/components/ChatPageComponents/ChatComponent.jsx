@@ -5,31 +5,77 @@ import ChatInput from "../ChatAreaComponents/ChatInput";
 import ChatHeader from "../ChatAreaComponents/ChatHeader";
 import { useChatHistory } from "../../utilities/useChatHistory";
 
+const DEFAULT_MESSAGES = [
+  {
+    role: "assistant",
+    content: "Hey there, I'm here to assist you in planning your experience. Ask me anything travel related.",
+  },
+];
+
 export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, onTripGenerated, initialChatId }) {
   const [inputQuestion, setInputQuestion] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [currentChatId, setCurrentChatId] = useState(() => {
-    const stored = sessionStorage.getItem("currentChatId");
-    return initialChatId ?? (stored ? parseInt(stored) : null);
-  });
-
-  const [messages, setMessages] = useState(() => {
-    const stored = sessionStorage.getItem("currentMessages");
-    return stored ? JSON.parse(stored) : [
-      {
-        role: "assistant",
-        content: "Hey there, I'm here to assist you in planning your experience. Ask me anything travel related.",
-      },
-    ];
-  });
+  const [isLoadingHistory, setIsLoadingHistory] = useState(!!initialChatId);
+  const [currentChatId, setCurrentChatId] = useState(initialChatId ?? null);
+  const [messages, setMessages] = useState(DEFAULT_MESSAGES);
 
   const fromCardClick = useRef(false);
   const location = useLocation();
-  const { createChat, saveUserMessage, saveAssistantResponse } = useChatHistory();
+  const { createChat, saveUserMessage, saveAssistantResponse, loadChat } = useChatHistory();
 
-  // When a destination card is clicked in RecommendationsPanel,
-  // pendingPrompt is set in ChatPage. We consume it here by
-  // populating the input and auto-sending.
+  useEffect(() => {
+    if (!initialChatId) {
+      setMessages(DEFAULT_MESSAGES);
+      setIsLoadingHistory(false);
+      return;
+    }
+
+    setIsLoadingHistory(true);
+    loadChat(initialChatId)
+      .then((data) => {
+        const userMsgs = (data?.userMessages ?? []).map((m) => ({
+          role: "user",
+          content: m.content,
+          createdAt: m.createdAt,
+        }));
+
+        const assistantMsgs = (data?.assistantResponses ?? []).map((m) => {
+          let content = "";
+          let aiReply = null;
+          try {
+            aiReply = JSON.parse(m.jsonContent);
+            content = aiReply?.tripDetails?.summary ?? aiReply?.assistantMessage ?? "";
+          } catch {
+            content = m.jsonContent ?? "";
+          }
+          return { role: "assistant", content, aiReply, createdAt: m.createdAt };
+        });
+
+        const merged = [...userMsgs, ...assistantMsgs].sort(
+          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+        );
+
+        setMessages(merged.length > 0 ? merged : DEFAULT_MESSAGES);
+      })
+      .catch((err) => {
+        console.error("Failed to load chat:", err);
+        setMessages(DEFAULT_MESSAGES);
+      })
+      .finally(() => setIsLoadingHistory(false));
+  }, [initialChatId]);
+
+  useEffect(() => {
+    sessionStorage.setItem("currentMessages", JSON.stringify(messages));
+  }, [messages]);
+
+  useEffect(() => {
+    if (currentChatId) {
+      sessionStorage.setItem("currentChatId", String(currentChatId));
+    } else {
+      sessionStorage.removeItem("currentChatId");
+    }
+  }, [currentChatId]);
+
   useEffect(() => {
     if (!pendingPrompt) return;
     fromCardClick.current = true;
@@ -37,7 +83,6 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
     onPendingPromptConsumed();
   }, [pendingPrompt]);
 
-  // Auto-send once inputQuestion is set from a pending prompt
   useEffect(() => {
     if (!inputQuestion || isTyping || !fromCardClick.current) return;
     fromCardClick.current = false;
@@ -51,18 +96,6 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
     setInputQuestion(prompt);
     window.history.replaceState({}, "");
   }, []);
-
-  useEffect(() => {
-    if (currentChatId) {
-      sessionStorage.setItem("currentChatId", String(currentChatId));
-    } else {
-      sessionStorage.removeItem("currentChatId");
-    }
-  }, [currentChatId]);
-
-  useEffect(() => {
-    sessionStorage.setItem("currentMessages", JSON.stringify(messages));
-  }, [messages]);
 
   const handleOnInputChange = (event) => setInputQuestion(event.target.value);
 
@@ -83,9 +116,7 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
       throw new Error(text || "Server error");
     }
 
-    const data = await response.json();
-    console.log("Received OBJECT:", data);
-    return data;
+    return await response.json();
   };
 
   const handleSendMessage = async (overrideText) => {
@@ -99,7 +130,6 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
     setInputQuestion("");
     setIsTyping(true);
 
-    // Create chat on first message
     let chatId = currentChatId;
     if (!chatId) {
       const chat = await createChat("New Chat");
@@ -107,14 +137,12 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
       setCurrentChatId(chatId);
     }
 
-    // Save user message
     await saveUserMessage(chatId, textToSend);
 
     try {
       const aiReply = await callBackendChat(updatedMessages);
       if (!aiReply) throw new Error("No data received from the server.");
 
-      // Save full AI response as JSON
       await saveAssistantResponse(chatId, aiReply);
 
       if (aiReply.isPlanComplete) {
@@ -137,7 +165,7 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
           ),
         });
 
-        setMessages((prev) => [...prev, { role: "assistant", content: trip.summary, aiReply: aiReply }]);
+        setMessages((prev) => [...prev, { role: "assistant", content: trip.summary, aiReply }]);
       } else {
         setMessages((prev) => [...prev, { role: "assistant", content: aiReply.assistantMessage, aiReply: null }]);
         onTripGenerated(null);
@@ -156,11 +184,12 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
   return (
     <div className="h-full flex flex-col bg-white">
       <ChatHeader chatId={currentChatId} />
-      <ConversationArea messages={messages} isTyping={isTyping} />
+      <ConversationArea messages={messages} isTyping={isTyping || isLoadingHistory} />
       <ChatInput
         inputQuestion={inputQuestion}
         onInputChange={handleOnInputChange}
         onSendMessage={() => handleSendMessage()}
+        disabled={isLoadingHistory}
       />
     </div>
   );

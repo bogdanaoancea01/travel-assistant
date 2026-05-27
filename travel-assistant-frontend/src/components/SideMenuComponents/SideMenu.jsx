@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import Logo from "../Logo";
 import { useChatHistory } from "../../utilities/useChatHistory";
 
-export default function SideMenu({ onNewChat, currentChatId }) {
+export default function SideMenu({ onNewChat, onChatSelect, currentChatId }) {
   const navigate = useNavigate();
   const [isCompact, setIsCompact] = useState(false);
   const [showChatList, setShowChatList] = useState(false);
@@ -25,14 +25,11 @@ export default function SideMenu({ onNewChat, currentChatId }) {
       }
     }
     loadChatCount();
-  });
+  }, []);
 
   const menuItems = [
     { icon: MessageSquare, label: "Chats", badge: chatCount > 0 ? String(chatCount) : null },
-    { icon: MapPin, label: "Trips", badge: null },
     { icon: Compass, label: "Explore", badge: null },
-    { icon: Heart, label: "Saved", badge: null },
-    { icon: Bell, label: "Updates", badge: null },
     { icon: Lightbulb, label: "Inspiration", badge: null },
   ];
 
@@ -69,6 +66,7 @@ export default function SideMenu({ onNewChat, currentChatId }) {
           showChatList={showChatList}
           onChatsClick={() => setShowChatList((p) => !p)}
           onChatCountChange={setChatCount}
+          onChatSelect={onChatSelect} 
         />
       )}
 

@@ -39,7 +39,16 @@ const Home = () => {
         onSignInClick={() => setAuthModal("signin")}
         onMenuClick={() => setIsMenuOpen(true)}
       />
-      <MenuModal isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <MenuModal isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)}
+        onAuthRequired={(prompt) => {
+          if (prompt) {
+            setPendingPrompt(prompt);
+          } else {
+            setPendingChat(true);
+          }
+          setAuthModal("signin");
+        }}
+      />
       <SignInModal
         isOpen={authModal === "signin"}
         onClose={() => setAuthModal(null)}

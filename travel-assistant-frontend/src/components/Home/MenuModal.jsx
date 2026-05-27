@@ -4,16 +4,17 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 import Logo from "../Logo";
+import { useChatHistory } from "../../utilities/useChatHistory";
 
-export default function MenuModal({ isOpen, onClose }) {
+export default function MenuModal({ isOpen, onClose, onAuthRequired }) {
   const { user, logout } = useAuth();
+  const { createChat } = useChatHistory();
   const navigate = useNavigate();
 
   const menuItems = [
-    { icon: MessageSquare, label: "Start planning", path: "/chat" },
+    { icon: MessageSquare, label: "Start chatting", path: "/chat" },
     { icon: Compass, label: "Explore", path: "/explore" },
     { icon: Lightbulb, label: "Get inspired", path: "/inspiration" },
-    { icon: Heart, label: "Personalize", path: "/personalize" },
   ];
 
   const handleNavigate = (path) => {
@@ -24,6 +25,19 @@ export default function MenuModal({ isOpen, onClose }) {
   const handleLogout = () => {
     logout();
     onClose();
+  };
+
+  const handleStartChatting = async () => {
+    sessionStorage.removeItem("currentChatId");
+    sessionStorage.removeItem("currentMessages");
+    sessionStorage.removeItem("activeTrip");
+
+    if (user) {
+      const chat = await createChat("New Chat");
+      navigate("/chat", { state: { initialChatId: chat?.id } });
+    } else {
+      onAuthRequired?.(null);
+    }
   };
 
   return (
@@ -59,7 +73,12 @@ export default function MenuModal({ isOpen, onClose }) {
           {menuItems.map((item) => (
             <button
               key={item.label}
-              onClick={() => handleNavigate(item.path)}
+              onClick={() => {
+                if (item.label === "Start chatting") {
+                  handleStartChatting?.();
+                }
+                handleNavigate(item.path);
+              }}
               className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-800 hover:text-gray-900 hover:bg-gray-50 transition-colors cursor-pointer"
             >
               <item.icon className="h-4.5 w-4.5 shrink-0" />
