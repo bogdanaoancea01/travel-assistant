@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using travel_assistant_backend.Models;
@@ -11,9 +12,11 @@ using travel_assistant_backend.Models;
 namespace travel_assistant_backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260602103906_AddUserPreferences")]
+    partial class AddUserPreferences
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,11 +220,6 @@ namespace travel_assistant_backend.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("accommodation_style");
 
-                    b.Property<string>("Bio")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("bio");
-
                     b.Property<string>("HomeCity")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -231,6 +229,11 @@ namespace travel_assistant_backend.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("meal_preference");
+
+                    b.Property<string>("PreferredAirportCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("preferred_airport_code");
 
                     b.Property<string>("PreferredAirportName")
                         .HasMaxLength(100)

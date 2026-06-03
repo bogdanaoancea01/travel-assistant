@@ -20,6 +20,8 @@ namespace travel_assistant_backend.Controllers
         private int GetUserId()
         {
             var claim = User.FindFirstValue("userId");
+            if (claim == null)
+                throw new UnauthorizedAccessException("User ID claim not found in token.");
             return int.Parse(claim);
         }
 

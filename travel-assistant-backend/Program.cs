@@ -8,6 +8,7 @@ using travel_assistant_backend.Models;
 using travel_assistant_backend.Services.Geocoding;
 using travel_assistant_backend.Services.Interfaces.Chat;
 using travel_assistant_backend.Services.PopularDestinations;
+using travel_assistant_backend.Services.Preferences;
 using travel_assistant_backend.Services.Weather;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -94,6 +95,7 @@ builder.Services.AddHttpClient<IGeocodingService, GeocodingService>(client =>
     client.DefaultRequestHeaders.Add("User-Agent", "TravelAssistant/1.0");
     client.Timeout = TimeSpan.FromSeconds(10);
 });
+builder.Services.AddScoped<IPreferencesService, PreferencesService>();
 
 var app = builder.Build();
 

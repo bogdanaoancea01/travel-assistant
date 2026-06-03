@@ -24,5 +24,7 @@ namespace travel_assistant_backend.Models
 
         public List<Chat> Chats { get; set; } = new List<Chat>();
 
+        public UserPreferences? Preferences { get; set; }
+
     }
 }
