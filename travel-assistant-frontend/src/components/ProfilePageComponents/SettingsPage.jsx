@@ -226,6 +226,135 @@ export default function SettingsPage() {
           className={inputCls()} />
       ),
     },
+    {
+      id: "tripduration",
+      label: "Trip duration",
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
+      getValue: (p) => (p?.tripDurationMin != null && p?.tripDurationMax != null) ? `${p.tripDurationMin}–${p.tripDurationMax} days` : null,
+      getInitial: (p) => ({ tripDurationMin: p?.tripDurationMin ?? 3, tripDurationMax: p?.tripDurationMax ?? 7 }),
+      deleteKeys: ["tripduration"],
+      renderInput: () => (
+        <div className="flex flex-col gap-3 max-w-xs">
+          <div className="flex justify-between text-xs text-gray-500">
+            <span>Min: <strong>{formValues.tripDurationMin ?? 3} days</strong></span>
+            <span>Max: <strong>{formValues.tripDurationMax ?? 7} days</strong></span>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-xs text-gray-400">Minimum</label>
+            <input type="range" min={1} max={14} value={formValues.tripDurationMin ?? 3}
+              onChange={(e) => setFormValues((p) => ({ ...p, tripDurationMin: Math.min(+e.target.value, p.tripDurationMax ?? 7) }))}
+              className="w-full accent-gray-900" />
+            <label className="text-xs text-gray-400">Maximum</label>
+            <input type="range" min={1} max={14} value={formValues.tripDurationMax ?? 7}
+              onChange={(e) => setFormValues((p) => ({ ...p, tripDurationMax: Math.max(+e.target.value, p.tripDurationMin ?? 3) }))}
+              className="w-full accent-gray-900" />
+            <div className="flex justify-between text-xs text-gray-300">
+              <span>1</span><span>7</span><span>14</span>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "trippace",
+      label: "Trip pace",
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+      getValue: (p) => p?.tripPace ?? null,
+      getInitial: (p) => ({ tripPace: p?.tripPace ?? "" }),
+      deleteKeys: ["trippace"],
+      renderInput: () => (
+        <div className="flex gap-2">
+          {["Relaxed", "Balanced", "Intensive"].map((opt) => (
+            <button key={opt} type="button"
+              onClick={() => setFormValues((p) => ({ ...p, tripPace: opt }))}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                formValues.tripPace === opt
+                  ? "bg-gray-900 text-white border-gray-900"
+                  : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+              }`}>
+              {opt}
+            </button>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "travelstyles",
+      label: "Travel style",
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+      getValue: (p) => p?.travelStyles ?? null,
+      getInitial: (p) => ({ travelStyles: p?.travelStyles ?? "" }),
+      deleteKeys: ["travelstyles"],
+      renderInput: () => {
+        const selected = (formValues.travelStyles ?? "").split(",").map(s => s.trim()).filter(Boolean);
+        const toggle = (style) => {
+          const next = selected.includes(style)
+            ? selected.filter(s => s !== style)
+            : [...selected, style];
+          setFormValues((p) => ({ ...p, travelStyles: next.join(", ") || null }));
+        };
+        return (
+          <div className="flex flex-wrap gap-2 max-w-xs">
+            {["Adventure", "Cultural", "Food & Drink", "Nature", "Nightlife", "Wellness", "Shopping"].map((style) => (
+              <button key={style} type="button" onClick={() => toggle(style)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                  selected.includes(style)
+                    ? "bg-gray-900 text-white border-gray-900"
+                    : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+                }`}>
+                {style}
+              </button>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
+      id: "budgetrange",
+      label: "Budget",
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
+      getValue: (p) => p?.budgetRange ?? null,
+      getInitial: (p) => ({ budgetRange: p?.budgetRange ?? "" }),
+      deleteKeys: ["budgetrange"],
+      renderInput: () => (
+        <div className="flex gap-2 flex-wrap">
+          {["Budget", "Mid-range", "Comfort", "Luxury"].map((opt) => (
+            <button key={opt} type="button"
+              onClick={() => setFormValues((p) => ({ ...p, budgetRange: opt }))}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                formValues.budgetRange === opt
+                  ? "bg-gray-900 text-white border-gray-900"
+                  : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+              }`}>
+              {opt}
+            </button>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "travelcompanions",
+      label: "Travel companions",
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+      getValue: (p) => p?.travelCompanions ?? null,
+      getInitial: (p) => ({ travelCompanions: p?.travelCompanions ?? "" }),
+      deleteKeys: ["travelcompanions"],
+      renderInput: () => (
+        <div className="flex gap-2 flex-wrap">
+          {["Solo", "Couple", "Family", "Friends"].map((opt) => (
+            <button key={opt} type="button"
+              onClick={() => setFormValues((p) => ({ ...p, travelCompanions: opt }))}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                formValues.travelCompanions === opt
+                  ? "bg-gray-900 text-white border-gray-900"
+                  : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+              }`}>
+              {opt}
+            </button>
+          ))}
+        </div>
+      ),
+    },
 
   ];
 

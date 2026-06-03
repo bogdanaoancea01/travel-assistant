@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using OpenAI;
 using System.Text;
 using travel_assistant_backend.Models;
+using travel_assistant_backend.Services.Explore;
 using travel_assistant_backend.Services.Geocoding;
 using travel_assistant_backend.Services.Interfaces.Chat;
 using travel_assistant_backend.Services.PopularDestinations;
@@ -96,6 +97,7 @@ builder.Services.AddHttpClient<IGeocodingService, GeocodingService>(client =>
     client.Timeout = TimeSpan.FromSeconds(10);
 });
 builder.Services.AddScoped<IPreferencesService, PreferencesService>();
+builder.Services.AddScoped<IExploreService, ExploreService>();
 
 var app = builder.Build();
 

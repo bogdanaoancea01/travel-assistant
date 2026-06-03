@@ -19,7 +19,6 @@ namespace travel_assistant_backend.Services.Preferences
                 .FirstOrDefaultAsync(p => p.UserId == userId);
 
             if (prefs == null) return null;
-
             return MapToDTO(prefs);
         }
 
@@ -40,9 +39,14 @@ namespace travel_assistant_backend.Services.Preferences
             prefs.PreferredAirportName = dto.PreferredAirportName;
             prefs.AccommodationStyle = dto.AccommodationStyle;
             prefs.MealPreference = dto.MealPreference;
+            prefs.TripDurationMin = dto.TripDurationMin;
+            prefs.TripDurationMax = dto.TripDurationMax;
+            prefs.TripPace = dto.TripPace;
+            prefs.TravelStyles = dto.TravelStyles;
+            prefs.BudgetRange = dto.BudgetRange;
+            prefs.TravelCompanions = dto.TravelCompanions;
 
             await _context.SaveChangesAsync();
-
             return MapToDTO(prefs);
         }
 
@@ -72,6 +76,11 @@ namespace travel_assistant_backend.Services.Preferences
                 case "preferredairportname": prefs.PreferredAirportName = null; break;
                 case "accommodationstyle": prefs.AccommodationStyle = null; break;
                 case "mealpreference": prefs.MealPreference = null; break;
+                case "tripduration": prefs.TripDurationMin = null; prefs.TripDurationMax = null; break;
+                case "trippace": prefs.TripPace = null; break;
+                case "travelstyles": prefs.TravelStyles = null; break;
+                case "budgetrange": prefs.BudgetRange = null; break;
+                case "travelcompanions": prefs.TravelCompanions = null; break;
                 default: return null;
             }
 
@@ -87,6 +96,12 @@ namespace travel_assistant_backend.Services.Preferences
             PreferredAirportName = prefs.PreferredAirportName,
             AccommodationStyle = prefs.AccommodationStyle,
             MealPreference = prefs.MealPreference,
+            TripDurationMin = prefs.TripDurationMin,
+            TripDurationMax = prefs.TripDurationMax,
+            TripPace = prefs.TripPace,
+            TravelStyles = prefs.TravelStyles,
+            BudgetRange = prefs.BudgetRange,
+            TravelCompanions = prefs.TravelCompanions,
         };
     }
 }

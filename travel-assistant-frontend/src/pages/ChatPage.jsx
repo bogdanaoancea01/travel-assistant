@@ -10,8 +10,10 @@ export default function ChatPage() {
     const stored = sessionStorage.getItem("activeTrip");
     return stored ? JSON.parse(stored) : null;
   });
-  const [pendingPrompt, setPendingPrompt] = useState("");
+  const [chatCountKey, setChatCountKey] = useState(0);
+  const [pendingChatTitle, setPendingChatTitle] = useState(location.state?.chatTitle ?? null);
   const [chatKey, setChatKey] = useState(0);
+  const [pendingPrompt, setPendingPrompt] = useState("");
   const [initialChatId, setInitialChatId] = useState(() => {
     if (location.state?.initialChatId) return location.state.initialChatId;
     const stored = sessionStorage.getItem("currentChatId");
@@ -46,6 +48,7 @@ export default function ChatPage() {
     sessionStorage.removeItem("activeTrip");
     setActiveTrip(null);
     setInitialChatId(chatId ?? null);
+    setPendingChatTitle(null);
     setChatKey(prev => prev + 1);
   };
 
@@ -54,6 +57,7 @@ export default function ChatPage() {
     sessionStorage.removeItem("activeTrip");
     setActiveTrip(null);
     setInitialChatId(chatId);
+    setPendingChatTitle(null);
     setChatKey(prev => prev + 1);
   };
 
@@ -61,6 +65,7 @@ export default function ChatPage() {
     <div className="flex h-screen overflow-hidden">
       <div>
         <SideMenuWhole
+          key={chatCountKey}
           onNewChat={handleNewChat}
           onChatSelect={handleChatSelect}
           currentChatId={initialChatId}
@@ -72,8 +77,10 @@ export default function ChatPage() {
           key={chatKey}
           initialChatId={initialChatId}
           pendingPrompt={pendingPrompt}
-          onPendingPromptConsumed={() => setPendingPrompt("")}
+          pendingChatTitle={pendingChatTitle}
+          onPendingPromptConsumed={() => { setPendingPrompt(""); setPendingChatTitle(null); }}
           onTripGenerated={setActiveTrip}
+          onChatCreated={() => setChatCountKey(k => k + 1)}
         />
       </div>
 

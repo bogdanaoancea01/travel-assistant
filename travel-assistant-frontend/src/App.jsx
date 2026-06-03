@@ -1,5 +1,6 @@
 import Home from "./pages/Home";
 import ChatPage from "./pages/ChatPage";
+import ExplorePage from "./pages/ExplorePage";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import EditProfile from "./pages/EditProfile";
@@ -22,6 +23,9 @@ const App = () => {
         } />
         <Route path="editprofile" element={
           <ProtectedRoute><EditProfile /></ProtectedRoute>
+        } />
+        <Route path="explore" element={
+          <ProtectedRoute><ExplorePage /></ProtectedRoute>
         } />
 
         <Route path="*" element={<NotFound />} />

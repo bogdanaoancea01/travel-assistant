@@ -27,6 +27,20 @@ namespace travel_assistant_backend.Models
 
         [MaxLength(100)]
         public string? MealPreference { get; set; }
+        public int? TripDurationMin { get; set; }
+        public int? TripDurationMax { get; set; }
+
+        [MaxLength(20)]
+        public string? TripPace { get; set; } 
+
+        [MaxLength(200)]
+        public string? TravelStyles { get; set; }
+
+        [MaxLength(20)]
+        public string? BudgetRange { get; set; }
+
+        [MaxLength(30)]
+        public string? TravelCompanions { get; set; }
 
     }
 }

@@ -12,7 +12,7 @@ const DEFAULT_MESSAGES = [
   },
 ];
 
-export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, onTripGenerated, initialChatId }) {
+export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendingPromptConsumed, onTripGenerated, onChatCreated, initialChatId }) {
   const [inputQuestion, setInputQuestion] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(!!initialChatId);
@@ -132,9 +132,10 @@ export default function ChatComponent({ pendingPrompt, onPendingPromptConsumed, 
 
     let chatId = currentChatId;
     if (!chatId) {
-      const chat = await createChat("New Chat");
+      const chat = await createChat(pendingChatTitle ?? "New Chat");
       chatId = chat?.id;
       setCurrentChatId(chatId);
+      onChatCreated?.();
     }
 
     await saveUserMessage(chatId, textToSend);

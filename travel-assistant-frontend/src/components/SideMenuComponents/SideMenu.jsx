@@ -29,7 +29,7 @@ export default function SideMenu({ onNewChat, onChatSelect, currentChatId }) {
 
   const menuItems = [
     { icon: MessageSquare, label: "Chats", badge: chatCount > 0 ? String(chatCount) : null },
-    { icon: Compass, label: "Explore", badge: null },
+    { icon: Compass, label: "Explore", badge: null, path: "/explore" },
     { icon: Lightbulb, label: "Inspiration", badge: null },
   ];
 
