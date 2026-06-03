@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 import { usePreferences } from "../../utilities/usePreferences";
 
@@ -88,7 +89,7 @@ function inputCls() {
 }
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { preferences, loading, savePreferences, deleteField } = usePreferences();
   const [activeSection, setActiveSection] = useState(null);
   const [formValues, setFormValues] = useState({});
@@ -100,6 +101,7 @@ export default function SettingsPage() {
     current: "", next: "", confirm: "",
   });
 
+  const navigate = useNavigate();
   const username = user?.email?.split("@")[0] ?? "";
   const initials = user
     ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase()
@@ -107,6 +109,42 @@ export default function SettingsPage() {
 
   const openPref = (id, initial) => { setFormValues(initial); setActiveSection(id); };
   const closePref = () => setActiveSection(null);
+
+  const handleChangePassword = async () => {
+    if (!passwordData.next || !passwordData.current) return;
+    if (passwordData.next !== passwordData.confirm) {
+      alert("New passwords do not match.");
+      return;
+    }
+    const token = sessionStorage.getItem("token");
+    const res = await fetch("https://localhost:7063/api/authentication/change-password", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ currentPassword: passwordData.current, newPassword: passwordData.next }),
+    });
+    if (res.ok) {
+      setPasswordData({ current: "", next: "", confirm: "" });
+      setActiveSection(null);
+    } else {
+      const err = await res.text();
+      alert(err || "Failed to update password.");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("Are you sure? This will permanently delete your account and all your data.")) return;
+    const token = sessionStorage.getItem("token");
+    const res = await fetch("https://localhost:7063/api/authentication/delete-account", {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      logout();
+      navigate("/home");
+    } else {
+      alert("Failed to delete account. Please try again.");
+    }
+  };
 
   const handlePrefSave = async () => {
     await savePreferences({ ...preferences, ...formValues });
@@ -209,6 +247,12 @@ export default function SettingsPage() {
                 Change photo
               </button>
             </div>
+            <button
+              onClick={() => { logout(); navigate("/home"); }}
+              className="shrink-0 text-xs font-medium text-gray-500 bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 hover:bg-gray-100 transition-colors cursor-pointer"
+            >
+              Log out
+            </button>
           </div>
 
           {/* First name */}
@@ -291,7 +335,7 @@ export default function SettingsPage() {
           {/* Password */}
           {activeSection === "password" ? (
             <InlineForm
-              onSave={() => setActiveSection(null)}
+              onSave={handleChangePassword}
               onCancel={() => setActiveSection(null)}
             >
               <label className="text-xs font-medium text-gray-500">Current password</label>
@@ -365,7 +409,7 @@ export default function SettingsPage() {
               <p className="text-sm font-medium text-red-500">Delete my account</p>
               <p className="text-xs text-gray-400 mt-0.5">Permanently removes all your data</p>
             </div>
-            <button className="shrink-0 text-xs font-medium text-red-500 bg-red-50 border border-red-100 rounded-full px-3 py-1.5 hover:bg-red-100 transition-colors cursor-pointer">
+            <button onClick={handleDeleteAccount} className="shrink-0 text-xs font-medium text-red-500 bg-red-50 border border-red-100 rounded-full px-3 py-1.5 hover:bg-red-100 transition-colors cursor-pointer">
               Delete
             </button>
           </div>

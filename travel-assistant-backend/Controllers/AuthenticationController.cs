@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using NuGet.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using travel_assistant_backend.DTOs.Authentication;
+using travel_assistant_backend.DTOs.UserPreference;
 using travel_assistant_backend.Models;
 
 namespace travel_assistant_backend.Controllers
@@ -24,6 +26,9 @@ namespace travel_assistant_backend.Controllers
             _passwordHasher = passwordHasher;
             _configuration = configuration;
         }
+
+        private int GetUserId() =>
+            int.Parse(User.FindFirstValue("userId")!);
 
         [HttpPost("signin")]
         public IActionResult SignIn([FromBody] SignInDTO signInDTO)
@@ -65,6 +70,41 @@ namespace travel_assistant_backend.Controllers
 
             var token = GenerateToken(user);
             return Ok(new { message = "User registered successfully", token });
+        }
+
+        // PUT api/authentication/change-password
+        [HttpPut("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO dto)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.CurrentPassword) || string.IsNullOrWhiteSpace(dto.NewPassword))
+                return BadRequest("Current and new password are required.");
+
+            var user = await _context.Users.FindAsync(GetUserId());
+            if (user == null) return NotFound("User not found.");
+
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.CurrentPassword);
+            if (result == PasswordVerificationResult.Failed)
+                return Unauthorized("Current password is incorrect.");
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.NewPassword);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Password updated successfully." });
+        }
+
+        // DELETE api/authentication/delete-account
+        [HttpDelete("delete-account")]
+        [Authorize]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var user = await _context.Users.FindAsync(GetUserId());
+            if (user == null) return NotFound("User not found.");
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         private string GenerateToken(User user)
