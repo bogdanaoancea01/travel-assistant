@@ -35,6 +35,11 @@ export default function HeaderSection({ onSignInClick, onMenuClick }) {
             <button
               key={item}
               className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-full transition-colors cursor-pointer"
+              onClick={() => {
+                if (item === "Explore") navigate("/explore");
+                // else if (item === "Destinations") navigate("/destinations");
+                // else if (item === "Inspiration") navigate("/inspiration");
+              }}
             >
               {item}
             </button>

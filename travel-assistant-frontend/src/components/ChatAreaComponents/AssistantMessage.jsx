@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Cloud, Clock, MapPin, AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
 
-const UNSPLASH_ACCESS_KEY = "";
+const UNSPLASH_ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 
 function PhotoCarousel({ activityName, city }) {
   const [photos, setPhotos] = useState([]);

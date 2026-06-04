@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
 import ConversationArea from "../ChatAreaComponents/ConverstaionArea";
 import ChatInput from "../ChatAreaComponents/ChatInput";
 import ChatHeader from "../ChatAreaComponents/ChatHeader";
@@ -20,7 +19,7 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
   const [messages, setMessages] = useState(DEFAULT_MESSAGES);
 
   const fromCardClick = useRef(false);
-  const location = useLocation();
+  const pendingTitleRef = useRef(null);
   const { createChat, saveUserMessage, saveAssistantResponse, loadChat } = useChatHistory();
 
   useEffect(() => {
@@ -79,30 +78,26 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
   useEffect(() => {
     if (!pendingPrompt) return;
     fromCardClick.current = true;
+    pendingTitleRef.current = pendingChatTitle; 
     setInputQuestion(pendingPrompt);
     onPendingPromptConsumed();
   }, [pendingPrompt]);
 
   useEffect(() => {
-    if (!inputQuestion || isTyping || !fromCardClick.current) return;
+  if (!inputQuestion || isTyping || isLoadingHistory || !fromCardClick.current) return;
     fromCardClick.current = false;
     handleSendMessage(inputQuestion);
-  }, [inputQuestion]);
-
-  useEffect(() => {
-    const prompt = location.state?.prompt;
-    if (!prompt) return;
-    fromCardClick.current = true;
-    setInputQuestion(prompt);
-    window.history.replaceState({}, "");
-  }, []);
+  }, [inputQuestion, isLoadingHistory]);
 
   const handleOnInputChange = (event) => setInputQuestion(event.target.value);
 
   const callBackendChat = async (chatMessages) => {
     const response = await fetch("https://localhost:7063/generatetrip", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
       body: JSON.stringify({
         messages: chatMessages.map((m) => ({
           role: m.role || "user",
@@ -132,7 +127,8 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
 
     let chatId = currentChatId;
     if (!chatId) {
-      const chat = await createChat(pendingChatTitle ?? "New Chat");
+      const chat = await createChat(pendingTitleRef.current ?? "New Chat");
+      pendingTitleRef.current = null;
       chatId = chat?.id;
       setCurrentChatId(chatId);
       onChatCreated?.();

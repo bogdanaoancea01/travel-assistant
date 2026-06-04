@@ -3,6 +3,7 @@ using NJsonSchema.Generation;
 using OpenAI.Chat;
 using System.Text.Json;
 using travel_assistant_backend.DTOs.Chat;
+using travel_assistant_backend.DTOs.UserPreference;
 using travel_assistant_backend.Services.Geocoding;
 using travel_assistant_backend.Services.Weather;
 
@@ -67,7 +68,41 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
             _geocodingService = geocodingService;
         }
 
-        public async Task<GenerateTripResult> GenerateTripAsync(IReadOnlyList<ChatMessage> messages, CancellationToken cancellationToken = default)
+        private static string BuildPersonalizationBlock(UserPreferencesDTO? p)
+        {
+            if (p == null) return string.Empty;
+
+            var prefLines = new[]
+            {
+                string.IsNullOrWhiteSpace(p.HomeCity)           ? null : $"- Home city / trip origin: {p.HomeCity}",
+                string.IsNullOrWhiteSpace(p.PreferredCurrency)  ? null : $"- Preferred currency: {p.PreferredCurrency}",
+                string.IsNullOrWhiteSpace(p.PreferredAirportName) ? null : $"- Preferred departure airport: {p.PreferredAirportName}",
+                string.IsNullOrWhiteSpace(p.AccommodationStyle) ? null : $"- Accommodation style: {p.AccommodationStyle}",
+                string.IsNullOrWhiteSpace(p.MealPreference)     ? null : $"- Meal preference: {p.MealPreference}",
+                p.TripDurationMin.HasValue && p.TripDurationMax.HasValue
+                                                                 ? $"- Preferred trip duration: {p.TripDurationMin}–{p.TripDurationMax} days" : null,
+                string.IsNullOrWhiteSpace(p.TripPace)           ? null : $"- Trip pace: {p.TripPace}",
+                string.IsNullOrWhiteSpace(p.TravelStyles)       ? null : $"- Travel interests: {p.TravelStyles}",
+                string.IsNullOrWhiteSpace(p.BudgetRange)        ? null : $"- Budget range: {p.BudgetRange}",
+                string.IsNullOrWhiteSpace(p.TravelCompanions)   ? null : $"- Travelling with: {p.TravelCompanions}",
+                string.IsNullOrWhiteSpace(p.Bio)                ? null : $"- Traveller bio: {p.Bio}",
+            }
+            .Where(l => l != null)
+            .ToList();
+
+            if (!prefLines.Any()) return string.Empty;
+
+            return $"""
+                USER CONTEXT (apply silently — never mention these to the user directly):
+                {string.Join("\n", prefLines)}
+
+                """;
+        }
+
+        public async Task<GenerateTripResult> GenerateTripAsync(
+            IReadOnlyList<ChatMessage> messages,
+            UserPreferencesDTO? preferences = null,
+            CancellationToken cancellationToken = default)
         {
             bool requiresAction = true;
             string jsonResponse = "";
@@ -145,7 +180,7 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
 
             var messageHistory = new List<ChatMessage>
             {
-                new SystemChatMessage(TripSystemPrompt)
+                new SystemChatMessage(BuildPersonalizationBlock(preferences) + TripSystemPrompt)
             };
             messageHistory.AddRange(messages);
 

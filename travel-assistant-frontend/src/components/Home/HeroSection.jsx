@@ -47,8 +47,8 @@ export default function HeroSection({ onAuthRequired }) {
     sessionStorage.removeItem("activeTrip");
 
     if (user) {
-      const chat = await createChat("New Chat");
-      navigate("/chat", { state: { prompt, initialChatId: chat?.id } });
+      const chat = await createChat(city);
+      navigate("/chat", { state: { prompt, initialChatId: chat?.id, chatTitle: city } });
     } else {
       onAuthRequired?.(prompt);
     }
@@ -71,16 +71,14 @@ export default function HeroSection({ onAuthRequired }) {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button
-              size="lg"
               className="px-8 py-2.5 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer"
               onClick={() => handleStartPlanning()}
             >
               Start planning
             </button>
             <button
-              size="lg"
-              variant="outline"
               className="rounded-full px-6 py-2 font-semibold cursor-pointer hover:bg-gray-100"
+              onClick={() => navigate("/explore")}
             >
               Explore destinations
             </button>
@@ -94,9 +92,7 @@ export default function HeroSection({ onAuthRequired }) {
                 type="text"
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSearch();
-                }}
+                onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
                 placeholder="Where do you want to go?"
                 className="flex-1 outline-none px-2 py-2 text-base"
               />

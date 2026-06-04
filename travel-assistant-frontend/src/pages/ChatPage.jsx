@@ -13,7 +13,7 @@ export default function ChatPage() {
   const [chatCountKey, setChatCountKey] = useState(0);
   const [pendingChatTitle, setPendingChatTitle] = useState(location.state?.chatTitle ?? null);
   const [chatKey, setChatKey] = useState(0);
-  const [pendingPrompt, setPendingPrompt] = useState("");
+  const [pendingPrompt, setPendingPrompt] = useState(location.state?.prompt ?? "");
   const [initialChatId, setInitialChatId] = useState(() => {
     if (location.state?.initialChatId) return location.state.initialChatId;
     const stored = sessionStorage.getItem("currentChatId");
