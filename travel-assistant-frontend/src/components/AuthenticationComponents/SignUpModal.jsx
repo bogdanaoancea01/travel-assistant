@@ -113,7 +113,7 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick, onSignUpSu
             <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
-            <span className="text-xl font-semibold">TravelAI</span>
+            <span className="text-xl font-semibold">Meridian</span>
           </div>
 
           <h2 className="mb-2 text-3xl font-semibold">Welcome to TravelAI</h2>
@@ -188,9 +188,9 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick, onSignUpSu
               className="absolute right-3 top-9.5 flex items-center"
             >
               {showPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-              ) : (
                 <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              ) : (
+                <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
               )}
             </button>
           </div>
@@ -214,9 +214,9 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick, onSignUpSu
               className="absolute right-3 top-9.5 flex items-center"
             >
               {showConfirmPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-              ) : (
                 <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              ) : (
+                <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
               )}
             </button>
           </div>
