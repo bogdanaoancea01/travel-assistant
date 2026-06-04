@@ -3,7 +3,7 @@ import MenuOptions from "../SideMenuComponents/MenuOptions";
 import MenuOptionsCompact from "../SideMenuComponents/MenuOptionsCompact";
 import UserProfile from "../SideMenuComponents/UserProfile";
 import FooterLinks from "../SideMenuComponents/FooterLinks";
-import { MessageSquare, MapPin, Compass, Heart, Bell, Lightbulb, ChevronLeft, ChevronRight } from "lucide-react";
+import { MessageSquare, MapPin, Compass, Heart, Bell, Lightbulb, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import Logo from "../Logo";
 import { useChatHistory } from "../../utilities/useChatHistory";
@@ -31,6 +31,7 @@ export default function SideMenu({ onNewChat, onChatSelect, currentChatId }) {
     { icon: MessageSquare, label: "Chats", badge: chatCount > 0 ? String(chatCount) : null },
     { icon: Compass, label: "Explore", badge: null, path: "/explore" },
     { icon: Lightbulb, label: "Inspiration", badge: null },
+    { icon: Sparkles, label: "Quiz", badge: null, path: "/quiz" },
   ];
 
   return (
@@ -57,6 +58,7 @@ export default function SideMenu({ onNewChat, onChatSelect, currentChatId }) {
           menuItems={menuItems} 
           onNewChat={onNewChat} 
           onChatCountChange={setChatCount}
+          onExpandChats={() => { setIsCompact(false); setShowChatList(true); }}
         />
       ) : (
         <MenuOptions
@@ -65,6 +67,7 @@ export default function SideMenu({ onNewChat, onChatSelect, currentChatId }) {
           currentChatId={currentChatId}
           showChatList={showChatList}
           onChatsClick={() => setShowChatList((p) => !p)}
+          onExpandChats={() => { setIsCompact(false); setShowChatList(true); }}
           onChatCountChange={setChatCount}
           onChatSelect={onChatSelect} 
         />

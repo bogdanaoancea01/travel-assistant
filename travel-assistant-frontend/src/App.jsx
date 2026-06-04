@@ -5,6 +5,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
+import QuizPage from "./pages/QuizPage";
 import ProtectedRoute from "./utilities/ProtectedRoute";
 import { Routes, Route } from "react-router";
 import { Toaster } from "react-hot-toast";
@@ -26,6 +27,9 @@ const App = () => {
         } />
         <Route path="explore" element={
           <ProtectedRoute><ExplorePage /></ProtectedRoute>
+        } />
+        <Route path="quiz" element={
+          <ProtectedRoute><QuizPage /></ProtectedRoute>
         } />
 
         <Route path="*" element={<NotFound />} />

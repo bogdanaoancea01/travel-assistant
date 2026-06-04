@@ -10,6 +10,7 @@ using travel_assistant_backend.Services.Geocoding;
 using travel_assistant_backend.Services.Interfaces.Chat;
 using travel_assistant_backend.Services.PopularDestinations;
 using travel_assistant_backend.Services.Preferences;
+using travel_assistant_backend.Services.Quiz;
 using travel_assistant_backend.Services.Weather;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -98,6 +99,7 @@ builder.Services.AddHttpClient<IGeocodingService, GeocodingService>(client =>
 });
 builder.Services.AddScoped<IPreferencesService, PreferencesService>();
 builder.Services.AddScoped<IExploreService, ExploreService>();
+builder.Services.AddScoped<IQuizService, QuizService>();
 
 var app = builder.Build();
 

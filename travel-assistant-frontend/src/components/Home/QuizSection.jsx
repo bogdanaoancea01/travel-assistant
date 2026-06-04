@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 export default function QuizSection() {
+  const navigate = useNavigate();
+
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -7,8 +11,8 @@ export default function QuizSection() {
           <div className="relative">
             <div className="rounded-3xl overflow-hidden shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=100"
-                alt="Luxury outdoor pools surrounded by nature"
+                src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800&q=80"
+                alt="Santorini Greece aerial view at golden hour"
                 className="w-full h-auto object-cover"
               />
             </div>
@@ -32,6 +36,9 @@ export default function QuizSection() {
               <button
                 size="lg"
                 className="bg-black text-white hover:bg-gray-800 rounded-full px-8 py-4 text-base cursor-pointer"
+                onClick={() => {
+                  navigate("/quiz");
+                }}
               >
                 Take our quiz
               </button>

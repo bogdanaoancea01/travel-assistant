@@ -37,7 +37,7 @@ export default function HeaderSection({ onSignInClick, onMenuClick }) {
               className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-full transition-colors cursor-pointer"
               onClick={() => {
                 if (item === "Explore") navigate("/explore");
-                //if (item === "Quiz") navigate("/quiz");
+                if (item === "Quiz") navigate("/quiz");
                 // else if (item === "Inspiration") navigate("/inspiration");
               }}
             >

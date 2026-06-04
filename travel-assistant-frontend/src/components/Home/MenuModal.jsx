@@ -1,5 +1,5 @@
 import {
-  MessageSquare, Compass, Heart, Bell, Lightbulb, X, User, LogOut,
+  MessageSquare, Compass, Heart, Bell, Lightbulb, X, User, LogOut, Sparkles
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
@@ -14,7 +14,8 @@ export default function MenuModal({ isOpen, onClose, onAuthRequired }) {
   const menuItems = [
     { icon: MessageSquare, label: "Start chatting", path: "/chat" },
     { icon: Compass, label: "Explore", path: "/explore" },
-    { icon: Lightbulb, label: "Get inspired", path: "/inspiration" },
+    { icon: Lightbulb, label: "Inspiration", path: "/" },
+    { icon: Sparkles, label: "Quiz", path: "/quiz" },
   ];
 
   const handleNavigate = (path) => {

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useChatHistory } from "../../utilities/useChatHistory";
 
-export default function MenuOptionsCompact({ menuItems, onNewChat, onChatCountChange }) {
+export default function MenuOptionsCompact({ menuItems, onNewChat, onChatCountChange, onExpandChats }) {
   const navigate = useNavigate();
   const { createChat } = useChatHistory();
 
@@ -14,11 +14,20 @@ export default function MenuOptionsCompact({ menuItems, onNewChat, onChatCountCh
     onChatCountChange?.((c) => (c ?? 0) + 1);
   };
 
+  const handleItemClick = (item) => {
+    if (item.label === "Chats") {
+      onExpandChats?.();
+    } else if (item.path) {
+      navigate(item.path);
+    }
+  };
+
   return (
     <nav className="flex-1 flex flex-col items-center px-2 py-4 gap-1">
       {menuItems.map((item) => (
         <button
           key={item.label}
+          onClick={() => handleItemClick(item)}
           className="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group"
           title={item.label}
         >

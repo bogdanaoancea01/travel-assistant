@@ -42,5 +42,11 @@ namespace travel_assistant_backend.Models
         [MaxLength(30)]
         public string? TravelCompanions { get; set; }
 
+        [MaxLength(100)]
+        public string? ArchetypeName { get; set; }
+
+        [MaxLength(500)]
+        public string? ArchetypeDescription { get; set; }
+
     }
 }

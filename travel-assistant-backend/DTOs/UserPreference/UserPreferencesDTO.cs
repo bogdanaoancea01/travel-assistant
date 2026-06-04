@@ -1,4 +1,6 @@
-﻿namespace travel_assistant_backend.DTOs.UserPreference
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace travel_assistant_backend.DTOs.UserPreference
 {
     public class UserPreferencesDTO
     {
@@ -14,5 +16,7 @@
         public string? TravelStyles { get; set; }
         public string? BudgetRange { get; set; }
         public string? TravelCompanions { get; set; }
+        public string? ArchetypeName { get; set; }
+        public string? ArchetypeDescription { get; set; }
     }
 }
