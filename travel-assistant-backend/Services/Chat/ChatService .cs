@@ -25,6 +25,7 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
 
             1. VALIDATION
                - Required: destination + number of days. If either is missing, set isPlanComplete: false, tripDetails: null, and ask professionally. Pace/budget/interests are optional; default to "Balanced/Moderate" if absent.
+               - Start date is ALWAYS optional. If not provided, assume the trip starts today and use GetDestinationWeather. Never ask the user for a date.
 
             2. GEOGRAPHY
                - Country trips: design a logical circuit to minimize travel time.
