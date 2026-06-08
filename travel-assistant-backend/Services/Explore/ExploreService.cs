@@ -21,7 +21,6 @@ namespace travel_assistant_backend.Services.Explore
             UserPreferencesDTO preferences,
             CancellationToken cancellationToken = default)
         {
-            // Build schema from the DTO the same way ChatService does
             var schemaSettings = new SystemTextJsonSchemaGeneratorSettings
             {
                 SerializerOptions = new JsonSerializerOptions
@@ -75,6 +74,10 @@ namespace travel_assistant_backend.Services.Explore
                 string.IsNullOrWhiteSpace(p.TravelStyles)       ? null : $"- Travel styles: {p.TravelStyles}",
                 string.IsNullOrWhiteSpace(p.BudgetRange)        ? null : $"- Budget range: {p.BudgetRange}",
                 string.IsNullOrWhiteSpace(p.TravelCompanions)   ? null : $"- Travelling with: {p.TravelCompanions}",
+                string.IsNullOrWhiteSpace(p.TripMotivation)     ? null : $"- Trip motivation: {p.TripMotivation}",
+                string.IsNullOrWhiteSpace(p.ClimatePreference)  ? null : $"- Preferred climate: {p.ClimatePreference}",
+                string.IsNullOrWhiteSpace(p.Transport)          ? null : $"- Getting around: {p.Transport}",
+                string.IsNullOrWhiteSpace(p.DietaryNeeds)       ? null : $"- Dietary needs: {p.DietaryNeeds}",
                 string.IsNullOrWhiteSpace(p.Bio)                ? null : $"- Traveller bio: {p.Bio}",
             }
             .Where(l => l != null);
@@ -89,7 +92,8 @@ namespace travel_assistant_backend.Services.Explore
  
                 RULES:
                 - Each reason must reference at least one of the user's preferences — make it feel personal.
-                - Vary the results: mix short-haul and mid-haul, different climates, different styles.
+                - If the user stated a climate or dietary preference, honour it; otherwise vary climates freely.
+                - Vary the results: mix short-haul and mid-haul, different styles.
                 - Avoid Paris, Rome, and London.
                 - Category must be one of: Mediterranean, City break, Nature, Island, Desert, Mountain, Cultural, Coastal, Warm escape.
                 - Provide exactly 3 tags per destination.

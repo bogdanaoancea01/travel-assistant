@@ -24,13 +24,14 @@ const HOW_IT_WORKS = [
   { icon: "🌤", text: "Weather is fetched automatically — either a live forecast or historical averages depending on your travel dates." },
 ];
 
-const FALLBACK_EMOJIS = ["🗺️", "✈️", "🌍", "🏛️", "🌅", "🗼", "🏖️", "🌄", "🧳", "🌏"];
+const FALLBACK_EMOJIS = ["🗺️", "✈️", "🌍", "🏛️", "🌅", "🗼", "🏖️", "🌄", "🧳", "🌏", "🏔️", "🌺", "🎭", "🍷", "🏝️", "🌊", "🎪", "🏯", "🌋", "🎠"];
 
-const getEmoji = (dest) => {
-  if (dest.emoji) return dest.emoji;
-  // deterministic based on city name so it doesn't change on re-render
-  const index = dest.city.charCodeAt(0) % FALLBACK_EMOJIS.length;
-  return FALLBACK_EMOJIS[index];
+const getEmoji = (destinations) => {
+  const shuffled = [...FALLBACK_EMOJIS].sort(() => Math.random() - 0.5);
+  return destinations.map((dest, i) => ({
+    ...dest,
+    resolvedEmoji: dest.emoji ?? shuffled[i % shuffled.length],
+  }));
 };
 
 function DestinationSkeleton() {
@@ -54,7 +55,7 @@ export default function RecommendationsPanel({ activeTrip, onPrompt }) {
         const res = await fetch("https://localhost:7063/api/PopularDestinations/generatedestinations");
         if (!res.ok) throw new Error("Failed to fetch");
         const data = await res.json();
-        setDestinations(data);
+        setDestinations(getEmoji(data));
       } catch (err) {
         console.error("Failed to load destinations:", err);
         setError(true);
@@ -67,7 +68,7 @@ export default function RecommendationsPanel({ activeTrip, onPrompt }) {
   }, []);
 
   // AI destinations + always-present Surprise Me as 6th card
-  const allCards = [...destinations, SURPRISE_CARD];
+  const allCards = getEmoji([...destinations, SURPRISE_CARD]);
 
   if (activeTrip) {
   return (
@@ -108,8 +109,8 @@ export default function RecommendationsPanel({ activeTrip, onPrompt }) {
                 onClick={() => onPrompt(dest.prompt)}
                 className="flex flex-col gap-1 rounded-lg border border-gray-100 bg-white px-3 py-2.5 text-left transition-colors hover:bg-gray-50 active:scale-95 cursor-pointer"
               >
-                {/* Change this line: */}
-                <span className="text-base" aria-hidden="true">{getEmoji(dest)}</span>
+                {/* Destination card */}
+                <span className="text-base" aria-hidden="true">{dest.resolvedEmoji}</span>
                 <span className="text-xs font-medium text-gray-900">{dest.city}</span>
                 <span className="text-[11px] text-gray-400">
                   {dest.country}{dest.durationDays ? ` · ${dest.durationDays} days` : ""}

@@ -355,6 +355,111 @@ export default function SettingsPage() {
         </div>
       ),
     },
+    {
+      id: "tripmotivation",
+      label: "Trip motivation",
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
+      getValue: (p) => p?.tripMotivation ?? null,
+      getInitial: (p) => ({ tripMotivation: p?.tripMotivation ?? "" }),
+      deleteKeys: ["tripmotivation"],
+      renderInput: () => (
+        <div className="flex gap-2 flex-wrap max-w-xs">
+          {["Recharge & relax", "Adventure & adrenaline", "Discover & learn", "Connect & celebrate"].map((opt) => (
+            <button key={opt} type="button"
+              onClick={() => setFormValues((p) => ({ ...p, tripMotivation: opt }))}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                formValues.tripMotivation === opt
+                  ? "bg-gray-900 text-white border-gray-900"
+                  : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+              }`}>
+              {opt}
+            </button>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "climatepreference",
+      label: "Climate",
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>,
+      getValue: (p) => p?.climatePreference ?? null,
+      getInitial: (p) => ({ climatePreference: p?.climatePreference ?? "" }),
+      deleteKeys: ["climatepreference"],
+      renderInput: () => (
+        <div className="flex gap-2 flex-wrap max-w-xs">
+          {["Warm & sunny", "Mild & temperate", "Cool & crisp", "Cold & snowy", "No preference"].map((opt) => (
+            <button key={opt} type="button"
+              onClick={() => setFormValues((p) => ({ ...p, climatePreference: opt }))}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                formValues.climatePreference === opt
+                  ? "bg-gray-900 text-white border-gray-900"
+                  : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+              }`}>
+              {opt}
+            </button>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "transport",
+      label: "Getting around",
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="4" y="3" width="16" height="13" rx="2"/><line x1="4" y1="11" x2="20" y2="11"/><line x1="8" y1="19" x2="8" y2="21"/><line x1="16" y1="19" x2="16" y2="21"/><line x1="7" y1="16" x2="7" y2="16.01"/><line x1="17" y1="16" x2="17" y2="16.01"/></svg>,
+      getValue: (p) => p?.transport ?? null,
+      getInitial: (p) => ({ transport: p?.transport ?? "" }),
+      deleteKeys: ["transport"],
+      renderInput: () => (
+        <div className="flex gap-2 flex-wrap max-w-xs">
+          {["Rental car / road trip", "Public transport", "Walkable & compact", "No preference"].map((opt) => (
+            <button key={opt} type="button"
+              onClick={() => setFormValues((p) => ({ ...p, transport: opt }))}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                formValues.transport === opt
+                  ? "bg-gray-900 text-white border-gray-900"
+                  : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+              }`}>
+              {opt}
+            </button>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "dietaryneeds",
+      label: "Dietary needs",
+      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M11 2v20"/><path d="M5 2v7a3 3 0 0 0 6 0V2"/><path d="M19 2v20"/><path d="M19 12c2 0 3-2 3-5s-1-5-3-5"/></svg>,
+      getValue: (p) => p?.dietaryNeeds ?? null,
+      getInitial: (p) => ({ dietaryNeeds: p?.dietaryNeeds ?? "" }),
+      deleteKeys: ["dietaryneeds"],
+      renderInput: () => {
+        const ALL = ["No restrictions", "Vegetarian", "Vegan", "Pescatarian", "Halal", "Kosher", "Gluten-free", "Nut allergy"];
+        const selected = (formValues.dietaryNeeds ?? "").split(",").map(s => s.trim()).filter(Boolean);
+        const toggle = (opt) => {
+          let next;
+          if (opt === "No restrictions") {
+            next = selected.includes(opt) ? [] : ["No restrictions"];
+          } else {
+            const base = selected.filter(s => s !== "No restrictions");
+            next = base.includes(opt) ? base.filter(s => s !== opt) : [...base, opt];
+          }
+          setFormValues((p) => ({ ...p, dietaryNeeds: next.join(", ") || null }));
+        };
+        return (
+          <div className="flex flex-wrap gap-2 max-w-xs">
+            {ALL.map((opt) => (
+              <button key={opt} type="button" onClick={() => toggle(opt)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                  selected.includes(opt)
+                    ? "bg-gray-900 text-white border-gray-900"
+                    : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+                }`}>
+                {opt}
+              </button>
+            ))}
+          </div>
+        );
+      },
+    },
 
   ];
 

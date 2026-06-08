@@ -42,6 +42,18 @@ namespace travel_assistant_backend.Models
         [MaxLength(30)]
         public string? TravelCompanions { get; set; }
 
+        [MaxLength(150)]
+        public string? DietaryNeeds { get; set; }
+
+        [MaxLength(50)]
+        public string? ClimatePreference { get; set; }
+
+        [MaxLength(60)]
+        public string? TripMotivation { get; set; }
+
+        [MaxLength(60)]
+        public string? Transport { get; set; }
+
         [MaxLength(100)]
         public string? ArchetypeName { get; set; }
 

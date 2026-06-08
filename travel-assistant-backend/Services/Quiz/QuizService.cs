@@ -46,19 +46,45 @@ namespace travel_assistant_backend.Services.Quiz
             var messages = new List<ChatMessage>
             {
                 new SystemChatMessage("""
-                    You are a travel personality analyst.
-                    Based on the user's quiz answers, infer their traveler archetype and full travel preferences.
+                    You are a travel personality analyst for an AI travel assistant.
+                    From the user's quiz answers you must (1) build a complete, structured travel
+                    preference profile and (2) name and describe their traveller archetype.
 
-                    RULES:
-                    - archetypeName: short evocative name e.g. 'The Luxury Explorer', 'The Solo Wanderer', 'The Budget Adventurer'
-                    - archetypeDescription: 2-3 sentences written directly to the user (use 'you'). Make it feel personal and insightful.
-                    - archetypeEmoji: single emoji that best represents this archetype
-                    - bio: 1-2 sentence travel bio written in first person, inferred from their answers
-                    - tripPace must be exactly one of: Relaxed, Balanced, Intensive
-                    - budgetRange must be exactly one of: Budget, Mid-range, Comfort, Luxury
-                    - travelCompanions must be exactly one of: Solo, Couple, Family, Friends
-                    - travelStyles: comma-separated subset of: Adventure, Cultural, Food & Drink, Nature, Nightlife, Wellness, Shopping
-                    - tripDurationMin and tripDurationMax: infer a realistic range in days based on the duration answer
+                    GROUNDING — THE MOST IMPORTANT RULE:
+                    Use ONLY what the answers actually state. Never invent facts about the user.
+                    - Map each answer to the closest allowed value below. Do not add preferences
+                      the answers do not support.
+                    - If an answer for a field is missing, return an empty string for that field
+                      (or 0 for the duration numbers). Do NOT guess.
+                    - dietaryNeeds is safety-critical: copy ONLY what the user selected. If they
+                      chose "No restrictions" or said nothing, return "No restrictions". Never
+                      invent allergies or restrictions.
+                    - homeCity: copy the user's stated home/departure city verbatim if present,
+                      otherwise return an empty string. Never invent a city.
+
+                    ALLOWED VALUES (normalise the user's wording to exactly one of these):
+                    - tripPace: Relaxed | Balanced | Intensive
+                    - budgetRange: Budget | Mid-range | Comfort | Luxury
+                    - travelCompanions: Solo | Couple | Family | Friends
+                    - climatePreference: Warm & sunny | Mild & temperate | Cool & crisp | Cold & snowy | No preference
+                    - tripMotivation: Recharge & relax | Adventure & adrenaline | Discover & learn | Connect & celebrate
+                    - transport: Rental car / road trip | Public transport | Walkable & compact | No preference
+                    - travelStyles: comma-separated subset of:
+                      Adventure, Cultural, Food & Drink, Nature, Nightlife, Wellness, Shopping, Beach, Art & Architecture
+                    - accommodationStyle: a short phrase grounded in their lodging answer
+                      (e.g. "Hostels & guesthouses", "Comfortable mid-range hotels",
+                      "Boutique & character stays", "Luxury resorts", "Apartments & local rentals").
+                    - mealPreference: a short phrase grounded in their food answer
+                      (e.g. "Street food & local spots", "Mix of casual and nice meals",
+                      "Fine dining & reservations", "Mostly self-catering").
+                    - tripDurationMin / tripDurationMax: integer day range parsed from the duration answer.
+
+                    FREE-TEXT FIELDS:
+                    - archetypeName: short, evocative title, e.g. "The Slow Wanderer",
+                      "The Culture Seeker", "The Budget Adventurer", "The Luxury Epicurean".
+                    - archetypeDescription: 2-3 sentences written directly to the user ("you").
+                      Personal and insightful; reflect their actual answers.
+                    - bio: 1-2 sentence first-person travel bio, grounded in their answers.
                     """),
                 new UserChatMessage($"Quiz answers:\n{answersText}")
             };
@@ -71,21 +97,28 @@ namespace travel_assistant_backend.Services.Quiz
                 PropertyNameCaseInsensitive = true
             }) ?? new QuizStructuredResult();
 
+            var inferred = structured.InferredPreferences;
+
             return new QuizResultDTO
             {
                 ArchetypeName = structured.ArchetypeName,
                 ArchetypeDescription = structured.ArchetypeDescription,
                 InferredPreferences = new UserPreferencesDTO
                 {
-                    Bio = structured.InferredPreferences.Bio,
-                    AccommodationStyle = structured.InferredPreferences.AccommodationStyle,
-                    MealPreference = structured.InferredPreferences.MealPreference,
-                    TripDurationMin = structured.InferredPreferences.TripDurationMin,
-                    TripDurationMax = structured.InferredPreferences.TripDurationMax,
-                    TripPace = structured.InferredPreferences.TripPace,
-                    TravelStyles = structured.InferredPreferences.TravelStyles,
-                    BudgetRange = structured.InferredPreferences.BudgetRange,
-                    TravelCompanions = structured.InferredPreferences.TravelCompanions,
+                    Bio = inferred.Bio,
+                    AccommodationStyle = inferred.AccommodationStyle,
+                    MealPreference = inferred.MealPreference,
+                    TripDurationMin = inferred.TripDurationMin,
+                    TripDurationMax = inferred.TripDurationMax,
+                    TripPace = inferred.TripPace,
+                    TravelStyles = inferred.TravelStyles,
+                    BudgetRange = inferred.BudgetRange,
+                    TravelCompanions = inferred.TravelCompanions,
+                    DietaryNeeds = inferred.DietaryNeeds,
+                    ClimatePreference = inferred.ClimatePreference,
+                    TripMotivation = inferred.TripMotivation,
+                    Transport = inferred.Transport,
+                    HomeCity = string.IsNullOrWhiteSpace(inferred.HomeCity) ? null : inferred.HomeCity,
                 }
             };
         }

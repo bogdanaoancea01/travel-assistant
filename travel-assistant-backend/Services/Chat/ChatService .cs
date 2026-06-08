@@ -86,6 +86,10 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                 string.IsNullOrWhiteSpace(p.TravelStyles)       ? null : $"- Travel interests: {p.TravelStyles}",
                 string.IsNullOrWhiteSpace(p.BudgetRange)        ? null : $"- Budget range: {p.BudgetRange}",
                 string.IsNullOrWhiteSpace(p.TravelCompanions)   ? null : $"- Travelling with: {p.TravelCompanions}",
+                string.IsNullOrWhiteSpace(p.TripMotivation)     ? null : $"- Trip motivation: {p.TripMotivation}",
+                string.IsNullOrWhiteSpace(p.ClimatePreference)  ? null : $"- Preferred climate: {p.ClimatePreference}",
+                string.IsNullOrWhiteSpace(p.Transport)          ? null : $"- Getting around: {p.Transport}",
+                string.IsNullOrWhiteSpace(p.DietaryNeeds)       ? null : $"- Dietary needs (always respect): {p.DietaryNeeds}",
                 string.IsNullOrWhiteSpace(p.Bio)                ? null : $"- Traveller bio: {p.Bio}",
             }
             .Where(l => l != null)

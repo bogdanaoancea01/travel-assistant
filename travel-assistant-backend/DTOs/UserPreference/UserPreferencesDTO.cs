@@ -16,6 +16,10 @@ namespace travel_assistant_backend.DTOs.UserPreference
         public string? TravelStyles { get; set; }
         public string? BudgetRange { get; set; }
         public string? TravelCompanions { get; set; }
+        public string? DietaryNeeds { get; set; }
+        public string? ClimatePreference { get; set; }
+        public string? TripMotivation { get; set; }
+        public string? Transport { get; set; }
         public string? ArchetypeName { get; set; }
         public string? ArchetypeDescription { get; set; }
     }

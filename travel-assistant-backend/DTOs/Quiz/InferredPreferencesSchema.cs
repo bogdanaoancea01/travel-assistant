@@ -11,5 +11,10 @@
         public string TravelStyles { get; set; } = string.Empty;
         public string BudgetRange { get; set; } = string.Empty;
         public string TravelCompanions { get; set; } = string.Empty;
+        public string DietaryNeeds { get; set; } = string.Empty;
+        public string ClimatePreference { get; set; } = string.Empty;
+        public string TripMotivation { get; set; } = string.Empty;
+        public string Transport { get; set; } = string.Empty;
+        public string HomeCity { get; set; } = string.Empty;
     }
 }
