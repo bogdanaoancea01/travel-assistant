@@ -3,7 +3,7 @@ import GlobeLogo from "../GlobeLogo";
 import { useAuth } from "../../AuthContext";
 import AssistantMessage from "./AssistantMessage";
 
-export default function ConversationArea({ messages, isTyping }) {
+export default function ConversationArea({ messages, isTyping, onRefine }) {
   const bottomRef = useRef(null);
   const { user } = useAuth();
   const initials = user
@@ -38,7 +38,12 @@ export default function ConversationArea({ messages, isTyping }) {
                 : "bg-gray-50 border border-gray-100 text-gray-800 rounded-bl-sm"
             }`}>
               {msg.role === "assistant" ? (
-                <AssistantMessage content={msg.content} aiReply={msg.aiReply} />
+                <AssistantMessage
+                  content={msg.content}
+                  aiReply={msg.aiReply}
+                  onRefine={onRefine}
+                  isLast={index === messages.length - 1}
+                />
               ) : (
                 typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content)
               )}

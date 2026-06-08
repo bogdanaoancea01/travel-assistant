@@ -181,7 +181,11 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
   return (
     <div className="h-full flex flex-col bg-white">
       <ChatHeader chatId={currentChatId} />
-      <ConversationArea messages={messages} isTyping={isTyping || isLoadingHistory} />
+      <ConversationArea
+        messages={messages}
+        isTyping={isTyping || isLoadingHistory}
+        onRefine={(text) => handleSendMessage(text)}
+      />
       <ChatInput
         inputQuestion={inputQuestion}
         onInputChange={handleOnInputChange}

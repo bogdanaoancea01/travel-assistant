@@ -44,7 +44,7 @@ function DestinationSkeleton() {
   );
 }
 
-export default function RecommendationsPanel({ activeTrip, onPrompt }) {
+export default function RecommendationsPanel({ activeTrip, onPrompt, onNewTrip }) {
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -77,6 +77,7 @@ export default function RecommendationsPanel({ activeTrip, onPrompt }) {
         key={activeTrip.destination}
         destination={activeTrip.destination}
         pins={activeTrip.pins}
+        onNewTrip={onNewTrip}
       />
     </div>
   );

@@ -33,7 +33,7 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
 
             3. TONE & TIPS
                - Sophisticated, accessible. No exclamation marks, no generic filler.
-               - local_tips must reflect genuine resident knowledge.
+               - localTip on each day must reflect genuine resident knowledge (opening-hour tricks, best viewpoints, less-crowded alternatives). One sentence maximum.
 
             4. SCHEMA
                - assistantMessage is a brief confirmation only when isPlanComplete: true.
@@ -46,20 +46,30 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                - If GeocodeActivity returns an error, omit the location rather than inventing coordinates.
                - Call GeocodeActivity before finalizing the itinerary — never hardcode or estimate coordinates.
                - Set weatherDependent: true for any activity that is significantly impacted by rain or high UV.
+               - tripTags: 2–4 short labels describing the trip character (e.g. "Culture & history", "Local food & drinks", "Gluten-free friendly", "Outdoor & nature"). Choose only tags that genuinely apply.
+               - packingList: 4–5 practical items based on the weather and activities (e.g. "Lightweight waterproof jacket", "Compact umbrella", "Sunscreen"). Derive from actual weather data, not generic advice.
 
             5. LIVE WEATHER (startDate within 7 days of today)
                - Call GetDestinationWeather first. Pass location and number of trip days.
-               - On success: translate UV, rain, humidity into concierge advice; include temp highs/lows. Pivot outdoor activities indoors if rain or UV > 6.
-               - On failure: give general seasonal guidance, clearly framed as such. Never invent data.
+               - On success:
+                   * Populate weatherHighC, weatherLowC, weatherRainChancePct, weatherUvIndex, weatherCondition directly from the tool response.
+                   * weatherDateRange: format as "D1–D2 Month" (e.g. "12–13 June") covering the trip dates.
+                   * weatherGuidance: one or two concierge sentences — practical scheduling advice (e.g. "Shift outdoor sights to mornings; prefer covered venues during peak UV."). Do NOT repeat the raw numbers already shown in the summary fields.
+                   * Pivot outdoor activities indoors if rain or UV > 6.
+               - On failure: give general seasonal guidance, clearly framed as such. Set all numeric weather fields to 0 and weatherCondition to "". Never invent data.
 
             6. HISTORICAL WEATHER (startDate more than 7 days from today)
                - Call GetHistoricalWeather first. Pass location, startDate, endDate (yyyy-MM-dd).
                - Vague dates: "in June" → yyyy-06-01 / yyyy-06-30. "This summer" → yyyy-06-01 / yyyy-08-31. Always use the next upcoming occurrence.
-               - On success: frame output as historical averages, not a forecast.
+               - On success: populate weather fields from historical averages; frame weatherGuidance as "Historical averages suggest…".
                - On failure: same fallback as Rule 5.
 
             7. SUMMARY
                - One elegant sentence. Experience and theme only — no logistics, no travel times.
+
+            8. REFINEMENT (follow-up turns)
+               - If the user asks to change an existing plan (cheaper, more relaxed, more outdoorsy, more food, swap a day, hidden gems), regenerate the FULL plan with the change applied.
+               - Keep parts the user did not ask to change broadly stable.
             """;
 
         public ChatService(ChatClient chatClient, IWeatherService weatherService, IGeocodingService geocodingService)
