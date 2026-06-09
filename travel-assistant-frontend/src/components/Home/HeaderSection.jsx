@@ -13,10 +13,10 @@ export default function HeaderSection({ onSignInClick, onMenuClick }) {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center">
 
         {/* Left — menu + logo */}
-        <div className="flex items-center gap-5">
+        <div className="flex-1 flex items-center gap-5">
           <button
             onClick={onMenuClick}
             className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
@@ -30,15 +30,14 @@ export default function HeaderSection({ onSignInClick, onMenuClick }) {
         </div>
 
         {/* Center — nav links (hidden on mobile) */}
-        <nav className="hidden md:flex items-center gap-1">
-          {["Explore", "Quiz", "Inspiration"].map((item) => (
+        <nav className="hidden md:flex items-center">
+          {["Explore", "Quiz"].map((item) => (
             <button
               key={item}
-              className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-full transition-colors cursor-pointer"
+              className="px-2 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-full transition-colors cursor-pointer"
               onClick={() => {
                 if (item === "Explore") navigate("/explore");
                 if (item === "Quiz") navigate("/quiz");
-                // else if (item === "Inspiration") navigate("/inspiration");
               }}
             >
               {item}
@@ -47,7 +46,7 @@ export default function HeaderSection({ onSignInClick, onMenuClick }) {
         </nav>
 
         {/* Right — auth */}
-        <div className="flex items-center gap-3">
+        <div className="flex-1 flex items-center justify-end gap-3">
           {user ? (
             <button
               onClick={() => navigate("/editprofile")}

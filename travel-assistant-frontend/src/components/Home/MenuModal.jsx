@@ -14,7 +14,6 @@ export default function MenuModal({ isOpen, onClose, onAuthRequired }) {
   const menuItems = [
     { icon: MessageSquare, label: "Start chatting", path: "/chat" },
     { icon: Compass, label: "Explore", path: "/explore" },
-    { icon: Lightbulb, label: "Inspiration", path: "/" },
     { icon: Sparkles, label: "Quiz", path: "/quiz" },
   ];
 
