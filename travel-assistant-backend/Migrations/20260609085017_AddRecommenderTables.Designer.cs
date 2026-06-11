@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using travel_assistant_backend.Models;
@@ -11,9 +12,11 @@ using travel_assistant_backend.Models;
 namespace travel_assistant_backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260609085017_AddRecommenderTables")]
+    partial class AddRecommenderTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,7 +92,7 @@ namespace travel_assistant_backend.Migrations
                     b.ToTable("chats", (string)null);
                 });
 
-            modelBuilder.Entity("travel_assistant_backend.Models.DestinationInteraction", b =>
+            modelBuilder.Entity("travel_assistant_backend.Models.DestinationFeedback", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,17 +123,6 @@ namespace travel_assistant_backend.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<string>("EmbeddingJson")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("embedding_json");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("reason");
-
                     b.Property<string>("Signal")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -143,22 +135,17 @@ namespace travel_assistant_backend.Migrations
                         .HasColumnType("character varying(300)")
                         .HasColumnName("tags");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_destination_interactions");
+                        .HasName("pk_destination_feedbacks");
 
-                    b.HasIndex("UserId", "City", "Country")
-                        .IsUnique()
-                        .HasDatabaseName("ix_destination_interactions_user_id_city_country");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_destination_feedbacks_user_id");
 
-                    b.ToTable("destination_interactions", (string)null);
+                    b.ToTable("destination_feedbacks", (string)null);
                 });
 
             modelBuilder.Entity("travel_assistant_backend.Models.PopularDestination", b =>
@@ -386,6 +373,42 @@ namespace travel_assistant_backend.Migrations
                     b.ToTable("user_preferences", (string)null);
                 });
 
+            modelBuilder.Entity("travel_assistant_backend.Models.UserTasteProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FeedbackCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("feedback_count");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("WeightsJson")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("weights_json");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_taste_profiles");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_user_taste_profiles_user_id");
+
+                    b.ToTable("user_taste_profiles", (string)null);
+                });
+
             modelBuilder.Entity("travel_assistant_backend.Models.AssistantResponse", b =>
                 {
                     b.HasOne("travel_assistant_backend.Models.Chat", "Chat")
@@ -410,14 +433,14 @@ namespace travel_assistant_backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("travel_assistant_backend.Models.DestinationInteraction", b =>
+            modelBuilder.Entity("travel_assistant_backend.Models.DestinationFeedback", b =>
                 {
                     b.HasOne("travel_assistant_backend.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_destination_interactions_users_user_id");
+                        .HasConstraintName("fk_destination_feedbacks_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -442,6 +465,18 @@ namespace travel_assistant_backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_preferences_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("travel_assistant_backend.Models.UserTasteProfile", b =>
+                {
+                    b.HasOne("travel_assistant_backend.Models.User", "User")
+                        .WithOne()
+                        .HasForeignKey("travel_assistant_backend.Models.UserTasteProfile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_taste_profiles_users_user_id");
 
                     b.Navigation("User");
                 });

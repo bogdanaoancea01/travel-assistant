@@ -15,6 +15,7 @@ export default function MenuModal({ isOpen, onClose, onAuthRequired }) {
     { icon: MessageSquare, label: "Start chatting", path: "/chat" },
     { icon: Compass, label: "Explore", path: "/explore" },
     { icon: Sparkles, label: "Quiz", path: "/quiz" },
+    { icon: Heart, label: "Saved", path: "/saved" },
   ];
 
   const handleNavigate = (path) => {

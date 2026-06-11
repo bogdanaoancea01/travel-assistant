@@ -1,6 +1,9 @@
 ﻿namespace travel_assistant_backend.DTOs.Explore
 {
-    public class ExploreDestinationDTO
+    /// <summary>
+    /// A saved destination, for the Saved page.
+    /// </summary>
+    public class SavedDestinationDTO
     {
         public string City { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;

@@ -15,6 +15,7 @@ namespace travel_assistant_backend.Models
         public DbSet<UserMessage> UserMessages { get; set; } = null!;
         public DbSet<AssistantResponse> AssistantResponses { get; set; } = null!;
         public DbSet<UserPreferences> UserPreferences { get; set; } = null!;
+        public DbSet<DestinationInteraction> DestinationInteractions { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,6 +39,16 @@ namespace travel_assistant_backend.Models
                 .WithOne(p => p.User)
                 .HasForeignKey<UserPreferences>(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // User → DestinationInteraction (one-to-many), unique per destination.
+            modelBuilder.Entity<DestinationInteraction>()
+                .HasOne(i => i.User)
+                .WithMany()
+                .HasForeignKey(i => i.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<DestinationInteraction>()
+                .HasIndex(i => new { i.UserId, i.City, i.Country })
+                .IsUnique();
 
             // Chat → UserMessages (one-to-many)
             modelBuilder.Entity<Chat>()

@@ -17,8 +17,12 @@ namespace travel_assistant_backend.Services.Explore
             _chatClient = chatClient;
         }
 
-        public async Task<ExploreSuggestionsDTO> GenerateSuggestionsAsync(
+        public async Task<ExploreSuggestionsDTO> GenerateCandidatesAsync(
             UserPreferencesDTO preferences,
+            int count,
+            IReadOnlyCollection<string> excludeNames,
+            IReadOnlyCollection<string> likedNames,
+            IReadOnlyCollection<string> dislikedNames,
             CancellationToken cancellationToken = default)
         {
             var schemaSettings = new SystemTextJsonSchemaGeneratorSettings
@@ -36,6 +40,8 @@ namespace travel_assistant_backend.Services.Explore
 
             var options = new ChatCompletionOptions
             {
+                // Higher temperature → more variety across regenerations.
+                Temperature = 1.0f,
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                     jsonSchemaFormatName: "explore_suggestions",
                     jsonSchema: BinaryData.FromString(schema.ToJson()),
@@ -44,8 +50,8 @@ namespace travel_assistant_backend.Services.Explore
 
             var messages = new List<ChatMessage>
             {
-                new SystemChatMessage(BuildSystemPrompt(preferences)),
-                new UserChatMessage("Generate 6 destination suggestions based on the user preferences above.")
+                new SystemChatMessage(BuildSystemPrompt(preferences, count, excludeNames, likedNames, dislikedNames)),
+                new UserChatMessage($"Generate {count} fresh candidate destination suggestions now.")
             };
 
             var completion = await _chatClient.CompleteChatAsync(messages, options, cancellationToken);
@@ -59,7 +65,11 @@ namespace travel_assistant_backend.Services.Explore
             return result ?? new ExploreSuggestionsDTO();
         }
 
-        private static string BuildSystemPrompt(UserPreferencesDTO p)
+        private static string BuildSystemPrompt(
+            UserPreferencesDTO p, int count,
+            IReadOnlyCollection<string> excludeNames,
+            IReadOnlyCollection<string> likedNames,
+            IReadOnlyCollection<string> dislikedNames)
         {
             var prefLines = new[]
             {
@@ -86,21 +96,37 @@ namespace travel_assistant_backend.Services.Explore
                 ? string.Join("\n", prefLines)
                 : "No specific preferences set — suggest diverse, universally appealing destinations.";
 
+            string likedBlock = likedNames.Any()
+                ? $"\n\nThe traveller LIKED these destinations — propose new places with a similar character:\n- {string.Join("\n- ", likedNames)}"
+                : "";
+            string dislikedBlock = dislikedNames.Any()
+                ? $"\n\nThe traveller DISLIKED these — avoid places with a similar character:\n- {string.Join("\n- ", dislikedNames)}"
+                : "";
+            string excludeBlock = excludeNames.Any()
+                ? $"\n\nDo NOT suggest any of these (already seen): {string.Join("; ", excludeNames)}"
+                : "";
+
             return $"""
-                You are a travel recommendation engine.
-                Generate exactly 6 personalised destination suggestions.
- 
+                You are a travel recommendation engine generating a CANDIDATE POOL
+                that will be re-ranked downstream by an embedding-based recommender.
+                Generate exactly {count} distinct destination candidates.
+
                 RULES:
-                - Each reason must reference at least one of the user's preferences — make it feel personal.
+                - Each reason must reference at least one of the user's preferences or liked destinations — make it feel personal.
                 - If the user stated a climate or dietary preference, honour it; otherwise vary climates freely.
-                - Vary the results: mix short-haul and mid-haul, different styles.
+                - Give a broad, varied pool: mix short-haul and mid-haul, and span several categories. Avoid near-duplicates.
+                - Strongly favour destinations resembling the LIKED list and steer away from the DISLIKED list.
+                - Never repeat any destination in the exclusion list. Every candidate must be a NEW city.
                 - Avoid Paris, Rome, and London.
-                - Category must be one of: Mediterranean, City break, Nature, Island, Desert, Mountain, Cultural, Coastal, Warm escape.
-                - Provide exactly 3 tags per destination.
+                - Category must be exactly one of: Mediterranean, City break, Nature, Island, Desert,
+                  Mountain, Cultural, Coastal, Warm escape.
+                - Provide exactly 3 tags per destination, each chosen ONLY from this list:
+                  Adventure, Cultural, Food & Drink, Nature, Nightlife, Wellness, Shopping, Beach,
+                  Art & Architecture, Budget-friendly, Luxury, Romantic, Family-friendly, Off the beaten path.
                 - Reason must be one sentence, maximum 25 words.
- 
+
                 USER PREFERENCES:
-                {preferences}
+                {preferences}{likedBlock}{dislikedBlock}{excludeBlock}
                 """;
         }
 

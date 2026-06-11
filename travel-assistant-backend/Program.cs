@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OpenAI;
+using OpenAI.Embeddings;
 using System.Text;
 using travel_assistant_backend.Models;
 using travel_assistant_backend.Services.Explore;
@@ -100,6 +101,13 @@ builder.Services.AddHttpClient<IGeocodingService, GeocodingService>(client =>
 builder.Services.AddScoped<IPreferencesService, PreferencesService>();
 builder.Services.AddScoped<IExploreService, ExploreService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
+builder.Services.AddScoped<travel_assistant_backend.Services.Taste.ITasteService, travel_assistant_backend.Services.Taste.TasteService>();
+
+// OpenAI embeddings client + service (recommender)
+var embeddingModel = builder.Configuration["OpenAI:EmbeddingModel"] ?? "text-embedding-3-small";
+builder.Services.AddSingleton(sp => new OpenAIClient(openAiKey).GetEmbeddingClient(embeddingModel));
+builder.Services.AddScoped<travel_assistant_backend.Services.Embeddings.IEmbeddingService,
+    travel_assistant_backend.Services.Embeddings.EmbeddingService>();
 
 var app = builder.Build();
 

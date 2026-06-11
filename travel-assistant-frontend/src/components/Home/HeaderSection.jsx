@@ -31,13 +31,14 @@ export default function HeaderSection({ onSignInClick, onMenuClick }) {
 
         {/* Center — nav links (hidden on mobile) */}
         <nav className="hidden md:flex items-center">
-          {["Explore", "Quiz"].map((item) => (
+          {["Explore", "Quiz", "Saved"].map((item) => (
             <button
               key={item}
               className="px-2 py-2 text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-full transition-colors cursor-pointer"
               onClick={() => {
                 if (item === "Explore") navigate("/explore");
                 if (item === "Quiz") navigate("/quiz");
+                if (item === "Saved") navigate("/saved");
               }}
             >
               {item}
