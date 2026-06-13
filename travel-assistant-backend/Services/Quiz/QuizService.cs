@@ -1,4 +1,4 @@
-﻿using NJsonSchema;
+using NJsonSchema;
 using NJsonSchema.Generation;
 using OpenAI.Chat;
 using System.Text.Json;
@@ -56,27 +56,23 @@ namespace travel_assistant_backend.Services.Quiz
                       the answers do not support.
                     - If an answer for a field is missing, return an empty string for that field
                       (or 0 for the duration numbers). Do NOT guess.
-                    - dietaryNeeds is safety-critical: copy ONLY what the user selected. If they
-                      chose "No restrictions" or said nothing, return "No restrictions". Never
-                      invent allergies or restrictions.
                     - homeCity: copy the user's stated home/departure city verbatim if present,
                       otherwise return an empty string. Never invent a city.
 
                     ALLOWED VALUES (normalise the user's wording to exactly one of these):
                     - tripPace: Relaxed | Balanced | Intensive
-                    - budgetRange: Budget | Mid-range | Comfort | Luxury
                     - travelCompanions: Solo | Couple | Family | Friends
                     - climatePreference: Warm & sunny | Mild & temperate | Cool & crisp | Cold & snowy | No preference
                     - tripMotivation: Recharge & relax | Adventure & adrenaline | Discover & learn | Connect & celebrate
                     - transport: Rental car / road trip | Public transport | Walkable & compact | No preference
+                    - preferredSetting: City | Small towns & villages | Nature | Mix of city & nature
+                    - planningStyle: Fully planned | Loosely planned | Spontaneous
+                    - travelFrequency: Once a year or less | 2–3 times a year | 4–6 times a year | More than 6 times a year
+                    - preferredRegions: comma-separated subset of:
+                      Europe, Southeast Asia, East Asia, Middle East & North Africa, Sub-Saharan Africa,
+                      North America, Latin America & Caribbean, South Asia, Oceania & Pacific
                     - travelStyles: comma-separated subset of:
                       Adventure, Cultural, Food & Drink, Nature, Nightlife, Wellness, Shopping, Beach, Art & Architecture
-                    - accommodationStyle: a short phrase grounded in their lodging answer
-                      (e.g. "Hostels & guesthouses", "Comfortable mid-range hotels",
-                      "Boutique & character stays", "Luxury resorts", "Apartments & local rentals").
-                    - mealPreference: a short phrase grounded in their food answer
-                      (e.g. "Street food & local spots", "Mix of casual and nice meals",
-                      "Fine dining & reservations", "Mostly self-catering").
                     - tripDurationMin / tripDurationMax: integer day range parsed from the duration answer.
 
                     FREE-TEXT FIELDS:
@@ -106,18 +102,18 @@ namespace travel_assistant_backend.Services.Quiz
                 InferredPreferences = new UserPreferencesDTO
                 {
                     Bio = inferred.Bio,
-                    AccommodationStyle = inferred.AccommodationStyle,
-                    MealPreference = inferred.MealPreference,
                     TripDurationMin = inferred.TripDurationMin,
                     TripDurationMax = inferred.TripDurationMax,
                     TripPace = inferred.TripPace,
                     TravelStyles = inferred.TravelStyles,
-                    BudgetRange = inferred.BudgetRange,
                     TravelCompanions = inferred.TravelCompanions,
-                    DietaryNeeds = inferred.DietaryNeeds,
                     ClimatePreference = inferred.ClimatePreference,
                     TripMotivation = inferred.TripMotivation,
                     Transport = inferred.Transport,
+                    PreferredSetting = inferred.PreferredSetting,
+                    PlanningStyle = inferred.PlanningStyle,
+                    PreferredRegions = inferred.PreferredRegions,
+                    TravelFrequency = inferred.TravelFrequency,
                     HomeCity = string.IsNullOrWhiteSpace(inferred.HomeCity) ? null : inferred.HomeCity,
                 }
             };

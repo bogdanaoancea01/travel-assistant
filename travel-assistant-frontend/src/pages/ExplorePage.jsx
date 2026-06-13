@@ -215,12 +215,20 @@ export default function ExplorePage() {
 
   const prefPills = [
     preferences?.homeCity && { label: preferences.homeCity, icon: "🏠" },
-    preferences?.budgetRange && { label: preferences.budgetRange, icon: "💰" },
-    preferences?.tripPace && { label: preferences.tripPace, icon: "⏱️" },
     preferences?.travelCompanions && { label: preferences.travelCompanions, icon: "👥" },
+    preferences?.tripPace && { label: preferences.tripPace, icon: "⏱️" },
     preferences?.travelStyles && { label: preferences.travelStyles, icon: "✨" },
     preferences?.climatePreference && { label: preferences.climatePreference, icon: "🌤️" },
-    preferences?.accommodationStyle && { label: preferences.accommodationStyle, icon: "🏨" },
+    preferences?.tripMotivation && { label: preferences.tripMotivation, icon: "🎯" },
+    preferences?.preferredSetting && { label: preferences.preferredSetting, icon: "🏙️" },
+    preferences?.planningStyle && { label: preferences.planningStyle, icon: "🗓️" },
+    preferences?.transport && { label: preferences.transport, icon: "🚆" },
+    preferences?.preferredRegions && { label: preferences.preferredRegions, icon: "🌍" },
+    preferences?.travelFrequency && { label: preferences.travelFrequency, icon: "✈️" },
+    preferences?.tripDurationMin != null && preferences?.tripDurationMax != null && {
+      label: `${preferences.tripDurationMin}–${preferences.tripDurationMax} days`,
+      icon: "📅",
+    },
   ].filter(Boolean);
 
   return (

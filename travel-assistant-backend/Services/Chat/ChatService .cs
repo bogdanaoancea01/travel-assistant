@@ -85,22 +85,22 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
 
             var prefLines = new[]
             {
-                string.IsNullOrWhiteSpace(p.HomeCity)           ? null : $"- Home city / trip origin: {p.HomeCity}",
-                string.IsNullOrWhiteSpace(p.PreferredCurrency)  ? null : $"- Preferred currency: {p.PreferredCurrency}",
+                string.IsNullOrWhiteSpace(p.HomeCity)             ? null : $"- Home city / trip origin: {p.HomeCity}",
+                string.IsNullOrWhiteSpace(p.PreferredCurrency)    ? null : $"- Preferred currency: {p.PreferredCurrency}",
                 string.IsNullOrWhiteSpace(p.PreferredAirportName) ? null : $"- Preferred departure airport: {p.PreferredAirportName}",
-                string.IsNullOrWhiteSpace(p.AccommodationStyle) ? null : $"- Accommodation style: {p.AccommodationStyle}",
-                string.IsNullOrWhiteSpace(p.MealPreference)     ? null : $"- Meal preference: {p.MealPreference}",
                 p.TripDurationMin.HasValue && p.TripDurationMax.HasValue
-                                                                 ? $"- Preferred trip duration: {p.TripDurationMin}–{p.TripDurationMax} days" : null,
-                string.IsNullOrWhiteSpace(p.TripPace)           ? null : $"- Trip pace: {p.TripPace}",
-                string.IsNullOrWhiteSpace(p.TravelStyles)       ? null : $"- Travel interests: {p.TravelStyles}",
-                string.IsNullOrWhiteSpace(p.BudgetRange)        ? null : $"- Budget range: {p.BudgetRange}",
-                string.IsNullOrWhiteSpace(p.TravelCompanions)   ? null : $"- Travelling with: {p.TravelCompanions}",
-                string.IsNullOrWhiteSpace(p.TripMotivation)     ? null : $"- Trip motivation: {p.TripMotivation}",
-                string.IsNullOrWhiteSpace(p.ClimatePreference)  ? null : $"- Preferred climate: {p.ClimatePreference}",
-                string.IsNullOrWhiteSpace(p.Transport)          ? null : $"- Getting around: {p.Transport}",
-                string.IsNullOrWhiteSpace(p.DietaryNeeds)       ? null : $"- Dietary needs (always respect): {p.DietaryNeeds}",
-                string.IsNullOrWhiteSpace(p.Bio)                ? null : $"- Traveller bio: {p.Bio}",
+                                                                   ? $"- Preferred trip duration: {p.TripDurationMin}–{p.TripDurationMax} days" : null,
+                string.IsNullOrWhiteSpace(p.TripPace)             ? null : $"- Trip pace: {p.TripPace}",
+                string.IsNullOrWhiteSpace(p.TravelStyles)         ? null : $"- Travel interests: {p.TravelStyles}",
+                string.IsNullOrWhiteSpace(p.TravelCompanions)     ? null : $"- Travelling with: {p.TravelCompanions}",
+                string.IsNullOrWhiteSpace(p.TripMotivation)       ? null : $"- Trip motivation: {p.TripMotivation}",
+                string.IsNullOrWhiteSpace(p.ClimatePreference)    ? null : $"- Preferred climate: {p.ClimatePreference}",
+                string.IsNullOrWhiteSpace(p.Transport)            ? null : $"- Getting around: {p.Transport}",
+                string.IsNullOrWhiteSpace(p.PreferredSetting)     ? null : $"- Preferred setting: {p.PreferredSetting}",
+                string.IsNullOrWhiteSpace(p.PlanningStyle)        ? null : $"- Planning style: {p.PlanningStyle}",
+                string.IsNullOrWhiteSpace(p.PreferredRegions)     ? null : $"- Preferred regions: {p.PreferredRegions}",
+                string.IsNullOrWhiteSpace(p.TravelFrequency)      ? null : $"- Travel frequency: {p.TravelFrequency}",
+                string.IsNullOrWhiteSpace(p.Bio)                  ? null : $"- Traveller bio: {p.Bio}",
             }
             .Where(l => l != null)
             .ToList();

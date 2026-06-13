@@ -38,6 +38,17 @@ const QUESTIONS = {
       "Shopping & Markets",
     ],
     multi: true,
+    next: () => "setting",
+  },
+  setting: {
+    id: "setting",
+    question: "What kind of setting feels most like home when you travel?",
+    options: [
+      "Bustling cities — energy, skylines, urban life",
+      "Small towns & villages — local charm, slower pace",
+      "Pure nature — mountains, forests, coastlines",
+      "A mix — city base with day trips into nature",
+    ],
     next: () => "climate",
   },
   climate: {
@@ -54,68 +65,50 @@ const QUESTIONS = {
       "Balanced — 4-5 activities, some flexibility",
       "Intensive — see as much as humanly possible",
     ],
-    next: (answer) => (answer.startsWith("Relaxed") ? "budget_relaxed" : "budget_active"),
+    next: () => "planning",
   },
-  budget_relaxed: {
-    id: "budget",
-    question: "What's your typical travel budget per day?",
-    options: ["Under €50 (Budget)", "€50–150 (Mid-range)", "€150–300 (Comfort)", "€300+ (Luxury)"],
-    next: () => "accommodation",
-  },
-  budget_active: {
-    id: "budget",
-    question: "When you're out exploring, how do you like to spend?",
+  planning: {
+    id: "planning",
+    question: "How do you like to plan your trips?",
     options: [
-      "Keep it lean — hostels and street food",
-      "Mid-range — solid hotels, local restaurants",
-      "Comfort — boutique stays, nice dinners",
-      "Luxury — the best of everything",
+      "Fully planned — itinerary, bookings, no surprises",
+      "Loose framework — key things booked, rest spontaneous",
+      "Completely spontaneous — figure it out on arrival",
     ],
-    next: () => "accommodation",
-  },
-  accommodation: {
-    id: "accommodation",
-    question: "Where do you like to rest your head?",
-    options: [
-      "Hostels & guesthouses",
-      "Comfortable mid-range hotels",
-      "Boutique & character stays",
-      "Luxury resorts",
-      "Apartments & local rentals",
-    ],
-    next: () => "meals",
-  },
-  meals: {
-    id: "meals",
-    question: "How do you like to eat when you travel?",
-    options: [
-      "Street food & hole-in-the-wall local spots",
-      "A mix of casual and nicer meals",
-      "Fine dining & memorable reservations",
-      "Mostly self-catering / cook my own",
-    ],
-    next: () => "dietary",
-  },
-  dietary: {
-    id: "dietary",
-    question: "Any dietary needs we should always respect?",
-    options: [
-      "No restrictions",
-      "Vegetarian",
-      "Vegan",
-      "Pescatarian",
-      "Halal",
-      "Kosher",
-      "Gluten-free",
-      "Nut allergy",
-    ],
-    multi: true,
     next: () => "transport",
   },
   transport: {
     id: "transport",
     question: "How do you like to get around once you're there?",
     options: ["Rental car / road trip", "Public transport", "Walkable & compact", "No preference"],
+    next: () => "regions",
+  },
+  regions: {
+    id: "regions",
+    question: "Which parts of the world call to you most? Pick all that apply.",
+    options: [
+      "Europe",
+      "Southeast Asia",
+      "East Asia",
+      "Middle East & North Africa",
+      "Sub-Saharan Africa",
+      "North America",
+      "Latin America & Caribbean",
+      "South Asia",
+      "Oceania & Pacific",
+    ],
+    multi: true,
+    next: () => "frequency",
+  },
+  frequency: {
+    id: "frequency",
+    question: "How often do you travel in a typical year?",
+    options: [
+      "Once a year or less",
+      "2–3 times a year",
+      "4–6 times a year",
+      "More than 6 times a year",
+    ],
     next: () => "duration",
   },
   duration: {
@@ -176,15 +169,15 @@ function ArchetypeResult({ result, onContinue }) {
       <div className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-5 mb-8 text-left space-y-2">
         <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-3">Your inferred preferences</p>
         {p.tripMotivation && <PreferenceRow icon="🎯" label="Looking for" value={p.tripMotivation} />}
-        {p.budgetRange && <PreferenceRow icon="💰" label="Budget" value={p.budgetRange} />}
-        {p.tripPace && <PreferenceRow icon="⏱️" label="Pace" value={p.tripPace} />}
         {p.travelCompanions && <PreferenceRow icon="👥" label="Companions" value={p.travelCompanions} />}
         {p.travelStyles && <PreferenceRow icon="✨" label="Interests" value={p.travelStyles} />}
+        {p.preferredSetting && <PreferenceRow icon="🏙️" label="Setting" value={p.preferredSetting} />}
         {p.climatePreference && <PreferenceRow icon="🌤️" label="Climate" value={p.climatePreference} />}
-        {p.accommodationStyle && <PreferenceRow icon="🏨" label="Stay" value={p.accommodationStyle} />}
-        {p.mealPreference && <PreferenceRow icon="🍽️" label="Food" value={p.mealPreference} />}
-        {p.dietaryNeeds && <PreferenceRow icon="🥗" label="Dietary" value={p.dietaryNeeds} />}
+        {p.tripPace && <PreferenceRow icon="⏱️" label="Pace" value={p.tripPace} />}
+        {p.planningStyle && <PreferenceRow icon="🗓️" label="Planning" value={p.planningStyle} />}
         {p.transport && <PreferenceRow icon="🚆" label="Getting around" value={p.transport} />}
+        {p.preferredRegions && <PreferenceRow icon="🌍" label="Regions" value={p.preferredRegions} />}
+        {p.travelFrequency && <PreferenceRow icon="✈️" label="Frequency" value={p.travelFrequency} />}
         {p.tripDurationMin != null && p.tripDurationMax != null && (
           <PreferenceRow icon="📅" label="Trip length" value={`${p.tripDurationMin}–${p.tripDurationMax} days`} />
         )}
@@ -216,16 +209,9 @@ export default function QuizPage() {
   const progress = Math.min(100, Math.round(((history.length + 1) / TOTAL_STEPS) * 100));
 
   const toggleMulti = (option) => {
-    setSelected((prev) => {
-      if (stepKey === "dietary") {
-        if (option === "No restrictions") return prev.includes(option) ? [] : ["No restrictions"];
-        const withoutNone = prev.filter((o) => o !== "No restrictions");
-        return withoutNone.includes(option)
-          ? withoutNone.filter((o) => o !== option)
-          : [...withoutNone, option];
-      }
-      return prev.includes(option) ? prev.filter((o) => o !== option) : [...prev, option];
-    });
+    setSelected((prev) =>
+      prev.includes(option) ? prev.filter((o) => o !== option) : [...prev, option]
+    );
   };
 
   const advance = (answerValue) => {

@@ -1,4 +1,4 @@
-﻿using travel_assistant_backend.DTOs.UserPreference;
+using travel_assistant_backend.DTOs.UserPreference;
 using travel_assistant_backend.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,18 +37,18 @@ namespace travel_assistant_backend.Services.Preferences
             prefs.HomeCity = dto.HomeCity;
             prefs.PreferredCurrency = dto.PreferredCurrency;
             prefs.PreferredAirportName = dto.PreferredAirportName;
-            prefs.AccommodationStyle = dto.AccommodationStyle;
-            prefs.MealPreference = dto.MealPreference;
             prefs.TripDurationMin = dto.TripDurationMin;
             prefs.TripDurationMax = dto.TripDurationMax;
             prefs.TripPace = dto.TripPace;
             prefs.TravelStyles = dto.TravelStyles;
-            prefs.BudgetRange = dto.BudgetRange;
             prefs.TravelCompanions = dto.TravelCompanions;
-            prefs.DietaryNeeds = dto.DietaryNeeds;
             prefs.ClimatePreference = dto.ClimatePreference;
             prefs.TripMotivation = dto.TripMotivation;
             prefs.Transport = dto.Transport;
+            prefs.PreferredSetting = dto.PreferredSetting;
+            prefs.PlanningStyle = dto.PlanningStyle;
+            prefs.PreferredRegions = dto.PreferredRegions;
+            prefs.TravelFrequency = dto.TravelFrequency;
 
             await _context.SaveChangesAsync();
             return MapToDTO(prefs);
@@ -78,17 +78,17 @@ namespace travel_assistant_backend.Services.Preferences
                 case "homecity": prefs.HomeCity = null; break;
                 case "preferredcurrency": prefs.PreferredCurrency = null; break;
                 case "preferredairportname": prefs.PreferredAirportName = null; break;
-                case "accommodationstyle": prefs.AccommodationStyle = null; break;
-                case "mealpreference": prefs.MealPreference = null; break;
                 case "tripduration": prefs.TripDurationMin = null; prefs.TripDurationMax = null; break;
                 case "trippace": prefs.TripPace = null; break;
                 case "travelstyles": prefs.TravelStyles = null; break;
-                case "budgetrange": prefs.BudgetRange = null; break;
                 case "travelcompanions": prefs.TravelCompanions = null; break;
-                case "dietaryneeds": prefs.DietaryNeeds = null; break;
                 case "climatepreference": prefs.ClimatePreference = null; break;
                 case "tripmotivation": prefs.TripMotivation = null; break;
                 case "transport": prefs.Transport = null; break;
+                case "preferredsetting": prefs.PreferredSetting = null; break;
+                case "planningstyle": prefs.PlanningStyle = null; break;
+                case "preferredregions": prefs.PreferredRegions = null; break;
+                case "travelfrequency": prefs.TravelFrequency = null; break;
                 default: return null;
             }
 
@@ -102,18 +102,18 @@ namespace travel_assistant_backend.Services.Preferences
             HomeCity = prefs.HomeCity,
             PreferredCurrency = prefs.PreferredCurrency,
             PreferredAirportName = prefs.PreferredAirportName,
-            AccommodationStyle = prefs.AccommodationStyle,
-            MealPreference = prefs.MealPreference,
             TripDurationMin = prefs.TripDurationMin,
             TripDurationMax = prefs.TripDurationMax,
             TripPace = prefs.TripPace,
             TravelStyles = prefs.TravelStyles,
-            BudgetRange = prefs.BudgetRange,
             TravelCompanions = prefs.TravelCompanions,
-            DietaryNeeds = prefs.DietaryNeeds,
             ClimatePreference = prefs.ClimatePreference,
             TripMotivation = prefs.TripMotivation,
             Transport = prefs.Transport,
+            PreferredSetting = prefs.PreferredSetting,
+            PlanningStyle = prefs.PlanningStyle,
+            PreferredRegions = prefs.PreferredRegions,
+            TravelFrequency = prefs.TravelFrequency,
         };
     }
 }

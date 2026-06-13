@@ -127,8 +127,8 @@ namespace travel_assistant_backend.Controllers
         {
             var parts = new[]
             {
-                p.TravelStyles, p.ClimatePreference, p.TripMotivation, p.BudgetRange,
-                p.TravelCompanions, p.AccommodationStyle, p.MealPreference, p.Bio
+                p.TravelStyles, p.ClimatePreference, p.TripMotivation, p.TravelCompanions,
+                p.PreferredSetting, p.PlanningStyle, p.PreferredRegions, p.Transport, p.Bio
             }.Where(s => !string.IsNullOrWhiteSpace(s));
             return parts.Any() ? $"A traveller who enjoys: {string.Join("; ", parts)}." : "";
         }
