@@ -74,8 +74,6 @@ namespace travel_assistant_backend.Services.Explore
             var prefLines = new[]
             {
                 string.IsNullOrWhiteSpace(p.HomeCity)             ? null : $"- Home city: {p.HomeCity}",
-                string.IsNullOrWhiteSpace(p.PreferredCurrency)    ? null : $"- Preferred currency: {p.PreferredCurrency}",
-                string.IsNullOrWhiteSpace(p.PreferredAirportName) ? null : $"- Preferred airport: {p.PreferredAirportName}",
                 p.TripDurationMin.HasValue && p.TripDurationMax.HasValue
                                                                    ? $"- Preferred trip duration: {p.TripDurationMin}–{p.TripDurationMax} days" : null,
                 string.IsNullOrWhiteSpace(p.TripPace)             ? null : $"- Trip pace: {p.TripPace}",

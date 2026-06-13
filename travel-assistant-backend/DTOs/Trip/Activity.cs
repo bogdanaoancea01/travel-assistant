@@ -1,4 +1,4 @@
-﻿namespace travel_assistant_backend.DTOs.Trip
+namespace travel_assistant_backend.DTOs.Trip
 {
     public class Activity
     {
@@ -10,6 +10,5 @@
         public double Lng { get; set; }
         public string EstimatedDuration { get; set; }
         public bool IsWeatherDependent { get; set; }
-        public double EstimatedCost { get; set; }
     }
 }

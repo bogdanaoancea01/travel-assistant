@@ -60,16 +60,16 @@ function InlineForm({ children, onSave, onCancel, onDelete }) {
       <div className="flex flex-col gap-2">{children}</div>
       <div className="flex gap-2 mt-6">
         <button
-          onClick={onCancel}
-          className="px-5 py-1.5 border border-gray-200 rounded-full text-xs font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
-        >
-          Cancel
-        </button>
-        <button
           onClick={onSave}
           className="px-5 py-1.5 border border-gray-200 rounded-full text-xs font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
         >
           Save
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-5 py-1.5 border border-gray-200 rounded-full text-xs font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
+        >
+          Cancel
         </button>
         {onDelete && (
           <button
@@ -169,35 +169,6 @@ export default function SettingsPage() {
         <input type="text" placeholder="e.g. Cluj-Napoca" value={formValues.homeCity ?? ""}
           onChange={(e) => setFormValues((p) => ({ ...p, homeCity: e.target.value || null }))}
           className={inputCls()} />
-      ),
-    },
-    {
-      id: "airport",
-      label: "Airport",
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M22 17H2a1 1 0 0 0 0 2h20a1 1 0 0 0 0-2z"/><path d="M2.5 13.5L9 15l3 1 8-4.5c1.5-.8 1.5-2.5 0-2.5-1 0-2 .5-2 .5l-4 2-4.5-5.5H7L8.5 12 5 11 3.5 9H2L2.5 13.5z"/></svg>,
-      getValue: (p) => p?.preferredAirportName ?? null,
-      getInitial: (p) => ({ preferredAirportName: p?.preferredAirportName ?? "" }),
-      deleteKeys: ["preferredAirportName"],
-      renderInput: () => (
-        <input type="text" placeholder="e.g. Cluj International" value={formValues.preferredAirportName ?? ""}
-          onChange={(e) => setFormValues((p) => ({ ...p, preferredAirportName: e.target.value || null }))}
-          className={inputCls()} />
-      ),
-    },
-    {
-      id: "currency",
-      label: "Currency",
-      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
-      getValue: (p) => p?.preferredCurrency ? `${CURRENCIES.find(c => c.code === p.preferredCurrency)?.label ?? ""} — ${p.preferredCurrency}` : null,
-      getInitial: (p) => ({ preferredCurrency: p?.preferredCurrency ?? "" }),
-      deleteKeys: ["preferredCurrency"],
-      renderInput: () => (
-        <select value={formValues.preferredCurrency ?? ""}
-          onChange={(e) => setFormValues((p) => ({ ...p, preferredCurrency: e.target.value || null }))}
-          className={inputCls()}>
-          <option value="">Select currency</option>
-          {CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.label} — {c.code}</option>)}
-        </select>
       ),
     },
     {

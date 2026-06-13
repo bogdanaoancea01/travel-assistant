@@ -1,30 +1,14 @@
 import { useState, useEffect } from "react";
-import { Clock, MapPin, AlertTriangle, Wallet, Sparkles, Droplets, Sun, Map, Calendar } from "lucide-react";
+import { Clock, MapPin, AlertTriangle, Sparkles, Droplets, Sun, Map, Calendar } from "lucide-react";
 
 const UNSPLASH_ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 
 const REFINEMENTS = [
-  { label: "Cheaper", prompt: "Revise this plan to be more budget-friendly while keeping the highlights." },
   { label: "More relaxed", prompt: "Relax the pace — fewer activities per day with more downtime." },
   { label: "More outdoors", prompt: "Add more outdoor and nature activities to the plan." },
   { label: "More food & drink", prompt: "Add more notable food and drink experiences to each day." },
   { label: "Hidden gems", prompt: "Swap some mainstream spots for lesser-known local gems." },
 ];
-
-function formatCost(amount, currency) {
-  const cur = (currency || "").trim();
-  const rounded = Math.round(amount);
-  if (/^[A-Za-z]{3}$/.test(cur)) {
-    try {
-      return new Intl.NumberFormat(undefined, {
-        style: "currency", currency: cur.toUpperCase(), maximumFractionDigits: 0,
-      }).format(rounded);
-    } catch {
-      return `${cur} ${rounded}`;
-    }
-  }
-  return cur ? `${cur}${rounded}` : `${rounded}`;
-}
 
 /* Lightbox */
 function Lightbox({ photos, index, onClose }) {
@@ -52,15 +36,12 @@ function Lightbox({ photos, index, onClose }) {
 }
 
 /* Activity card */
-function ActivityCard({ activity, index, city, currency }) {
+function ActivityCard({ activity, index, city }) {
   const [heroPhoto, setHeroPhoto] = useState(null);
   const [heroLoading, setHeroLoading] = useState(true);
   const [stripPhotos, setStripPhotos] = useState([]);
   const [stripLoading, setStripLoading] = useState(true);
   const [lightbox, setLightbox] = useState(null);
-
-  const cost = formatCost(activity.estimatedCost, currency);
-  const isFree = activity.estimatedCost === 0;
 
   // Hero image
   useEffect(() => {
@@ -115,21 +96,8 @@ function ActivityCard({ activity, index, city, currency }) {
         {/* RIGHT */}
         <div className="flex-1 min-w-0 px-4 pt-4 pb-4 flex flex-col">
 
-          {/* Name + cost */}
-          <div className="flex items-start justify-between gap-2 mb-2.5">
-            <h3 className="text-[15px] font-semibold text-gray-900 leading-snug">{activity.name}</h3>
-            <div className="shrink-0">
-              {cost ? (
-                <span className="text-xs font-semibold text-gray-600 bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-full">
-                  {cost}
-                </span>
-              ) : isFree ? (
-                <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">
-                  Free
-                </span>
-              ) : null}
-            </div>
-          </div>
+          {/* Name */}
+          <h3 className="text-[15px] font-semibold text-gray-900 leading-snug mb-2.5">{activity.name}</h3>
 
           {/* Weather badge */}
           {activity.isWeatherDependent && (
@@ -245,8 +213,7 @@ function WeatherBar({ trip }) {
 }
 
 /* Trip overview card */
-function TripOverview({ trip, currency }) {
-  const totalCost = formatCost(trip.estimatedTotalCost, currency);
+function TripOverview({ trip }) {
   const [heroPhoto, setHeroPhoto] = useState(null);
 
   useEffect(() => {
@@ -285,19 +252,6 @@ function TripOverview({ trip, currency }) {
           </div>
         )}
       </div>
-      {(totalCost || trip.budgetSummary) && (
-        <div className="bg-gray-900 px-4 py-3 flex items-center gap-3 flex-wrap">
-          <Wallet className="h-4 w-4 text-gray-400 shrink-0" />
-          {totalCost && (
-            <p className="text-sm font-bold text-white">
-              {totalCost} <span className="text-xs font-normal text-gray-400">est. per person</span>
-            </p>
-          )}
-          {trip.budgetSummary && (
-            <p className="text-[11px] text-gray-400 leading-relaxed">{trip.budgetSummary}</p>
-          )}
-        </div>
-      )}
     </div>
   );
 }
@@ -314,75 +268,57 @@ export default function AssistantMessage({ content, aiReply, onRefine, isLast })
   const trip = aiReply.tripDetails;
   const tripDays = trip.itinerary ?? [];
   const city = trip.destination?.city ?? "";
-  const currency = trip.currency ?? "";
-
-  const dayTotal = (day) =>
-    (day.activities ?? []).reduce((sum, a) => sum + (a.estimatedCost || 0), 0);
 
   return (
     <div className="space-y-3">
-      <TripOverview trip={trip} currency={currency} />
+      <TripOverview trip={trip} />
       <WeatherBar trip={trip} />
 
-      {tripDays.map((day, dayIndex) => {
-        const subtotal = formatCost(dayTotal(day), currency);
-        return (
-          <div key={day.dayNumber} className={dayIndex > 0 ? "pt-4" : ""}>
+      {tripDays.map((day, dayIndex) => (
+        <div key={day.dayNumber} className={dayIndex > 0 ? "pt-4" : ""}>
 
-            {/* Day header */}
-            <div className="mb-3">
-              {/* Row 1: pill + theme */}
-              <div className="flex items-center gap-3 flex-wrap">
-                <div className="flex items-center gap-2 bg-gray-900 text-white text-sm font-semibold px-4 py-1.5 rounded-full shrink-0">
-                  <Calendar className="h-3.5 w-3.5" />
-                  Day {day.dayNumber}
-                </div>
-                {day.theme && (
-                  <span className="text-sm font-semibold text-gray-900">{day.theme}</span>
-                )}
+          {/* Day header */}
+          <div className="mb-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2 bg-gray-900 text-white text-sm font-semibold px-4 py-1.5 rounded-full shrink-0">
+                <Calendar className="h-3.5 w-3.5" />
+                Day {day.dayNumber}
               </div>
-
-              {/* Row 2: activity count + cost pill */}
-              <div className="flex items-center gap-3 mt-2">
-                {day.theme && (
-                  <span className="text-xs text-gray-400">
-                    {(day.activities ?? []).length} activities
-                  </span>
-                )}
-                <div className="flex-1 h-px bg-gray-100" />
-                {subtotal && (
-                  <div className="flex items-center gap-2 border border-gray-100 rounded-full px-3 py-1 shrink-0">
-                    <span className="text-[10px] text-gray-400">Total est. cost</span>
-                    <span className="text-sm font-bold text-gray-900">{subtotal}</span>
-                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                      <Wallet className="h-3 w-3 text-emerald-500" />
-                    </div>
-                  </div>
-                )}
-              </div>
+              {day.theme && (
+                <span className="text-sm font-semibold text-gray-900">{day.theme}</span>
+              )}
             </div>
 
-            { /* Activities */ }
-            {(day.activities ?? []).map((activity, i) => (
-              <ActivityCard key={i} activity={activity} index={i} city={city} currency={currency} />
-            ))}
-
-            { /* Local tip */ }
-            {day.localTip && (
-              <div className="flex items-center gap-3 bg-green-50 border border-green-100 rounded-2xl px-4 py-3 mt-1 mb-3">
-                <div className="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center shrink-0">
-                  <span className="text-white text-sm">💡</span>
-                </div>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  <span className="font-semibold text-gray-800">Local tip</span>
-                  <br />
-                  {day.localTip}
-                </p>
-              </div>
-            )}
+            <div className="flex items-center gap-3 mt-2">
+              {day.theme && (
+                <span className="text-xs text-gray-400">
+                  {(day.activities ?? []).length} activities
+                </span>
+              )}
+              <div className="flex-1 h-px bg-gray-100" />
+            </div>
           </div>
-        );
-      })}
+
+          {/* Activities */}
+          {(day.activities ?? []).map((activity, i) => (
+            <ActivityCard key={i} activity={activity} index={i} city={city} />
+          ))}
+
+          {/* Local tip */}
+          {day.localTip && (
+            <div className="flex items-center gap-3 bg-green-50 border border-green-100 rounded-2xl px-4 py-3 mt-1 mb-3">
+              <div className="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center shrink-0">
+                <span className="text-white text-sm">💡</span>
+              </div>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                <span className="font-semibold text-gray-800">Local tip</span>
+                <br />
+                {day.localTip}
+              </p>
+            </div>
+          )}
+        </div>
+      ))}
 
       {/* Packing list */}
       {trip.packingList?.length > 0 && (

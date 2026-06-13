@@ -45,8 +45,6 @@ namespace travel_assistant_backend.Controllers
             merged.HomeCity = !string.IsNullOrWhiteSpace(result.InferredPreferences.HomeCity)
                 ? result.InferredPreferences.HomeCity
                 : existing.HomeCity;
-            merged.PreferredCurrency = existing.PreferredCurrency ?? result.InferredPreferences.PreferredCurrency;
-            merged.PreferredAirportName = existing.PreferredAirportName ?? result.InferredPreferences.PreferredAirportName;
             merged.ArchetypeName = result.ArchetypeName;
             merged.ArchetypeDescription = result.ArchetypeDescription;
 

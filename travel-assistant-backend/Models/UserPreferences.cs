@@ -15,13 +15,6 @@ namespace travel_assistant_backend.Models
 
         [MaxLength(100)]
         public string? HomeCity { get; set; }
-
-        [MaxLength(10)]
-        public string? PreferredCurrency { get; set; }
-
-        [MaxLength(100)]
-        public string? PreferredAirportName { get; set; }
-
         public int? TripDurationMin { get; set; }
         public int? TripDurationMax { get; set; }
 

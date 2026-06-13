@@ -35,8 +35,6 @@ namespace travel_assistant_backend.Services.Preferences
 
             prefs.Bio = dto.Bio;
             prefs.HomeCity = dto.HomeCity;
-            prefs.PreferredCurrency = dto.PreferredCurrency;
-            prefs.PreferredAirportName = dto.PreferredAirportName;
             prefs.TripDurationMin = dto.TripDurationMin;
             prefs.TripDurationMax = dto.TripDurationMax;
             prefs.TripPace = dto.TripPace;
@@ -76,8 +74,6 @@ namespace travel_assistant_backend.Services.Preferences
             {
                 case "bio": prefs.Bio = null; break;
                 case "homecity": prefs.HomeCity = null; break;
-                case "preferredcurrency": prefs.PreferredCurrency = null; break;
-                case "preferredairportname": prefs.PreferredAirportName = null; break;
                 case "tripduration": prefs.TripDurationMin = null; prefs.TripDurationMax = null; break;
                 case "trippace": prefs.TripPace = null; break;
                 case "travelstyles": prefs.TravelStyles = null; break;
@@ -100,8 +96,6 @@ namespace travel_assistant_backend.Services.Preferences
         {
             Bio = prefs.Bio,
             HomeCity = prefs.HomeCity,
-            PreferredCurrency = prefs.PreferredCurrency,
-            PreferredAirportName = prefs.PreferredAirportName,
             TripDurationMin = prefs.TripDurationMin,
             TripDurationMax = prefs.TripDurationMax,
             TripPace = prefs.TripPace,
