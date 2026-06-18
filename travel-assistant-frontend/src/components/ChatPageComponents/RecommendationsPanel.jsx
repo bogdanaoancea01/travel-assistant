@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import SectionHeader from "../RecommendationPanel/SectionHeader";
 import { GlobeSVG } from "../RecommendationPanel/GlobeSVG";
 import TripMapPanel from "../MapPanel/TripMapPanel";
@@ -55,7 +55,7 @@ export default function RecommendationsPanel({ activeTrip, onPrompt, onNewTrip }
         const res = await fetch("https://localhost:7063/api/PopularDestinations/generatedestinations");
         if (!res.ok) throw new Error("Failed to fetch");
         const data = await res.json();
-        setDestinations(getEmoji(data));
+        setDestinations(data);
       } catch (err) {
         console.error("Failed to load destinations:", err);
         setError(true);
@@ -67,8 +67,11 @@ export default function RecommendationsPanel({ activeTrip, onPrompt, onNewTrip }
     fetchDestinations();
   }, []);
 
-  // AI destinations + always-present Surprise Me as 6th card
-  const allCards = getEmoji([...destinations, SURPRISE_CARD]);
+  // AI destinations + always-present Surprise Me as 6th card.
+  const allCards = useMemo(
+    () => getEmoji([...destinations, SURPRISE_CARD]),
+    [destinations]
+  );
 
   if (activeTrip) {
   return (

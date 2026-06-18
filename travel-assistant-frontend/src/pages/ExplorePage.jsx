@@ -7,6 +7,7 @@ import {
   removeDestinationInteraction,
 } from "../utilities/useExplore";
 import { usePreferences } from "../utilities/usePreferences";
+import { searchPhotos } from "../utilities/photos";
 import { RefreshCw, ThumbsUp, ThumbsDown, Heart } from "lucide-react";
 
 function getTripDays(preferences, fallback = 5) {
@@ -17,15 +18,11 @@ function getTripDays(preferences, fallback = 5) {
   return fallback;
 }
 
-const UNSPLASH_ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
-
 function useDestinationPhoto(city, country) {
   const [photo, setPhoto] = useState(null);
   useEffect(() => {
-    const query = encodeURIComponent(`${city} ${country} travel`);
-    fetch(`https://api.unsplash.com/search/photos?query=${query}&per_page=1&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`)
-      .then((res) => res.json())
-      .then((data) => setPhoto(data.results?.[0]?.urls?.regular ?? null))
+    searchPhotos(`${city} ${country} travel`, 1, "landscape")
+      .then((urls) => setPhoto(urls[0] ?? null))
       .catch(() => setPhoto(null));
   }, [city, country]);
   return photo;

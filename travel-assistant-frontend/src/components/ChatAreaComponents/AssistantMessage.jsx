@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Clock, MapPin, AlertTriangle, Sparkles, Droplets, Sun, Map, Calendar } from "lucide-react";
-
-const UNSPLASH_ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+import { searchPhotos } from "../../utilities/photos";
 
 const REFINEMENTS = [
   { label: "More relaxed", prompt: "Relax the pace — fewer activities per day with more downtime." },
@@ -44,21 +43,15 @@ function ActivityCard({ activity, index, city }) {
 
   // Hero image
   useEffect(() => {
-    const q = encodeURIComponent(`${activity.name} ${city}`);
-    fetch(`https://api.unsplash.com/search/photos?query=${q}&per_page=1&client_id=${UNSPLASH_ACCESS_KEY}`)
-      .then(r => r.json())
-      .then(d => setHeroPhoto(d.results?.[0]?.urls?.regular ?? null))
-      .catch(() => {})
+    searchPhotos(`${activity.name} ${city}`, 1)
+      .then((urls) => setHeroPhoto(urls[0] ?? null))
       .finally(() => setHeroLoading(false));
   }, [activity.name, city]);
 
   // Strip photos
   useEffect(() => {
-    const q = encodeURIComponent(`${activity.name} ${city}`);
-    fetch(`https://api.unsplash.com/search/photos?query=${q}&per_page=4&client_id=${UNSPLASH_ACCESS_KEY}`)
-      .then(r => r.json())
-      .then(d => setStripPhotos((d.results ?? []).slice(1).map(r => r.urls.regular)))
-      .catch(() => {})
+    searchPhotos(`${activity.name} ${city}`, 4)
+      .then((urls) => setStripPhotos(urls.slice(1)))
       .finally(() => setStripLoading(false));
   }, [activity.name, city]);
 
@@ -218,11 +211,8 @@ function TripOverview({ trip }) {
   useEffect(() => {
     const dest = trip.destination?.city ?? "";
     if (!dest) return;
-    const q = encodeURIComponent(`${dest} city`);
-    fetch(`https://api.unsplash.com/search/photos?query=${q}&per_page=1&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`)
-      .then(r => r.json())
-      .then(d => setHeroPhoto(d.results?.[0]?.urls?.regular ?? null))
-      .catch(() => {});
+    searchPhotos(`${dest} city`, 1, "landscape")
+      .then((urls) => setHeroPhoto(urls[0] ?? null));
   }, [trip.destination?.city]);
 
   return (

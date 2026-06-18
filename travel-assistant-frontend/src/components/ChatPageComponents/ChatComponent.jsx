@@ -125,8 +125,6 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
       if (done) break;
 
       buffer += decoder.decode(value, { stream: true });
-
-      // SSE frames are separated by a blank line.
       let sep;
       while ((sep = buffer.indexOf("\n\n")) !== -1) {
         const frame = buffer.slice(0, sep);
@@ -187,8 +185,6 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
             label: update.label || "",
           };
           const last = prev[prev.length - 1];
-          // Same stage as the previous step (e.g. each geocode call) → update that
-          // line in place instead of adding a new one. Different stage → new line.
           if (last && last.stage === step.stage) {
             return [...prev.slice(0, -1), step];
           }

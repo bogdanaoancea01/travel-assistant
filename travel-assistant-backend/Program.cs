@@ -9,6 +9,7 @@ using travel_assistant_backend.Models;
 using travel_assistant_backend.Services.Explore;
 using travel_assistant_backend.Services.Geocoding;
 using travel_assistant_backend.Services.Interfaces.Chat;
+using travel_assistant_backend.Services.Photos;
 using travel_assistant_backend.Services.PopularDestinations;
 using travel_assistant_backend.Services.Preferences;
 using travel_assistant_backend.Services.Quiz;
@@ -98,6 +99,11 @@ builder.Services.AddHttpClient<IGeocodingService, GeocodingService>(client =>
     client.DefaultRequestHeaders.Add("User-Agent", "TravelAssistant/1.0");
     client.Timeout = TimeSpan.FromSeconds(10);
 });
+builder.Services.AddHttpClient<IPhotosService, PhotosService>(client =>
+{
+    client.BaseAddress = new Uri("https://api.unsplash.com/");
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
 builder.Services.AddScoped<IPreferencesService, PreferencesService>();
 builder.Services.AddScoped<IExploreService, ExploreService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
@@ -128,7 +134,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-//_ = app.SeedPopularDestinationsAsync();
 
 app.Run();

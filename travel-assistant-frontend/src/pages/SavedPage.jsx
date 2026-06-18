@@ -3,17 +3,14 @@ import { useNavigate } from "react-router-dom";
 import SideMenuWhole from "../components/SideMenuComponents/SideMenuWhole";
 import { fetchSavedDestinations, removeDestinationInteraction } from "../utilities/useExplore";
 import { usePreferences } from "../utilities/usePreferences";
+import { searchPhotos } from "../utilities/photos";
 import { Trash2, Heart } from "lucide-react";
-
-const UNSPLASH_ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 
 function useDestinationPhoto(city, country) {
   const [photo, setPhoto] = useState(null);
   useEffect(() => {
-    const query = encodeURIComponent(`${city} ${country} travel`);
-    fetch(`https://api.unsplash.com/search/photos?query=${query}&per_page=1&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`)
-      .then((res) => res.json())
-      .then((data) => setPhoto(data.results?.[0]?.urls?.regular ?? null))
+    searchPhotos(`${city} ${country} travel`, 1, "landscape")
+      .then((urls) => setPhoto(urls[0] ?? null))
       .catch(() => setPhoto(null));
   }, [city, country]);
   return photo;
@@ -29,7 +26,7 @@ function SavedCard({ dest, onPlanTrip, onRemove }) {
         ) : (
           <div className="w-full h-full animate-pulse bg-gray-200" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
         <span className="absolute bottom-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white border border-white/30">
           {dest.category}
         </span>
