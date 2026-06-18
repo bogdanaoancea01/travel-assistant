@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react";
+import { Check } from "lucide-react";
 import GlobeLogo from "../GlobeLogo";
 import { useAuth } from "../../AuthContext";
 import AssistantMessage from "./AssistantMessage";
 
-export default function ConversationArea({ messages, isTyping, onRefine }) {
+export default function ConversationArea({ messages, isTyping, thinkingSteps = [], onRefine }) {
   const bottomRef = useRef(null);
   const { user } = useAuth();
   const initials = user
@@ -12,7 +13,7 @@ export default function ConversationArea({ messages, isTyping, onRefine }) {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
+  }, [messages, isTyping, thinkingSteps]);
 
   return (
     <div className="flex-1 overflow-y-auto px-6 py-6">
@@ -52,14 +53,46 @@ export default function ConversationArea({ messages, isTyping, onRefine }) {
         ))}
 
         {isTyping && (
-          <div className="flex justify-start items-center gap-2.5">
+          <div className="flex justify-start items-start gap-2.5">
             <div className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0 mr-2.5 mt-0.5">
                 <GlobeLogo size={16} />
             </div>
-            <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+            <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-3">
+              {thinkingSteps.length === 0 ? (
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {thinkingSteps.map((step, i) => {
+                    const isActive = i === thinkingSteps.length - 1;
+                    const label = typeof step === "string" ? step : (step?.label ?? "");
+                    return (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2"
+                        style={{ animation: "taFadeIn 0.25s ease-in" }}
+                      >
+                        {isActive ? (
+                          <span className="flex items-center gap-1 shrink-0">
+                            <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                            <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                            <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                          </span>
+                        ) : (
+                          <Check size={13} className="text-emerald-500 shrink-0" />
+                        )}
+                        <span className={`text-xs ${isActive ? "text-gray-700" : "text-gray-400"}`}>
+                          {label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <style>{`@keyframes taFadeIn { from { opacity: 0 } to { opacity: 1 } }`}</style>
             </div>
           </div>
         )}

@@ -9,6 +9,7 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
         Task<GenerateTripResult> GenerateTripAsync(
             IReadOnlyList<ChatMessage> messages,
             UserPreferencesDTO? preferences = null,
+            Func<TripProgressUpdate, CancellationToken, Task>? onProgress = null,
             CancellationToken cancellationToken = default);
     }
 }

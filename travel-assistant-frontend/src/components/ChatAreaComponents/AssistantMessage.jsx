@@ -6,7 +6,6 @@ const UNSPLASH_ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 const REFINEMENTS = [
   { label: "More relaxed", prompt: "Relax the pace — fewer activities per day with more downtime." },
   { label: "More outdoors", prompt: "Add more outdoor and nature activities to the plan." },
-  { label: "More food & drink", prompt: "Add more notable food and drink experiences to each day." },
   { label: "Hidden gems", prompt: "Swap some mainstream spots for lesser-known local gems." },
 ];
 

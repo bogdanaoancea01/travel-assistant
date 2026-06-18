@@ -14,6 +14,7 @@ const DEFAULT_MESSAGES = [
 export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendingPromptConsumed, onTripGenerated, onChatCreated, initialChatId }) {
   const [inputQuestion, setInputQuestion] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [thinkingSteps, setThinkingSteps] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(!!initialChatId);
   const [currentChatId, setCurrentChatId] = useState(initialChatId ?? null);
   const [messages, setMessages] = useState(DEFAULT_MESSAGES);
@@ -91,7 +92,10 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
 
   const handleOnInputChange = (event) => setInputQuestion(event.target.value);
 
-  const callBackendChat = async (chatMessages) => {
+  // Streams the /generatetrip Server-Sent Events response.
+  // onStatus(label) is called for every "status" frame while the trip is being built;
+  // the promise resolves with the final trip object from the "result" frame.
+  const callBackendChat = async (chatMessages, onStatus) => {
     const response = await fetch("https://localhost:7063/generatetrip", {
       method: "POST",
       headers: {
@@ -106,12 +110,50 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
       }),
     });
 
-    if (!response.ok) {
-      const text = await response.text();
+    if (!response.ok || !response.body) {
+      const text = await response.text().catch(() => "");
       throw new Error(text || "Server error");
     }
 
-    return await response.json();
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let result = null;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+
+      // SSE frames are separated by a blank line.
+      let sep;
+      while ((sep = buffer.indexOf("\n\n")) !== -1) {
+        const frame = buffer.slice(0, sep);
+        buffer = buffer.slice(sep + 2);
+
+        let eventName = "message";
+        const dataLines = [];
+        for (const line of frame.split("\n")) {
+          if (line.startsWith("event:")) eventName = line.slice(6).trim();
+          else if (line.startsWith("data:")) dataLines.push(line.slice(5).trim());
+        }
+        if (dataLines.length === 0) continue;
+
+        const payload = JSON.parse(dataLines.join("\n"));
+
+        if (eventName === "status") {
+          onStatus?.(payload);
+        } else if (eventName === "result") {
+          result = payload;
+        } else if (eventName === "error") {
+          throw new Error(payload.error || "Server error");
+        }
+      }
+    }
+
+    if (!result) throw new Error("No data received from the server.");
+    return result;
   };
 
   const handleSendMessage = async (overrideText) => {
@@ -124,6 +166,7 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
     setMessages(updatedMessages);
     setInputQuestion("");
     setIsTyping(true);
+    setThinkingSteps([]);
 
     let chatId = currentChatId;
     if (!chatId) {
@@ -137,7 +180,21 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
     await saveUserMessage(chatId, textToSend);
 
     try {
-      const aiReply = await callBackendChat(updatedMessages);
+      const aiReply = await callBackendChat(updatedMessages, (update) =>
+        setThinkingSteps((prev) => {
+          const step = {
+            stage: update.stage,
+            label: update.label || "",
+          };
+          const last = prev[prev.length - 1];
+          // Same stage as the previous step (e.g. each geocode call) → update that
+          // line in place instead of adding a new one. Different stage → new line.
+          if (last && last.stage === step.stage) {
+            return [...prev.slice(0, -1), step];
+          }
+          return [...prev, step];
+        })
+      );
       if (!aiReply) throw new Error("No data received from the server.");
 
       await saveAssistantResponse(chatId, aiReply);
@@ -175,6 +232,7 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
       ]);
     } finally {
       setIsTyping(false);
+      setThinkingSteps([]);
     }
   };
 
@@ -184,6 +242,7 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
       <ConversationArea
         messages={messages}
         isTyping={isTyping || isLoadingHistory}
+        thinkingSteps={thinkingSteps}
         onRefine={(text) => handleSendMessage(text)}
       />
       <ChatInput

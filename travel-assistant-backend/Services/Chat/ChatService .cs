@@ -116,8 +116,19 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
         public async Task<GenerateTripResult> GenerateTripAsync(
             IReadOnlyList<ChatMessage> messages,
             UserPreferencesDTO? preferences = null,
+            Func<TripProgressUpdate, CancellationToken, Task>? onProgress = null,
             CancellationToken cancellationToken = default)
         {
+            async Task Report(string stage, string label)
+            {
+                if (onProgress != null)
+                {
+                    await onProgress(
+                        new TripProgressUpdate { Stage = stage, Label = label },
+                        cancellationToken);
+                }
+            }
+
             bool requiresAction = true;
             string jsonResponse = "";
             string weatherJson = "";
@@ -198,6 +209,9 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
             };
             messageHistory.AddRange(messages);
 
+            // First visible step — the model is about to read the request and decide what to do.
+            await Report("validating", "Reviewing your request");
+
             try
             {
                 do
@@ -216,6 +230,8 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                                 using var args = JsonDocument.Parse(toolCall.FunctionArguments);
                                 string location = args.RootElement.GetProperty("location").GetString();
                                 int days = args.RootElement.GetProperty("days").GetInt32();
+
+                                await Report("weather", $"Checking the forecast for {location}");
 
                                 var weatherData = await _weatherService.GetWeatherAsync(location, days);
 
@@ -241,6 +257,8 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                                 string startDate = args.RootElement.GetProperty("startDate").GetString();
                                 string endDate = args.RootElement.GetProperty("endDate").GetString();
 
+                                await Report("weather", $"Looking up typical weather for {location}");
+
                                 var historicalWeatherData = await _weatherService.GetHistoricalClimateAsync(location, startDate, endDate);
 
                                 if (historicalWeatherData != null)
@@ -264,6 +282,8 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                                 string address = args.RootElement.TryGetProperty("address", out var addrEl)
                                                      ? addrEl.GetString() ?? ""
                                                      : "";
+
+                                await Report("geocoding", "Mapping out locations");
 
                                 Console.WriteLine($"[Geocode] Requested: {name} | {address}");
 
@@ -289,6 +309,9 @@ namespace travel_assistant_backend.Services.Interfaces.Chat
                     }
 
                 } while (requiresAction);
+
+                // All tools are done; the model has produced the final structured plan.
+                await Report("finalizing", "Putting your itinerary together");
 
                 Console.WriteLine($"AI Raw Response: {jsonResponse}");
 
