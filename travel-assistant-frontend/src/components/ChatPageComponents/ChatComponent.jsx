@@ -11,6 +11,31 @@ const DEFAULT_MESSAGES = [
   },
 ];
 
+// Rebuilds the map's trip object (destination + pins) from an assistant reply,
+// whether it just streamed in or was loaded from saved history.
+// Returns null if the reply isn't a completed plan.
+function buildTripFromReply(aiReply) {
+  if (!aiReply?.isPlanComplete || !aiReply.tripDetails) return null;
+  const trip = aiReply.tripDetails;
+  const tripDays = trip.itinerary ?? [];
+  return {
+    destination: `${trip.destination?.city ?? ""}, ${trip.destination?.country ?? ""}`,
+    pins: tripDays.flatMap((day) =>
+      (day.activities ?? []).map((a) => ({
+        name: a.name,
+        placeName: a.placeName,
+        city: a.city,
+        country: a.country,
+        day: day.dayNumber,
+        description: a.description,
+        estimatedDuration: a.estimatedDuration,
+        address: a.address,
+        isWeatherDependent: a.isWeatherDependent ?? false,
+      }))
+    ),
+  };
+}
+
 export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendingPromptConsumed, onTripGenerated, onChatCreated, initialChatId }) {
   const [inputQuestion, setInputQuestion] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -27,6 +52,7 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
     if (!initialChatId) {
       setMessages(DEFAULT_MESSAGES);
       setIsLoadingHistory(false);
+      onTripGenerated?.(null);
       return;
     }
 
@@ -56,10 +82,18 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
         );
 
         setMessages(merged.length > 0 ? merged : DEFAULT_MESSAGES);
+
+        // Restore the map from the most recent completed itinerary in this chat
+        // (handles refinements — the latest plan wins).
+        const latestPlan = [...merged]
+          .reverse()
+          .find((m) => m.role === "assistant" && m.aiReply?.isPlanComplete && m.aiReply?.tripDetails);
+        onTripGenerated?.(latestPlan ? buildTripFromReply(latestPlan.aiReply) : null);
       })
       .catch((err) => {
         console.error("Failed to load chat:", err);
         setMessages(DEFAULT_MESSAGES);
+        onTripGenerated?.(null);
       })
       .finally(() => setIsLoadingHistory(false));
   }, [initialChatId]);
@@ -196,27 +230,8 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
       await saveAssistantResponse(chatId, aiReply);
 
       if (aiReply.isPlanComplete) {
-        const trip = aiReply.tripDetails;
-        const tripDays = trip.itinerary ?? [];
-
-        onTripGenerated({
-          destination: `${trip.destination.city}, ${trip.destination.country}`,
-          pins: tripDays.flatMap((day) =>
-            (day.activities ?? []).map((a) => ({
-              name: a.name,
-              placeName: a.placeName,
-              city: a.city,
-              country: a.country,
-              day: day.dayNumber,
-              description: a.description,
-              estimatedDuration: a.estimatedDuration,
-              address: a.address,
-              isWeatherDependent: a.isWeatherDependent ?? false,
-            }))
-          ),
-        });
-
-        setMessages((prev) => [...prev, { role: "assistant", content: trip.summary, aiReply }]);
+        onTripGenerated(buildTripFromReply(aiReply));
+        setMessages((prev) => [...prev, { role: "assistant", content: aiReply.tripDetails.summary, aiReply }]);
       } else {
         setMessages((prev) => [...prev, { role: "assistant", content: aiReply.assistantMessage, aiReply: null }]);
         onTripGenerated(null);
