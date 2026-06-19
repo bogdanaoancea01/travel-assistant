@@ -204,8 +204,9 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
           pins: tripDays.flatMap((day) =>
             (day.activities ?? []).map((a) => ({
               name: a.name,
-              lat: a.lat,
-              lng: a.lng,
+              placeName: a.placeName,
+              city: a.city,
+              country: a.country,
               day: day.dayNumber,
               description: a.description,
               estimatedDuration: a.estimatedDuration,

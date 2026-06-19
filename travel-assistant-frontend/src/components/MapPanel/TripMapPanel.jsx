@@ -1,7 +1,4 @@
-import { useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { useState, useEffect } from "react";
 
 const DAY_COLORS = [
   "#0f6e56", "#2563eb", "#dc2626", "#d97706", "#7c3aed",
@@ -11,49 +8,31 @@ const DAY_COLORS = [
 
 const getDayColor = (dayNumber) => DAY_COLORS[(dayNumber - 1) % DAY_COLORS.length];
 
-const createNumberedIcon = (number, color) =>
-  L.divIcon({
-    className: "",
-    html: `
-      <div style="
-        background:${color};color:white;width:28px;height:28px;
-        border-radius:50% 50% 50% 0;transform:rotate(-45deg);
-        display:flex;align-items:center;justify-content:center;
-        border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);
-      ">
-        <span style="transform:rotate(45deg);font-size:11px;font-weight:600">${number}</span>
-      </div>`,
-    iconSize: [28, 28],
-    iconAnchor: [14, 28],
-    popupAnchor: [0, -32],
-  });
-
-function MapBounds({ pins }) {
-  const map = useMap();
-  useEffect(() => {
-    if (pins.length === 0) return;
-    if (pins.length === 1) {
-      map.flyTo([pins[0].lat, pins[0].lng], 14, { duration: 1.2 });
-      return;
-    }
-    const bounds = L.latLngBounds(pins.map((p) => [p.lat, p.lng]));
-    map.flyToBounds(bounds, { padding: [48, 48], duration: 1.2 });
-  }, [pins, map]);
-  return null;
-}
+// Build a plain-text location query for the map embed. We prefer placeName —
+// an exact, real landmark the model provides — over the experiential card name
+// (e.g. "Old Town Walk"), so the embed resolves to one precise point.
+const buildQuery = (stop, destination) => {
+  if (!stop) return destination || "";
+  const parts = [stop.placeName || stop.name, stop.city, stop.country].filter(Boolean);
+  if (parts.length > 0) return parts.join(", ");
+  return stop.address || destination || "";
+};
 
 export default function TripMapPanel({ destination, dateRange, pins = [], onNewTrip }) {
-  const validPins = pins.filter((p) => p.lat && p.lng && p.lat !== 0 && p.lng !== 0);
-  const days = [...new Set(validPins.map((p) => p.day).filter(Boolean))].sort((a, b) => a - b);
+  // A stop is mappable if we have a name plus some locality text to query.
+  const stops = pins.filter((p) => p.name && (p.city || p.country || p.address));
+  const days = [...new Set(stops.map((p) => p.day).filter(Boolean))].sort((a, b) => a - b);
 
-  const centerLat = validPins.length > 0
-    ? validPins.reduce((sum, p) => sum + p.lat, 0) / validPins.length
-    : 41.9028;
-  const centerLng = validPins.length > 0
-    ? validPins.reduce((sum, p) => sum + p.lng, 0) / validPins.length
-    : 12.4964;
+  const [selected, setSelected] = useState(0);
 
-  const dayCounters = {};
+  // Reset selection whenever a new trip is loaded.
+  useEffect(() => {
+    setSelected(0);
+  }, [destination]);
+
+  const selectedStop = stops[selected] ?? null;
+  const query = buildQuery(selectedStop, destination);
+  const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
 
   return (
     <div className="flex flex-col h-full">
@@ -92,98 +71,45 @@ export default function TripMapPanel({ destination, dateRange, pins = [], onNewT
         </div>
       )}
 
-      {/* Map */}
-      <div className="flex-1 min-h-0" onWheel={(e) => e.stopPropagation()}>
-        <MapContainer
-          key={`${centerLat}-${centerLng}`}
-          center={[centerLat, centerLng]}
-          zoom={13}
-          style={{ height: "100%", width: "100%" }}
-          scrollWheelZoom={true}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-
-          {validPins.map((pin) => {
-            const day = pin.day ?? 1;
-            dayCounters[day] = (dayCounters[day] ?? 0) + 1;
-            const number = dayCounters[day];
-            const color = getDayColor(day);
-
-            return (
-              <Marker
-                key={`${pin.name}-${day}-${number}`}
-                position={[pin.lat, pin.lng]}
-                icon={createNumberedIcon(number, color)}
-              >
-                <Popup maxWidth={260} minWidth={200}>
-                  <div style={{ fontFamily: "inherit", fontSize: "12px", lineHeight: "1.5" }}>
-
-                    {/* Title */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px" }}>
-                      <span style={{ fontSize: "16px" }}>📌</span>
-                      <p style={{ fontWeight: 700, fontSize: "13px", margin: 0, color: "#111827" }}>{pin.name}</p>
-                    </div>
-
-                    {/* Day badge */}
-                    <p style={{ margin: "0 0 8px", fontWeight: 600, fontSize: "11px", color }}>
-                      Day {day}
-                    </p>
-
-                    {/* Duration + weather */}
-                    {(pin.estimatedDuration || pin.isWeatherDependent) && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px" }}>
-                        {pin.estimatedDuration && (
-                          <span style={{ color: "#6b7280", fontSize: "11px" }}>⏱ {pin.estimatedDuration}</span>
-                        )}
-                        {pin.isWeatherDependent && (
-                          <span style={{ color: "#d97706", fontSize: "11px" }}>🌤 Weather dependent</span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Description */}
-                    {pin.description && (
-                      <p style={{ margin: "0 0 8px", color: "#374151", fontSize: "12px" }}>
-                        {pin.description}
-                      </p>
-                    )}
-
-                    {/* Address */}
-                    {pin.address && (
-                      <p style={{ margin: "0 0 8px", color: "#9ca3af", fontSize: "11px" }}>
-                        📍 {pin.address}
-                      </p>
-                    )}
-
-                    {/* Tips */}
-                    {pin.tips?.length > 0 && (
-                      <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: "6px" }}>
-                        {pin.tips.map((tip, i) => (
-                          <p key={i} style={{ margin: "0 0 4px", color: "#6b7280", fontSize: "11px" }}>
-                            💡 {tip}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
-
-          <MapBounds pins={validPins} />
-        </MapContainer>
+      {/* Map (text-query embed) */}
+      <div className="flex-1 min-h-0">
+        <iframe
+          key={query}
+          title={selectedStop ? selectedStop.name : destination}
+          src={mapSrc}
+          style={{ height: "100%", width: "100%", border: 0 }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          allowFullScreen
+        />
       </div>
 
-      {/* Pin list grouped by day */}
-      {validPins.length > 0 && (
+      {/* Selected stop detail — compact strip below the map (off the map area) */}
+      {selectedStop && (
+        <div className="border-t border-gray-100 bg-white px-4 py-2 shrink-0">
+          <div className="flex items-center gap-x-2 gap-y-0.5 flex-wrap">
+            <span className="text-[13px] font-semibold text-gray-900">📌 {selectedStop.name}</span>
+            <span className="text-[11px] font-semibold" style={{ color: getDayColor(selectedStop.day ?? 1) }}>
+              Day {selectedStop.day ?? 1}
+            </span>
+            {selectedStop.estimatedDuration && (
+              <span className="text-[11px] text-gray-500">⏱ {selectedStop.estimatedDuration}</span>
+            )}
+            {selectedStop.isWeatherDependent && (
+              <span className="text-[11px] text-amber-600">🌤 Weather dependent</span>
+            )}
+          </div>
+          {selectedStop.description && (
+            <p className="mt-0.5 text-[12px] text-gray-600 line-clamp-2">{selectedStop.description}</p>
+          )}
+        </div>
+      )}
+
+      {/* Stop list grouped by day — tap a stop to focus the map on it */}
+      {stops.length > 0 && (
         <div className="border-t border-gray-100 bg-white p-3 shrink-0 overflow-y-auto max-h-36">
           {days.map((day) => {
-            const dayPins = validPins.filter((p) => (p.day ?? 1) === day);
+            const dayStops = stops.filter((p) => (p.day ?? 1) === day);
             return (
               <div key={day} className="mb-2 last:mb-0">
                 <p className="text-[10px] font-semibold uppercase tracking-wider mb-1"
@@ -191,20 +117,29 @@ export default function TripMapPanel({ destination, dateRange, pins = [], onNewT
                   Day {day}
                 </p>
                 <div className="flex flex-wrap gap-1">
-                  {dayPins.map((pin, i) => (
-                    <span
-                      key={`${pin.name}-${i}`}
-                      className="flex items-center gap-1 rounded-full border border-gray-100 bg-gray-50 px-2.5 py-0.5 text-xs text-gray-500"
-                    >
-                      <span
-                        className="flex h-3.5 w-3.5 items-center justify-center rounded-full text-white text-[8px] font-bold shrink-0"
-                        style={{ background: getDayColor(day) }}
+                  {dayStops.map((stop, i) => {
+                    const globalIndex = stops.indexOf(stop);
+                    const isSelected = globalIndex === selected;
+                    return (
+                      <button
+                        key={`${stop.name}-${i}`}
+                        onClick={() => setSelected(globalIndex)}
+                        className={`flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs transition-colors ${
+                          isSelected
+                            ? "border-gray-300 bg-gray-100 text-gray-800"
+                            : "border-gray-100 bg-gray-50 text-gray-500 hover:bg-gray-100"
+                        }`}
                       >
-                        {i + 1}
-                      </span>
-                      {pin.name}
-                    </span>
-                  ))}
+                        <span
+                          className="flex h-3.5 w-3.5 items-center justify-center rounded-full text-white text-[8px] font-bold shrink-0"
+                          style={{ background: getDayColor(day) }}
+                        >
+                          {i + 1}
+                        </span>
+                        {stop.name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             );
@@ -212,9 +147,9 @@ export default function TripMapPanel({ destination, dateRange, pins = [], onNewT
         </div>
       )}
 
-      {validPins.length === 0 && pins.length > 0 && (
+      {stops.length === 0 && pins.length > 0 && (
         <div className="p-4 text-xs text-gray-400 text-center shrink-0">
-          Coordinates unavailable — geocoding may still be in progress.
+          Location details unavailable for these stops.
         </div>
       )}
     </div>

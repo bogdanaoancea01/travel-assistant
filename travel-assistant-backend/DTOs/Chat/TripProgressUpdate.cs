@@ -7,7 +7,7 @@
     /// </summary>
     public class TripProgressUpdate
     {
-        //"validating" | "weather" | "geocoding" |
+        //"validating" | "weather" | "finalizing"
         public string Stage { get; set; } = "";
 
         // Human-friendly text shown to the user
