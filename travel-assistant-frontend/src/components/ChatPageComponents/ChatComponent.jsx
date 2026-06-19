@@ -31,6 +31,7 @@ function buildTripFromReply(aiReply) {
         estimatedDuration: a.estimatedDuration,
         address: a.address,
         isWeatherDependent: a.isWeatherDependent ?? false,
+        isDining: a.isDining ?? false,
       }))
     ),
   };

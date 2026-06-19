@@ -11,14 +11,18 @@ const getDayColor = (dayNumber) => DAY_COLORS[(dayNumber - 1) % DAY_COLORS.lengt
 // Build a plain-text location query for the map embed. We prefer placeName —
 // an exact, real landmark the model provides — over the experiential card name
 // (e.g. "Old Town Walk"), so the embed resolves to one precise point.
+// Dining stops are different: placeName is a neighbourhood/area, and we query
+// "restaurants in {area}" so the map shows the dining options across it.
 const buildQuery = (stop, destination) => {
   if (!stop) return destination || "";
-  const parts = [stop.placeName || stop.name, stop.city, stop.country].filter(Boolean);
-  if (parts.length > 0) return parts.join(", ");
+  const area = stop.placeName || stop.name;
+  const locality = [area, stop.city, stop.country].filter(Boolean).join(", ");
+  if (stop.isDining && locality) return `restaurants in ${locality}`;
+  if (locality) return locality;
   return stop.address || destination || "";
 };
 
-export default function TripMapPanel({ destination, dateRange, pins = [], onNewTrip }) {
+export default function TripMapPanel({ destination, dateRange, pins = [] }) {
   // A stop is mappable if we have a name plus some locality text to query.
   const stops = pins.filter((p) => p.name && (p.city || p.country || p.address));
   const days = [...new Set(stops.map((p) => p.day).filter(Boolean))].sort((a, b) => a - b);
@@ -49,14 +53,6 @@ export default function TripMapPanel({ destination, dateRange, pins = [], onNewT
             <p className="text-xs text-gray-400">{dateRange}</p>
           </div>
         </div>
-        {onNewTrip && (
-          <button
-            onClick={onNewTrip}
-            className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-600 transition-colors hover:bg-gray-50"
-          >
-            + New trip
-          </button>
-        )}
       </div>
 
       {/* Day legend */}
@@ -97,6 +93,9 @@ export default function TripMapPanel({ destination, dateRange, pins = [], onNewT
             )}
             {selectedStop.isWeatherDependent && (
               <span className="text-[11px] text-amber-600">🌤 Weather dependent</span>
+            )}
+            {selectedStop.isDining && (
+              <span className="text-[11px] text-rose-500">🍽 Restaurants in this area</span>
             )}
           </div>
           {selectedStop.description && (

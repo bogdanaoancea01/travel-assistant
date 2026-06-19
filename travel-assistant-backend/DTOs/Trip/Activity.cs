@@ -11,5 +11,6 @@ namespace travel_assistant_backend.DTOs.Trip
         public string Country { get; set; }
         public string EstimatedDuration { get; set; }
         public bool IsWeatherDependent { get; set; }
+        public bool IsDining { get; set; }
     }
 }

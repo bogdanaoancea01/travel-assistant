@@ -80,7 +80,6 @@ export default function RecommendationsPanel({ activeTrip, onPrompt, onNewTrip }
         key={activeTrip.destination}
         destination={activeTrip.destination}
         pins={activeTrip.pins}
-        onNewTrip={onNewTrip}
       />
     </div>
   );
