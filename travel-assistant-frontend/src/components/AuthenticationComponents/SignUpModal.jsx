@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Eye, EyeOff, X } from "lucide-react";
 import { useAuth } from "../../AuthContext";
-import SocialMediaAuth from "./SocialMediaAuth";
 
 export default function SignUpModal({ isOpen, onClose, onSignInClick, onSignUpSuccess  }) {
   const [formData, setFormData] = useState({
@@ -79,7 +78,7 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick, onSignUpSu
   return (
     <div
       className={`
-        fixed inset-0 z-100 flex items-start justify-center overflow-y-auto p-4
+        fixed inset-0 z-100 flex items-center justify-center overflow-y-auto p-4
         transition-opacity duration-400 backdrop-blur-xs bg-black/60
         ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
       `}
@@ -228,9 +227,6 @@ export default function SignUpModal({ isOpen, onClose, onSignInClick, onSignUpSu
             Sign up
           </button>
         </form>
-
-        {/* Social Media Auth */}
-        <SocialMediaAuth />
 
         {/* Footer */}
         <p className="mt-6 text-center text-sm text-gray-600">

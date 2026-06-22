@@ -1,7 +1,6 @@
 import { X, Eye, EyeOff } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../AuthContext";
-import SocialMediaAuth from "./SocialMediaAuth";
 
 export default function SignInModal({ isOpen, onClose, onSignUpClick, onLoginSuccess }) {
   const [email, setEmail] = useState("");
@@ -114,7 +113,7 @@ export default function SignInModal({ isOpen, onClose, onSignUpClick, onLoginSuc
           </button>
         </form>
 
-        <SocialMediaAuth />
+        {/* <SocialMediaAuth /> */}
 
         <p className="mt-6 text-center text-sm text-gray-600">
           Don&apos;t have an account?{" "}
