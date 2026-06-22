@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import ConversationArea from "../ChatAreaComponents/ConverstaionArea";
 import ChatInput from "../ChatAreaComponents/ChatInput";
 import ChatHeader from "../ChatAreaComponents/ChatHeader";
@@ -11,9 +11,7 @@ const DEFAULT_MESSAGES = [
   },
 ];
 
-// Rebuilds the map's trip object (destination + pins) from an assistant reply,
-// whether it just streamed in or was loaded from saved history.
-// Returns null if the reply isn't a completed plan.
+// Rebuilds the map's trip object (destination + pins)
 function buildTripFromReply(aiReply) {
   if (!aiReply?.isPlanComplete || !aiReply.tripDetails) return null;
   const trip = aiReply.tripDetails;
@@ -85,7 +83,6 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
         setMessages(merged.length > 0 ? merged : DEFAULT_MESSAGES);
 
         // Restore the map from the most recent completed itinerary in this chat
-        // (handles refinements — the latest plan wins).
         const latestPlan = [...merged]
           .reverse()
           .find((m) => m.role === "assistant" && m.aiReply?.isPlanComplete && m.aiReply?.tripDetails);
@@ -124,6 +121,14 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
     fromCardClick.current = false;
     handleSendMessage(inputQuestion);
   }, [inputQuestion, isLoadingHistory]);
+
+  // Full trip details used for the "Export chat" -> PDF action in the header.
+  const latestTripDetails = useMemo(() => {
+    const latest = [...messages]
+      .reverse()
+      .find((m) => m.role === "assistant" && m.aiReply?.isPlanComplete && m.aiReply?.tripDetails);
+    return latest?.aiReply?.tripDetails ?? null;
+  }, [messages]);
 
   const handleOnInputChange = (event) => setInputQuestion(event.target.value);
 
@@ -251,7 +256,7 @@ export default function ChatComponent({ pendingPrompt, pendingChatTitle, onPendi
 
   return (
     <div className="h-full flex flex-col bg-white">
-      <ChatHeader chatId={currentChatId} />
+      <ChatHeader chatId={currentChatId} trip={latestTripDetails} messages={messages} />
       <ConversationArea
         messages={messages}
         isTyping={isTyping || isLoadingHistory}

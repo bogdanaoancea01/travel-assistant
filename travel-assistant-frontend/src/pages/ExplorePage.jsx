@@ -8,7 +8,7 @@ import {
 } from "../utilities/useExplore";
 import { usePreferences } from "../utilities/usePreferences";
 import { searchPhotos } from "../utilities/photos";
-import { RefreshCw, ThumbsUp, ThumbsDown, Heart } from "lucide-react";
+import { RefreshCw, ThumbsUp, ThumbsDown, Heart, Loader2 } from "lucide-react";
 
 function getTripDays(preferences, fallback = 5) {
   const min = preferences?.tripDurationMin;
@@ -108,26 +108,6 @@ function DestinationCard({ dest, signal, onFeedback, onPlanTrip }) {
         >
           Plan this trip
         </button>
-      </div>
-    </div>
-  );
-}
-
-function SkeletonCard() {
-  return (
-    <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden animate-pulse">
-      <div className="h-40 bg-gray-100" />
-      <div className="p-4 space-y-3">
-        <div className="h-4 bg-gray-100 rounded w-2/3" />
-        <div className="h-3 bg-gray-100 rounded w-1/3" />
-        <div className="flex gap-1.5">
-          <div className="h-5 bg-gray-100 rounded-full w-14" />
-          <div className="h-5 bg-gray-100 rounded-full w-16" />
-          <div className="h-5 bg-gray-100 rounded-full w-12" />
-        </div>
-        <div className="h-3 bg-gray-100 rounded w-full" />
-        <div className="h-3 bg-gray-100 rounded w-4/5" />
-        <div className="h-8 bg-gray-100 rounded-xl mt-2" />
       </div>
     </div>
   );
@@ -286,20 +266,28 @@ export default function ExplorePage() {
             </div>
           )}
 
-          {!error && (
+          {!error && loading && (
+            <div
+              className="flex flex-col items-center justify-center text-center"
+              style={{ minHeight: "60vh" }}
+            >
+              <Loader2 className="h-10 w-10 text-gray-900 animate-spin" />
+              <p className="mt-4 text-sm font-medium text-gray-700">Finding destinations for you</p>
+              <p className="mt-1 text-xs text-gray-400">Just a moment…</p>
+            </div>
+          )}
+
+          {!error && !loading && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {loading
-                ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-                : destinations.map((dest, i) => (
-                    <DestinationCard
-                      key={keyFor(dest) + i}
-                      dest={dest}
-                      signal={feedback[keyFor(dest)] ?? null}
-                      onFeedback={handleFeedback}
-                      onPlanTrip={handlePlanTrip}
-                    />
-                  ))
-              }
+              {destinations.map((dest, i) => (
+                <DestinationCard
+                  key={keyFor(dest) + i}
+                  dest={dest}
+                  signal={feedback[keyFor(dest)] ?? null}
+                  onFeedback={handleFeedback}
+                  onPlanTrip={handlePlanTrip}
+                />
+              ))}
             </div>
           )}
 

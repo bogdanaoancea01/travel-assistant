@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import RenameChatModal from "./RenameChatModal";
 import { ChevronDown, Pencil, Download, Trash2 } from "lucide-react";
 import { useChatHistory } from "../../utilities/useChatHistory";
+import { exportChatPdf, hasExportableTrip } from "../../utilities/exportTripPdf";
 
-export default function ChatHeader({ chatId }) {
+export default function ChatHeader({ chatId, trip, messages }) {
   const [openMenu, setOpenMenu] = useState(false);
   const [openRenameModal, setOpenRenameModal] = useState(false);
   const [chatName, setChatName] = useState("New Chat");
@@ -34,6 +35,13 @@ export default function ChatHeader({ chatId }) {
     }
   };
 
+  const handleExport = () => {
+    setOpenMenu(false);
+    exportChatPdf({ trip, messages, title: chatName });
+  };
+
+  const exportable = hasExportableTrip(trip);
+
   return (
     <div className="h-14 border-b border-gray-100 px-5 flex items-center">
       <div className="relative" ref={menuRef}>
@@ -59,10 +67,10 @@ export default function ChatHeader({ chatId }) {
             </button>
             <button
               className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
-              onClick={() => setOpenMenu(false)}
+              onClick={handleExport}
             >
               <Download className="h-4 w-4 text-gray-400" />
-              Export chat
+              {exportable ? "Export itinerary (PDF)" : "Export chat (PDF)"}
             </button>
           </div>
         )}
